@@ -9,7 +9,8 @@ object dmConexao: TdmConexao
     Params.Strings = (
       'DriverID=FB'
       'User_Name=sysdba'
-      'Password=masterkey')
+      'Password=masterkey'
+      'CharacterSet=UTF8')
     ResourceOptions.AssignedValues = [rvAutoReconnect]
     ResourceOptions.AutoReconnect = True
     LoginPrompt = False

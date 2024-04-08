@@ -133,6 +133,8 @@ type
     //Tratar respostas do cliente para o tipo de opção recebida
     function ConverterTextoParaOpcaoMenu(ARespostaUsuario: string): integer;
     function ValidarCPFCNPJDoCliente(ARespostaUsuario: string; var AConexao: TFDConnection): integer;
+    function VerificarSeEncerraAtendimento(ARespostaUsuario: string): boolean;
+    function VerificarSeVoltaParaOMenuInicial(ARespostaUsuario: string): boolean;
   end;
 
   TMensagemWhatsapp = class
@@ -141,20 +143,31 @@ type
     function GetMensagemPadrao(ATipoMensagemPadrao: integer): string;
     function GetOpcoesAtedimento(ANumeroAtedimento: string): string;
     function GetPedidosCliente(AClienteId: integer): string;
+    procedure FinalizarAtendimento(ANumeroCliente: string);
+    function ListarVendedores: string;
+
+    function GetTextoInicioSair: string;
   public
     constructor Create;
     destructor Destroy; override;
 
     //Funções para gerar mensagens de resposta para enviar aos clientes
     class function MensagemBoasVindas(AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
+    class function MenuInicialSemBoasVindas(AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
     class function EnviarUltimosPedidos(AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
+    class function MensagemFinalizarAtendimento(AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
+    class function ReenviaUltimaMensagemValida(AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
+    class function RedirecionarParaVendedores(AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
+    class function ContatoDosVendedores(AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
   end;
 
   TProcessamentoMensagens = class
   private
-    FConexao: TFDConnection;
+    FdmConexao: TdmConexao;
   public
-    constructor Create(var AConexao: TFDConnection);
+    constructor Create;
+    destructor Destroy; override;
+    procedure FinalizarAtendimentosDeDiasAnteriores(ANumeroEmpresa: string);
     procedure ExecutarMensagensTodosCadastros;
     procedure ProcessarMensagensRecebidas(ANumeroEmpresa: string);
   end;
@@ -162,6 +175,41 @@ type
 implementation
 
 { TMensagemWhatsapp }
+
+class function TMensagemWhatsapp.ContatoDosVendedores(
+  AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
+var
+  lMensagemParaEnviar, lTextoPadrao: string;
+  lMensagemWhatsapp: TMensagemWhatsapp;
+begin
+  lMensagemWhatsapp := TMensagemWhatsapp.Create;
+  try
+    if lMensagemWhatsapp.FdmConexao.ConectarBanco then
+    begin
+      lTextoPadrao := 'Segue o contato de nossos colaboradores'+sLineBreak;
+      lMensagemParaEnviar := lTextoPadrao + lMensagemWhatsapp.ListarVendedores +sLineBreak+ lMensagemWhatsapp.GetTextoInicioSair;
+      Result := TMensagemEnviar.Novo(0,
+                                    Now,
+                                    AMensagemRecebida.NumeroEmpresa,
+                                    AMensagemRecebida.NumeroCliente,
+                                    AMensagemRecebida.Ticket,
+                                    StartOfTheDay(Now),
+                                    EndOfTheDay(Now),
+                                    STS_MENSAGEM_NAO_ENVIADA,
+                                    TP_INTERACAO_A_PARTIR_DO_USUARIO,
+                                    TP_ENTREGA_CONTATO_VENDEDORES,
+                                    lMensagemParaEnviar,
+                                    STS_ATENDIMENTO_EM_ABERTO,
+                                    AMensagemRecebida.ClienteId,
+                                    AMensagemRecebida.ClienteNome,
+                                    EmptyStr);
+      Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+      lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+    end;
+  finally
+    lMensagemWhatsapp.Free;
+  end;
+end;
 
 constructor TMensagemWhatsapp.Create;
 begin
@@ -188,7 +236,7 @@ begin
       if AMensagemRecebida.ClienteId = 0 then //Se o id do cliente for igual a zero requisitar o cpf
       begin
         lTextoPadrao := 'Por favor, informe o número do seu CPF ou CNPJ (sem caracteres especiais) para que possamos identificar o seu cadastro na loja';
-        lMensagemParaEnviar := lTextoPadrao;
+        lMensagemParaEnviar := lTextoPadrao+sLineBreak+sLineBreak+lMensagemWhatsapp.GetTextoInicioSair;
         Result := TMensagemEnviar.Novo(0,
                                       Now,
                                       AMensagemRecebida.NumeroEmpresa,
@@ -204,13 +252,14 @@ begin
                                       AMensagemRecebida.ClienteId,
                                       AMensagemRecebida.ClienteNome,
                                       EmptyStr);
+        Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
         Exit;
       end;
 
       if lTextoPadrao.IsEmpty then
         lTextoPadrao := 'Segue um resumo dos últimos pedidos encontrados no seu cadastro';
       lTextoPedidos := lMensagemWhatsapp.GetPedidosCliente(AMensagemRecebida.ClienteId);
-      lMensagemParaEnviar := lTextoPadrao + sLineBreak + sLineBreak + lTextoPedidos;
+      lMensagemParaEnviar := lTextoPadrao + sLineBreak + sLineBreak + lTextoPedidos+ sLineBreak + lMensagemWhatsapp.GetTextoInicioSair;
 
       Result := TMensagemEnviar.Novo(0,
                                     Now,
@@ -232,6 +281,32 @@ begin
     end;
   finally
     lMensagemWhatsapp.Free;
+  end;
+end;
+
+procedure TMensagemWhatsapp.FinalizarAtendimento(ANumeroCliente: string);
+var
+  lQuery: TFDQuery;
+begin
+  lQuery := TFDQuery.Create(nil);
+  try
+    lQuery.Connection := FdmConexao.fdConexao;
+    lQuery.SQL.Text := 'update WB_MENSAGENS set FINALIZADO = :FINALIZADO where NUMERO_CLIENTE = :NUMERO_CLIENTE and TIPO_INTERACAO = :TIPO_INTERACAO ';
+    lQuery.ParamByName('FINALIZADO').AsInteger := STS_ATENDIMENTO_FINALIZADO;
+    lQuery.ParamByName('TIPO_INTERACAO').AsInteger := TP_INTERACAO_A_PARTIR_DO_USUARIO;
+    lQuery.ParamByName('NUMERO_CLIENTE').AsString := ANumeroCliente;
+    lQuery.ExecSQL;
+    lQuery.SQL.Text := 'update WB_MENSAGEM_ENVIO set FINALIZADO = :FINALIZADO where NUMERO_CLIENTE = :NUMERO_CLIENTE and TIPO_INTERACAO = :TIPO_INTERACAO ';
+    lQuery.ParamByName('FINALIZADO').AsInteger := STS_ATENDIMENTO_FINALIZADO;
+    lQuery.ParamByName('TIPO_INTERACAO').AsInteger := TP_INTERACAO_A_PARTIR_DO_USUARIO;
+    lQuery.ParamByName('NUMERO_CLIENTE').AsString := ANumeroCliente;
+    lQuery.ExecSQL;
+    lQuery.SQL.Text := 'update WB_MENSAGEM_RECEBIDA set FINALIZADO = :FINALIZADO where NUMERO_CLIENTE = :NUMERO_CLIENTE ';
+    lQuery.ParamByName('FINALIZADO').AsInteger := STS_ATENDIMENTO_FINALIZADO;
+    lQuery.ParamByName('NUMERO_CLIENTE').AsString := ANumeroCliente;
+    lQuery.ExecSQL;
+  finally
+    lQuery.Free;
   end;
 end;
 
@@ -305,7 +380,7 @@ begin
         Result := Result + 'Número: *'+StrZero(lQuery.FieldByName('ID').AsInteger, 7)+'*'+sLineBreak;
         Result := Result + 'Data: *'+FormatDateTime('dd/mm/yyyy', lQuery.FieldByName('DATA_VENDA').AsDateTime)+'*'+sLineBreak;
         Result := Result + 'Tipo: *'+lQuery.FieldByName('TIPO').AsString+'*'+sLineBreak;
-        Result := Result + 'Status: '+lQuery.FieldByName('STATUS').AsString+'*'+sLineBreak;
+        Result := Result + 'Status: *'+lQuery.FieldByName('STATUS').AsString+'*'+sLineBreak;
         Result := Result + 'Qtd. produtos: *'+lQuery.FieldByName('QUANT_PRODUTOS').AsString+'*'+sLineBreak;
         Result := Result + 'Valor do pedido: *'+FormatCurr('#,##0.00', lQuery.FieldByName('VALOR_NOTA').AsCurrency)+'*'+sLineBreak;
         Result := Result + 'Desconto: *'+FormatCurr('#,##0.00', lQuery.FieldByName('VALOR_DESC_REAL').AsCurrency)+'*'+sLineBreak;
@@ -319,6 +394,55 @@ begin
   end;
 end;
 
+function TMensagemWhatsapp.GetTextoInicioSair: string;
+begin
+  Result := 'Digite *'+UpperCase(TP_PALAVRA_CHAVE_ATENDIMENTO_INICIO)+'* para voltar ao menu inicial ou *'+UpperCase(TP_PALAVRA_CHAVE_ATENDIMENTO_SAIR)+'* para finalizar o atendimento'
+end;
+
+function TMensagemWhatsapp.ListarVendedores: string;
+var
+  lQuery: TFDQuery;
+begin
+  lQuery := TFDQuery.Create(nil);
+  try
+    lQuery.Connection := FdmConexao.fdConexao;
+    lQuery.SQL.Text := SQL_CONSULTA_VENDEDORES_MV;
+    lQuery.Open;
+    if not (lQuery.IsEmpty) then
+    begin
+      lQuery.First;
+      while not (lQuery.Eof) do
+      begin
+        Result := Result+
+                  EMOJI_ATENDENTE +' '+
+                  lQuery.FieldByName('NOME').AsString+sLineBreak+
+                  EMOJI_TELEFONE  +' '+
+                  lQuery.FieldByName('FONE').AsString+sLineBreak;
+        lQuery.Next;
+      end;
+    end
+    else
+    begin
+      lQuery.Close;
+      lQuery.SQL.Text := SQL_CONSULTA_VENDEDORES_MV;
+      lQuery.Open;
+      if not (lQuery.IsEmpty) then
+      begin
+        Result := Result+
+                  EMOJI_ATENDENTE +' '+
+                  lQuery.FieldByName('NOME').AsString+sLineBreak+
+                  EMOJI_TELEFONE  +' '+
+                  lQuery.FieldByName('FONE').AsString+sLineBreak;
+      end;
+    end;
+    lQuery.Close;
+  finally
+    lQuery.Free;
+  end;
+  if Result.IsEmpty then
+    Result := 'Nenhum contato encontrado'+sLineBreak;
+end;
+
 class function TMensagemWhatsapp.MensagemBoasVindas(
   AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
 var
@@ -326,6 +450,7 @@ var
   lTextoPadrao: string;
   lOpcoesDisponiveis: string;
   lMensagemParaEnviar: string;
+  lMensagemParaSair: string;
 begin
   lMensagemWhatsapp := TMensagemWhatsapp.Create;
   try
@@ -334,8 +459,9 @@ begin
       lTextoPadrao := lMensagemWhatsapp.GetMensagemPadrao(TP_MENSAGEM_PADRAO_BOAS_VINDAS);
       if lTextoPadrao.IsEmpty then
         lTextoPadrao := 'Olá, bem-vindo ao nosso atedimento automatizado';
+      lMensagemParaSair := 'Digite *'+UpperCase(TP_PALAVRA_CHAVE_ATENDIMENTO_SAIR)+'* para finalizar o atendimento';
       lOpcoesDisponiveis := lMensagemWhatsapp.GetOpcoesAtedimento(AMensagemRecebida.NumeroEmpresa);
-      lMensagemParaEnviar := lTextoPadrao +sLineBreak + sLineBreak + lOpcoesDisponiveis;
+      lMensagemParaEnviar := lTextoPadrao +sLineBreak + lOpcoesDisponiveis +sLineBreak + sLineBreak +lMensagemParaSair;
       Result := TMensagemEnviar.Novo(0,
                                     Now,
                                     AMensagemRecebida.NumeroEmpresa,
@@ -346,6 +472,177 @@ begin
                                     STS_MENSAGEM_NAO_ENVIADA,
                                     TP_INTERACAO_A_PARTIR_DO_USUARIO,
                                     TP_ENTREGA_BOAS_VINDAS_MENU,
+                                    lMensagemParaEnviar,
+                                    STS_ATENDIMENTO_EM_ABERTO,
+                                    AMensagemRecebida.ClienteId,
+                                    AMensagemRecebida.ClienteNome,
+                                    EmptyStr);
+      Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+      lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+    end;
+  finally
+    lMensagemWhatsapp.Free;
+  end;
+end;
+
+class function TMensagemWhatsapp.MensagemFinalizarAtendimento(
+  AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
+var
+  lMensagemWhatsapp: TMensagemWhatsapp;
+  lTextoPadrao: string;
+begin
+  lMensagemWhatsapp := TMensagemWhatsapp.Create;
+  try
+    if lMensagemWhatsapp.FdmConexao.ConectarBanco then
+    begin
+      lTextoPadrao := lMensagemWhatsapp.GetMensagemPadrao(TP_MENSAGEM_PADRAO_FINALIZAR);
+      if lTextoPadrao.IsEmpty then
+        lTextoPadrao := 'Obrigado por entrar em contato conosco. Estamos sempre a disposição. Tenha um bom dia';
+      Result := TMensagemEnviar.Novo(0,
+                                    Now,
+                                    AMensagemRecebida.NumeroEmpresa,
+                                    AMensagemRecebida.NumeroCliente,
+                                    AMensagemRecebida.Ticket,
+                                    StartOfTheDay(Now),
+                                    EndOfTheDay(Now),
+                                    STS_MENSAGEM_NAO_ENVIADA,
+                                    TP_INTERACAO_A_PARTIR_DO_USUARIO,
+                                    TP_ENTREGA_FINALIZAR,
+                                    lTextoPadrao,
+                                    STS_ATENDIMENTO_FINALIZADO,
+                                    AMensagemRecebida.ClienteId,
+                                    AMensagemRecebida.ClienteNome,
+                                    EmptyStr);
+      Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+      lMensagemWhatsapp.FinalizarAtendimento(AMensagemRecebida.NumeroCliente);
+      lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+    end;
+  finally
+    lMensagemWhatsapp.Free;
+  end;
+end;
+
+class function TMensagemWhatsapp.MenuInicialSemBoasVindas(
+  AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
+var
+  lMensagemWhatsapp: TMensagemWhatsapp;
+  lTextoPadrao: string;
+  lOpcoesDisponiveis: string;
+  lMensagemParaEnviar: string;
+  lMensagemParaSair: string;
+begin
+  lMensagemWhatsapp := TMensagemWhatsapp.Create;
+  try
+    if lMensagemWhatsapp.FdmConexao.ConectarBanco then
+    begin
+      lTextoPadrao := 'Por favor, informe a opção desejada';
+      lMensagemParaSair := 'Digite *'+UpperCase(TP_PALAVRA_CHAVE_ATENDIMENTO_SAIR)+'* para finalizar o atendimento';
+      lOpcoesDisponiveis := lMensagemWhatsapp.GetOpcoesAtedimento(AMensagemRecebida.NumeroEmpresa);
+      lMensagemParaEnviar := lTextoPadrao +sLineBreak + lOpcoesDisponiveis +sLineBreak + sLineBreak +lMensagemParaSair;
+      Result := TMensagemEnviar.Novo(0,
+                                    Now,
+                                    AMensagemRecebida.NumeroEmpresa,
+                                    AMensagemRecebida.NumeroCliente,
+                                    AMensagemRecebida.Ticket,
+                                    StartOfTheDay(Now),
+                                    EndOfTheDay(Now),
+                                    STS_MENSAGEM_NAO_ENVIADA,
+                                    TP_INTERACAO_A_PARTIR_DO_USUARIO,
+                                    TP_ENTREGA_MENU_INICIAL,
+                                    lMensagemParaEnviar,
+                                    STS_ATENDIMENTO_EM_ABERTO,
+                                    AMensagemRecebida.ClienteId,
+                                    AMensagemRecebida.ClienteNome,
+                                    EmptyStr);
+      Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+      lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+    end;
+  finally
+    lMensagemWhatsapp.Free;
+  end;
+end;
+
+class function TMensagemWhatsapp.RedirecionarParaVendedores(
+  AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
+var
+  lMensagemParaEnviar, lTextoPadrao: string;
+  lMensagemWhatsapp: TMensagemWhatsapp;
+begin
+  lMensagemWhatsapp := TMensagemWhatsapp.Create;
+  try
+    if lMensagemWhatsapp.FdmConexao.ConectarBanco then
+    begin
+      lTextoPadrao := 'Não encontramos seu cadastro para o CFP/CNPJ informado. Segue o contato de nossos colaboradores'+sLineBreak;
+      lMensagemParaEnviar := lTextoPadrao + lMensagemWhatsapp.ListarVendedores +sLineBreak+ lMensagemWhatsapp.GetTextoInicioSair;
+      Result := TMensagemEnviar.Novo(0,
+                                    Now,
+                                    AMensagemRecebida.NumeroEmpresa,
+                                    AMensagemRecebida.NumeroCliente,
+                                    AMensagemRecebida.Ticket,
+                                    StartOfTheDay(Now),
+                                    EndOfTheDay(Now),
+                                    STS_MENSAGEM_NAO_ENVIADA,
+                                    TP_INTERACAO_A_PARTIR_DO_USUARIO,
+                                    TP_ENTREGA_CONTATO_VENDEDORES,
+                                    lMensagemParaEnviar,
+                                    STS_ATENDIMENTO_EM_ABERTO,
+                                    AMensagemRecebida.ClienteId,
+                                    AMensagemRecebida.ClienteNome,
+                                    EmptyStr);
+      Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+      lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+    end;
+  finally
+    lMensagemWhatsapp.Free;
+  end;
+end;
+
+class function TMensagemWhatsapp.ReenviaUltimaMensagemValida(
+  AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
+var
+  lMensagemWhatsapp: TMensagemWhatsapp;
+  lUltimaMensagemValida: TMensagemEnviar;
+  lTextoPadrao: string;
+  lOpcoesDisponiveis: string;
+  lMensagemParaEnviar: string;
+  lMensagemParaSair: string;
+begin
+  lMensagemWhatsapp := TMensagemWhatsapp.Create;
+  try
+    if lMensagemWhatsapp.FdmConexao.ConectarBanco then
+    begin
+      lTextoPadrao := '*OPÇÃO INVÁLIDA*'+sLineBreak;
+
+      lUltimaMensagemValida := TMensagemEnviar.RetornaUltimaOpcaoEntregueValida(AMensagemRecebida.NumeroEmpresa,
+                                                                                AMensagemRecebida.NumeroCliente,
+                                                                                lMensagemWhatsapp.FdmConexao.fdConexao);
+
+      case lUltimaMensagemValida.OpcaoEntregue of
+        TP_ENTREGA_BOAS_VINDAS_MENU, TP_ENTREGA_MENU_INICIAL: begin
+          lTextoPadrao := lTextoPadrao+ 'Por favor, informe a opção desejada';
+          lMensagemParaSair := 'Digite *'+UpperCase(TP_PALAVRA_CHAVE_ATENDIMENTO_SAIR)+'* para finalizar o atendimento';
+          lOpcoesDisponiveis := lMensagemWhatsapp.GetOpcoesAtedimento(AMensagemRecebida.NumeroEmpresa);
+          lMensagemParaEnviar := lTextoPadrao +sLineBreak + lOpcoesDisponiveis +sLineBreak + sLineBreak +lMensagemParaSair;
+        end;
+        TP_ENTREGA_ULTIMOS_PEDIDOS, TP_ENTREGA_ULTIMOS_OS, TP_ENTREGA_CONTAS_EM_ABERTO,
+        TP_ENTREGA_BOLETOS_EM_ABERTO, TP_ENTREGA_CONTATO_VENDEDORES: begin
+          lMensagemParaEnviar := lTextoPadrao + lMensagemWhatsapp.GetTextoInicioSair;
+        end;
+        else begin
+          lMensagemParaEnviar := lTextoPadrao + ReplaceStr(lUltimaMensagemValida.GetMensagem, lTextoPadrao, '');
+        end;
+      end;
+
+      Result := TMensagemEnviar.Novo(0,
+                                    Now,
+                                    AMensagemRecebida.NumeroEmpresa,
+                                    AMensagemRecebida.NumeroCliente,
+                                    AMensagemRecebida.Ticket,
+                                    StartOfTheDay(Now),
+                                    EndOfTheDay(Now),
+                                    STS_MENSAGEM_NAO_ENVIADA,
+                                    TP_INTERACAO_A_PARTIR_DO_USUARIO,
+                                    lUltimaMensagemValida.OpcaoEntregue,
                                     lMensagemParaEnviar,
                                     STS_ATENDIMENTO_EM_ABERTO,
                                     AMensagemRecebida.ClienteId,
@@ -543,7 +840,8 @@ begin
                              'E.NUMERO_CLIENTE = :NUMEROCLIENTE and ' +
                              'E.OPCAO_ENTREGUE <> :OPCAOENTREGUE AND '+
                              'E.FINALIZADO = 1 and ' +
-                             'E.TIPO_INTERACAO = 1 ';
+                             'E.TIPO_INTERACAO = 1 '+
+                       ' order by DATA_CADASTRO desc ';
     lQuery.ParamByName('NUMEROEMPRESA').AsString := ANumeroEmpresa;
     lQuery.ParamByName('NUMEROCLIENTE').AsString := ANumeroCliente;
     lQuery.ParamByName('OPCAOENTREGUE').AsInteger := TP_ENTREGA_OPCAO_INVALIDA;
@@ -1128,21 +1426,57 @@ function TMensagemBruta.TratarMensagemRecebida(AUltimaMensagemValida: TMensagemE
 var
   lRespostaTratada: integer;
 begin
-  case AUltimaMensagemValida.OpcaoEntregue of
-    TP_ENTREGA_BOAS_VINDAS_MENU: begin
-      lRespostaTratada := ConverterTextoParaOpcaoMenu(Self.GetMensagem);
-      if ClienteId = 0 then
-        IdentificarClienteAPartirDoWhatsapp(AConexao);
-      Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, Ticket,
-        Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, vClienteNome);
+  if not (VerificarSeEncerraAtendimento(Self.GetMensagem)) then
+  begin
+    case AUltimaMensagemValida.OpcaoEntregue of
+      TP_ENTREGA_BOAS_VINDAS_MENU, TP_ENTREGA_MENU_INICIAL: begin
+        lRespostaTratada := ConverterTextoParaOpcaoMenu(Self.GetMensagem);
+        if ClienteId = 0 then
+          IdentificarClienteAPartirDoWhatsapp(AConexao);
+        Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
+          Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, vClienteNome);
+      end;
+      TP_ENTREGA_ULTIMOS_PEDIDOS_REQUISITAR_CNPJCPF, TP_ENTREGA_ULTIMOS_OS_REQUISITAR_CNPJCPF,
+      TP_ENTREGA_CONTAS_EM_ABERTO_REQUISITAR_CNPJCPF, TP_ENTREGA_BOLETOS_EM_ABERTO_REQUISITAR_CNPJCPF: begin //Respostas para quando requisitar cpf/cnpj
+        if VerificarSeVoltaParaOMenuInicial(Self.GetMensagem) then
+        begin //Volta para o menu inicial
+          Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
+            Protocolo, TP_RECEBIDA_INICIO_ATENDIMENTO, FMensagem, Finalizado, ClienteId, vClienteNome);
+        end
+        else
+        begin
+          lRespostaTratada := ValidarCPFCNPJDoCliente(Self.GetMensagem, AConexao);
+          if lRespostaTratada = TP_RECEBIDA_VALIDADA then
+            case AUltimaMensagemValida.OpcaoEntregue of
+              TP_ENTREGA_ULTIMOS_PEDIDOS_REQUISITAR_CNPJCPF: lRespostaTratada := TP_RECEBIDA_REQUISITAR_ULTIMOS_PEDIDOS_CPFCNPJ_ENCONTRADO;
+              TP_ENTREGA_ULTIMOS_OS_REQUISITAR_CNPJCPF: lRespostaTratada := TP_RECEBIDA_REQUISITAR_ULTIMAS_OS_CPFCNPJ_ENCONTRADO;
+              TP_ENTREGA_CONTAS_EM_ABERTO_REQUISITAR_CNPJCPF: lRespostaTratada := TP_RECEBIDA_REQUISITAR_CONTAS_EM_ABERTO_CPFCNPJ_ENCONTRADO;
+              TP_ENTREGA_BOLETOS_EM_ABERTO_REQUISITAR_CNPJCPF: lRespostaTratada := TP_RECEBIDA_REQUISITAR_BOLETOS_EM_ABERTO_CPFCNPJ_ENCONTRADO;
+            end;
+          Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
+            Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, vClienteNome);
+        end;
+      end;
+      //Caso o usuario ja fez o que queria tratar se ele ta voltando para o inicio novamente
+      TP_ENTREGA_ULTIMOS_PEDIDOS, TP_ENTREGA_ULTIMOS_OS, TP_ENTREGA_CONTAS_EM_ABERTO,
+      TP_ENTREGA_BOLETOS_EM_ABERTO, TP_ENTREGA_CONTATO_VENDEDORES: begin
+        if VerificarSeVoltaParaOMenuInicial(Self.GetMensagem) then
+        begin //Volta para o menu inicial
+          Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
+            Protocolo, TP_RECEBIDA_INICIO_ATENDIMENTO, FMensagem, Finalizado, ClienteId, vClienteNome);
+        end
+        else
+        begin //Retona opção invalida
+          Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
+            Protocolo, TP_RECEBIDA_INVALIDA, FMensagem, Finalizado, ClienteId, vClienteNome);
+        end;
+      end;
     end;
-    TP_ENTREGA_ULTIMOS_PEDIDOS_REQUISITAR_CNPJCPF: begin
-      lRespostaTratada := ValidarCPFCNPJDoCliente(Self.GetMensagem, AConexao);
-      if lRespostaTratada = TP_RECEBIDA_VALIDADA then
-        lRespostaTratada := TP_RECEBIDA_REQUISITAR_ULTIMOS_PEDIDOS_CPFCNPJ_ENCONTRADO;
-      Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, Ticket,
-        Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, vClienteNome);
-    end;
+  end
+  else  //Encerra os atendimentos se o usuairo digitou "SAIR"
+  begin
+    Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
+      Protocolo, TP_RECEBIDA_FINALIZAR, FMensagem, STS_ATENDIMENTO_FINALIZADO, ClienteId, vClienteNome);
   end;
   Result.RegistraMensagem(AConexao);
 end;
@@ -1165,9 +1499,14 @@ begin
         Self.ClienteId := lQuery.FieldByName('ID').AsInteger;
         Self.vClienteNome := lQuery.FieldByName('DESCRICAO').AsString;
         Result := TP_RECEBIDA_VALIDADA;
+        lQuery.Close;
+        lQuery.SQL.Text := 'update CLIENTES set WHATSAPP = :WHATSAPP where ID = :ID';
+        lQuery.ParamByName('WHATSAPP').AsString := Self.NumeroCliente;
+        lQuery.ParamByName('ID').AsInteger := Self.ClienteId;
+        lQuery.ExecSQL;
       end
       else
-        Result := TP_RECEBIDA_INVALIDA;
+        Result := TP_RECEBIDA_CADASTRO_NAO_ENCONTRADO;
       lQuery.Close;
     finally
       lQuery.Free;
@@ -1175,6 +1514,19 @@ begin
   end
   else
     Result := TP_RECEBIDA_INVALIDA;
+end;
+
+function TMensagemBruta.VerificarSeEncerraAtendimento(ARespostaUsuario: string): boolean;
+begin
+  if StringsIguais(ARespostaUsuario, TP_PALAVRA_CHAVE_ATENDIMENTO_SAIR) then
+    Result := True;
+end;
+
+function TMensagemBruta.VerificarSeVoltaParaOMenuInicial(
+  ARespostaUsuario: string): boolean;
+begin
+  if StringsIguais(ARespostaUsuario, TP_PALAVRA_CHAVE_ATENDIMENTO_INICIO) then
+    Result := True;
 end;
 
 { TMensagemRecebida }
@@ -1200,12 +1552,16 @@ function TMensagemRecebida.GeraMensagemDeResposta: TMensagemEnviar;
 begin
   case OpcaoRecebida of
     TP_RECEBIDA_NOVO_ATENDIMENTO: Result := TMensagemWhatsapp.MensagemBoasVindas(Self);
+    TP_RECEBIDA_INICIO_ATENDIMENTO: Result := TMensagemWhatsapp.MenuInicialSemBoasVindas(Self);
     TP_RECEBIDA_REQUISITAR_ULTIMOS_PEDIDOS, TP_RECEBIDA_REQUISITAR_ULTIMOS_PEDIDOS_CPFCNPJ_ENCONTRADO:
       Result := TMensagemWhatsapp.EnviarUltimosPedidos(Self);
 //    TP_RECEBIDA_REQUISITAR_ULTIMAS_OS: Result := TMensagemWhatsapp.MensagemBoasVindas(Self);
 //    TP_RECEBIDA_REQUISITAR_CONTAS_EM_ABERTO: Result := TMensagemWhatsapp.MensagemBoasVindas(Self);
 //    TP_RECEBIDA_REQUISITAR_BOLETOS_EM_ABERTO: Result := TMensagemWhatsapp.MensagemBoasVindas(Self);
-//    TP_RECEBIDA_REQUISITAR_CONTATO_VENDEDORES: Result := TMensagemWhatsapp.MensagemBoasVindas(Self);
+    TP_RECEBIDA_REQUISITAR_CONTATO_VENDEDORES: Result := TMensagemWhatsapp.ContatoDosVendedores(Self);
+    TP_RECEBIDA_CADASTRO_NAO_ENCONTRADO: Result := TMensagemWhatsapp.RedirecionarParaVendedores(Self);
+    TP_RECEBIDA_FINALIZAR: Result := TMensagemWhatsapp.MensagemFinalizarAtendimento(Self);
+    TP_RECEBIDA_INVALIDA: Result := TMensagemWhatsapp.ReenviaUltimaMensagemValida(Self);
   end;
 end;
 
@@ -1351,9 +1707,15 @@ end;
 
 { TProcessamentoMensagens }
 
-constructor TProcessamentoMensagens.Create(var AConexao: TFDConnection);
+constructor TProcessamentoMensagens.Create;
 begin
-  FConexao := AConexao;
+  FdmConexao := TdmConexao.Create(nil);
+end;
+
+destructor TProcessamentoMensagens.Destroy;
+begin
+  FdmConexao.Free;
+  inherited;
 end;
 
 procedure TProcessamentoMensagens.ExecutarMensagensTodosCadastros;
@@ -1364,27 +1726,43 @@ var
 begin
   lListaNumerosAtendimentos := TStringList.Create;
   try
-    lQuery := TFDQuery.Create(nil);
-    try
-      lQuery.Connection := FConexao;
-      lQuery.Open('select distinct NUMERO from WB_CONFIGURACOES');
-      lQuery.First;
-      while not (lQuery.Eof) do
-      begin
-        lListaNumerosAtendimentos.Add(lQuery.FieldByName('NUMERO').AsString);
-        lQuery.Next;
-      end;
-      lQuery.Close;
-    finally
-      lQuery.Free;
-    end;
-    for I := 0 to lListaNumerosAtendimentos.Count - 1 do
+    if FdmConexao.ConectarBanco then
     begin
-      ProcessarMensagensRecebidas(lListaNumerosAtendimentos[I]);
+      lQuery := TFDQuery.Create(nil);
+      try
+        lQuery.Connection := FdmConexao.fdConexao;
+        lQuery.Open('select distinct NUMERO from WB_CONFIGURACOES');
+        lQuery.First;
+        while not (lQuery.Eof) do
+        begin
+          lListaNumerosAtendimentos.Add(lQuery.FieldByName('NUMERO').AsString);
+          lQuery.Next;
+        end;
+        lQuery.Close;
+      finally
+        lQuery.Free;
+      end;
+      for I := 0 to lListaNumerosAtendimentos.Count - 1 do
+      begin
+        FinalizarAtendimentosDeDiasAnteriores(lListaNumerosAtendimentos[I]);
+        ProcessarMensagensRecebidas(lListaNumerosAtendimentos[I]);
+      end;
     end;
+    FdmConexao.DesconectarBanco;
   finally
     lListaNumerosAtendimentos.Free;
   end;
+end;
+
+procedure TProcessamentoMensagens.FinalizarAtendimentosDeDiasAnteriores(
+  ANumeroEmpresa: string);
+begin
+  FdmConexao.ExecutarSQL('update WB_MENSAGENS set FINALIZADO = 2 where NUMERO_EMPRESA = '+QuotedStr(ANumeroEmpresa)+
+    ' and DATA_ENVIO_FINAL < current_timestamp and TIPO_INTERACAO = 1 and FINALIZADO = 0');
+  FdmConexao.ExecutarSQL('update WB_MENSAGEM_ENVIO set FINALIZADO = 2 where NUMERO_EMPRESA = '+QuotedStr(ANumeroEmpresa)+
+    ' and DATA_ENVIO_FINAL < current_timestamp and TIPO_INTERACAO = 1 and FINALIZADO = 0');
+  FdmConexao.ExecutarSQL('update WB_MENSAGEM_RECEBIDA set FINALIZADO = 2 where NUMERO_EMPRESA = '+QuotedStr(ANumeroEmpresa)+
+    ' and DATA_CADASTRO < current_timestamp and FINALIZADO = 0');
 end;
 
 procedure TProcessamentoMensagens.ProcessarMensagensRecebidas(ANumeroEmpresa: string);
@@ -1395,23 +1773,23 @@ var
   lNovaMensagemRecebida: TMensagemRecebida;
   lMensagemResposta: TMensagemEnviar;
 begin
-  lMensagensRecebidas := TMensagemBruta.RecuperaMensagensRecebidas(ANumeroEmpresa, FConexao);
+  lMensagensRecebidas := TMensagemBruta.RecuperaMensagensRecebidas(ANumeroEmpresa, FdmConexao.fdConexao);
   for I := 0 to lMensagensRecebidas.Count - 1 do
   begin
     lUltimaOpcaoEntregueValida := TMensagemEnviar.RetornaUltimaOpcaoEntregueValida(lMensagensRecebidas[I].NumeroEmpresa,
                                                                                    lMensagensRecebidas[I].NumeroCliente,
-                                                                                   FConexao);
+                                                                                   FdmConexao.fdConexao);
     if not (lUltimaOpcaoEntregueValida.Id = 0) then //Existe mensagem anterior entregue
     begin
-      lNovaMensagemRecebida := lMensagensRecebidas[I].TratarMensagemRecebida(lUltimaOpcaoEntregueValida, FConexao);
+      lNovaMensagemRecebida := lMensagensRecebidas[I].TratarMensagemRecebida(lUltimaOpcaoEntregueValida, FdmConexao.fdConexao);
       lMensagemResposta := lNovaMensagemRecebida.GeraMensagemDeResposta;
     end
     else
     begin
-      lNovaMensagemRecebida := lMensagensRecebidas[I].SalvaMensagemRecebida(TP_RECEBIDA_NOVO_ATENDIMENTO, FConexao);
+      lNovaMensagemRecebida := lMensagensRecebidas[I].SalvaMensagemRecebida(TP_RECEBIDA_NOVO_ATENDIMENTO, FdmConexao.fdConexao);
       lMensagemResposta := lNovaMensagemRecebida.GeraMensagemDeResposta;
     end;
-    lMensagensRecebidas[I].MarcarComoLida(FConexao);
+    lMensagensRecebidas[I].MarcarComoLida(FdmConexao.fdConexao);
   end;
 end;
 

@@ -21,6 +21,7 @@ type
     FCaminhoArquivoIni, FPathIniSistema: string;
     procedure GravarLog(ALog, AFileName: string);
   public
+    procedure ExecutarSQL(ASQL: string);
     function ConectarBanco: boolean;
     procedure DesconectarBanco;
     procedure GravarIni(ASecao, AIdent, AValor, AIniFile: string);
@@ -69,6 +70,27 @@ end;
 procedure TdmConexao.DesconectarBanco;
 begin
   fdConexao.Close;
+end;
+
+procedure TdmConexao.ExecutarSQL(ASQL: string);
+var
+  lQuery: TFDQuery;
+begin
+  lQuery := TFDQuery.Create(nil);
+  try
+    lQuery.Connection := fdConexao;
+    lQuery.SQL.Add(ASQL);
+    try
+      lQuery.ExecSQL;
+    except
+      on E: exception do
+      begin
+        GravarLog('Erro ao executar sql: '+e.Message, 'log_');
+      end;
+    end;
+  finally
+    lQuery.Free;
+  end;
 end;
 
 procedure TdmConexao.GravarIni(ASecao, AIdent, AValor, AIniFile: string);

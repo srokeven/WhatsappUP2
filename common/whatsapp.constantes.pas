@@ -1,4 +1,4 @@
-unit whatsapp.constantes;
+ï»¿unit whatsapp.constantes;
 
 interface
 
@@ -31,8 +31,8 @@ const
                                    'coalesce(DATA_VENDA, DATA_CRIACAO) DATA_VENDA, ' +
                                    'case TIPO ' +
                                    'when 1 then ''Pedido'' ' +
-                                   'when 2 then ''Orçamento'' ' +
-                                   'when 3 then ''Orçamento'' ' +
+                                   'when 2 then ''OrÃ§amento'' ' +
+                                   'when 3 then ''OrÃ§amento'' ' +
                                    'end TIPO, ' +
                                    'iif(STATUS = 1, ''Em Aberto'', ''Fechado'') STATUS, ' +
                                    'QUANT_PRODUTOS, ' +
@@ -43,11 +43,13 @@ const
                             'where STATUS <> 3 and    ' +
                                   'CLIENTE_ID = :CLIENTEID and ' +
                                   '((TIPO = 1 and IMPORTADO in (0, 1)) or (TIPO in (2, 3) and IMPORTADO = 0)) ' +
-                            'order by ID desc rows 15 ';
+                            'order by ID desc rows 5 ';
+  SQL_CONSULTA_VENDEDORES_MV = 'select ID, NOME, coalesce(CELULAR, TELEFONE) FONE from VENDEDORES where CELULAR is not null and INATIVO = 0';
+  SQL_CONSULTA_TELEFONE_EMPRESA = 'select ID, NOME_FANTASIA NOME, TELEFONE FONE from EMPRESA';
 
   //Constatntes de dialogos
   ///Entregar para o usuario
-  //Opção invalida
+  //OpÃ§Ã£o invalida
   TP_ENTREGA_OPCAO_INVALIDA = 9999;
   /// Texto
   //Enviada da empresa para o usuario
@@ -58,8 +60,8 @@ const
   TP_ENTREGA_ANEXO_IMAGEM = 2001;
   TP_ENTREGA_ANEXO_PDF = 2002;
 
-  //Mensagem de boas vindas enviada para o usuario
-  TP_ENTREGA_BOAS_VINDAS_MENU = 100;
+  TP_ENTREGA_BOAS_VINDAS_MENU = 100; //Mensagem de boas vindas enviada para o usuario
+  TP_ENTREGA_MENU_INICIAL = 110; //Mensagem com o menu inicial sem boas vindas
   TP_ENTREGA_ULTIMOS_PEDIDOS = 200;
   TP_ENTREGA_ULTIMOS_PEDIDOS_REQUISITAR_CNPJCPF = 201;
   TP_ENTREGA_ULTIMOS_OS = 300;
@@ -69,14 +71,17 @@ const
   TP_ENTREGA_BOLETOS_EM_ABERTO = 500;
   TP_ENTREGA_BOLETOS_EM_ABERTO_REQUISITAR_CNPJCPF = 501;
   TP_ENTREGA_CONTATO_VENDEDORES = 600;
+  TP_ENTREGA_FINALIZAR = 999;
 
   ///Recebida do usuario
   /// Texto
-  //Opção escolhida pelo usuario
+  //OpÃ§Ã£o escolhida pelo usuario
   TP_RECEBIDA_DESCONHECIDA = 0;
   TP_RECEBIDA_INVALIDA = 9999;
   TP_RECEBIDA_VALIDADA = 1111;
+  TP_RECEBIDA_CADASTRO_NAO_ENCONTRADO = 1112;
   TP_RECEBIDA_NOVO_ATENDIMENTO = 10;
+  TP_RECEBIDA_INICIO_ATENDIMENTO = 11;
   TP_RECEBIDA_REQUISITAR_ULTIMOS_PEDIDOS = 20;
   TP_RECEBIDA_REQUISITAR_ULTIMOS_PEDIDOS_CPFCNPJ_ENCONTRADO = 21;
   TP_RECEBIDA_REQUISITAR_ULTIMAS_OS = 30;
@@ -86,12 +91,14 @@ const
   TP_RECEBIDA_REQUISITAR_BOLETOS_EM_ABERTO = 50;
   TP_RECEBIDA_REQUISITAR_BOLETOS_EM_ABERTO_CPFCNPJ_ENCONTRADO = 51;
   TP_RECEBIDA_REQUISITAR_CONTATO_VENDEDORES = 60;
+  TP_RECEBIDA_FINALIZAR = 99;
 
-  ///Interação com o usuario
+  ///InteraÃ§Ã£o com o usuario
   //Tipos de mensagens padronizadas
   TP_MENSAGEM_PADRAO_BOAS_VINDAS = 0;
+  TP_MENSAGEM_PADRAO_FINALIZAR = 1;
 
-  //Palavras chaves para as opções de atendimento
+  //Palavras chaves para as opÃ§Ãµes de atendimento
   TP_PALAVRA_CHAVE_ATENDIMENTO_PEDIDOS = 'pedidos';
   TP_PALAVRA_CHAVE_ATENDIMENTO_PEDIDOS_SINGULAR = 'pedido'; //Caso o usuario digite no singular
   TP_PALAVRA_CHAVE_ATENDIMENTO_ORDEM_SERVICO = 'servicos';
@@ -102,6 +109,12 @@ const
   TP_PALAVRA_CHAVE_ATENDIMENTO_BOLETOS_SINGULAR = 'boleto'; //Caso o usuario digite no singular
   TP_PALAVRA_CHAVE_ATENDIMENTO_VENDEDORES = 'vendedores';
   TP_PALAVRA_CHAVE_ATENDIMENTO_VENDEDORES_SINGULAR = 'vendedor'; //Caso o usuario digite no singular
+  TP_PALAVRA_CHAVE_ATENDIMENTO_SAIR = 'sair';
+  TP_PALAVRA_CHAVE_ATENDIMENTO_INICIO = 'inicio';
+
+  //Emojis
+  EMOJI_ATENDENTE = 'ðŸ‘¤';
+  EMOJI_TELEFONE = 'ðŸ“±';
 
 implementation
 

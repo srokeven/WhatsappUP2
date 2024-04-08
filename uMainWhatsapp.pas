@@ -208,6 +208,7 @@ type
     function RecebimentoPausado: boolean;
     function ShowQuestion(const aMsg: string; aPreSelect: integer = 0): boolean;
     procedure PararEnvioDeMensagens;
+    function GetNomeAtendente: string;
   public
     { Public declarations }
   end;
@@ -567,7 +568,7 @@ begin
     try
       WhatsappWeb.SendFile(ANumeroCliente,
                            AAnexo,
-                           AMensagemTexto);
+                           IfThen(AMensagemTexto.IsEmpty, '', GetNomeAtendente+AMensagemTexto));
       RegistraLog(TP_OPCAO_ENTREGA_PARA_USUARIO, ANumeroCliente, ANomeCliente, AMensagemTexto, '');
     except
       on e: exception do
@@ -587,7 +588,7 @@ begin
     try
       if not (FMarcarMensagensRecebidasComoLidasAoPausar) then
       begin
-        WhatsappWeb.Send(ANumeroCliente, AMensagemTexto);
+        WhatsappWeb.Send(ANumeroCliente, GetNomeAtendente+AMensagemTexto);
         RegistraLog(TP_OPCAO_ENTREGA_PARA_USUARIO, ANumeroCliente, ANomeCliente, AMensagemTexto, '');
       end;
     except
@@ -637,6 +638,12 @@ begin
   FMarcarMensagensRecebidasComoLidasAoPausar := False;
   CarregaConfiguracoes;
   pcInformacoes.ActivePageIndex := 0;
+end;
+
+function TfmMainWhatsapp.GetNomeAtendente: string;
+begin
+  if not (edNomeEmpresa.Text = EmptyStr) then
+    Result := '[*'+edNomeEmpresa.Text+'*]\n';
 end;
 
 procedure TfmMainWhatsapp.GravaLog(ALog, AFileName: string);

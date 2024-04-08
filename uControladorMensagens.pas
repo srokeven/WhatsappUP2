@@ -98,70 +98,46 @@ var
 
   lProcessar: TProcessamentoMensagens;
 begin
-///  receber mensagens dos cliente
-///  verificar se existe mensagem anterior respondida
-///  1. se não existir: gerar numero do ticket
-///  criar mensagem de boas vindas pegando mensagem padrão e opções disponiveis
-///  2. Se existir: verificar ultimo tipo de mensagem recebida e gerar resposta adequada
-  //processando mensagens recebidas dos clientes
-//  lMensagensRecebidas := TMensagemBruta.RecuperaMensagensRecebidas(NumeroEmpresa.Text, fdConexao);
-//  for I := 0 to lMensagensRecebidas.Count - 1 do
-//  begin
-//    lUltimaOpcaoEntregueValida := TMensagemEnviar.RetornaUltimaOpcaoEntregueValida(lMensagensRecebidas[I].NumeroEmpresa,
-//                                                                                   lMensagensRecebidas[I].NumeroCliente,
-//                                                                                   fdConexao);
-//    if not (lUltimaOpcaoEntregueValida.Id = 0) then //Existe mensagem anterior entregue
-//    begin
-//      lNovaMensagemRecebida := lMensagensRecebidas[I].TratarMensagemRecebida(lUltimaOpcaoEntregueValida, fdConexao);
-//      lMensagemResposta := lNovaMensagemRecebida.GeraMensagemDeResposta;
-//    end
-//    else
-//    begin
-//      lNovaMensagemRecebida := lMensagensRecebidas[I].SalvaMensagemRecebida(TP_RECEBIDA_NOVO_ATENDIMENTO, fdConexao);
-//      lMensagemResposta := lNovaMensagemRecebida.GeraMensagemDeResposta;
-//    end;
-//    lMensagensRecebidas[I].MarcarComoLida(fdConexao);
-//  end;
 
-  lProcessar := TProcessamentoMensagens.Create(fdConexao);
+  lProcessar := TProcessamentoMensagens.Create;
   try
     lProcessar.ExecutarMensagensTodosCadastros;
   finally
     lProcessar.Free;
   end;
 
-  //Processando mensagens para enviar do sistema
-  lMensagens := TMensagemBruta.RecuperaMensagens(NumeroEmpresa.Text, STS_MENSAGEM_NAO_ENVIADA, fdConexao);
-  for I := 0 to lMensagens.Count - 1 do
-  begin
-    //Mandar mensagens do sistema para os clientes
-    if lMensagens[i].TipoInteracao = TP_INTERACAO_A_PARTIR_DA_EMPRESA then
-    begin
-      lResposta := TMensagemEnviar.Add(0,
-                                       Now,
-                                       lMensagens[I].NumeroEmpresa,
-                                       lMensagens[I].NumeroCliente,
-                                       lMensagens[I].Ticket,
-                                       lMensagens[I].DataEnvioInicio,
-                                       lMensagens[I].DataEnvioFinal,
-                                       STS_MENSAGEM_NAO_ENVIADA,
-                                       TP_INTERACAO_A_PARTIR_DA_EMPRESA,
-                                       lMensagens[I].OpcaoEntregue,
-                                       lMensagens[I].GetMensagemEncoded,
-                                       STS_ATENDIMENTO_FINALIZADO,
-                                       lMensagens[I].ClienteId,
-                                       lMensagens[I].vClienteNome,
-                                       lMensagens[I].GetAnexoMensagemEncoded)
-                                  .RegistraMensagem(fdConexao);
-      if lResposta.IsEmpty then
-      begin
-        mmLog.Lines.Add('Mensagem enviada a partir do sistema processada');
-        lMensagens[i].MarcarComoEnviada(fdConexao);
-      end
-      else
-        mmLog.Lines.Add('Mensagem enviada a partir do sistema com erro: '+lResposta);
-    end;
-  end;
+//  //Processando mensagens para enviar do sistema
+//  lMensagens := TMensagemBruta.RecuperaMensagens(NumeroEmpresa.Text, STS_MENSAGEM_NAO_ENVIADA, fdConexao);
+//  for I := 0 to lMensagens.Count - 1 do
+//  begin
+//    //Mandar mensagens do sistema para os clientes
+//    if lMensagens[i].TipoInteracao = TP_INTERACAO_A_PARTIR_DA_EMPRESA then
+//    begin
+//      lResposta := TMensagemEnviar.Add(0,
+//                                       Now,
+//                                       lMensagens[I].NumeroEmpresa,
+//                                       lMensagens[I].NumeroCliente,
+//                                       lMensagens[I].Ticket,
+//                                       lMensagens[I].DataEnvioInicio,
+//                                       lMensagens[I].DataEnvioFinal,
+//                                       STS_MENSAGEM_NAO_ENVIADA,
+//                                       TP_INTERACAO_A_PARTIR_DA_EMPRESA,
+//                                       lMensagens[I].OpcaoEntregue,
+//                                       lMensagens[I].GetMensagemEncoded,
+//                                       STS_ATENDIMENTO_FINALIZADO,
+//                                       lMensagens[I].ClienteId,
+//                                       lMensagens[I].vClienteNome,
+//                                       lMensagens[I].GetAnexoMensagemEncoded)
+//                                  .RegistraMensagem(fdConexao);
+//      if lResposta.IsEmpty then
+//      begin
+//        mmLog.Lines.Add('Mensagem enviada a partir do sistema processada');
+//        lMensagens[i].MarcarComoEnviada(fdConexao);
+//      end
+//      else
+//        mmLog.Lines.Add('Mensagem enviada a partir do sistema com erro: '+lResposta);
+//    end;
+//  end;
 end;
 
 procedure TfmControladorMensagens.Button4Click(Sender: TObject);
@@ -279,7 +255,7 @@ var
   lProcessar: TProcessamentoMensagens;
 begin
   tmCiclos.Enabled := False;
-  lProcessar := TProcessamentoMensagens.Create(fdConexao);
+  lProcessar := TProcessamentoMensagens.Create;
   try
     lProcessar.ExecutarMensagensTodosCadastros;
   finally
