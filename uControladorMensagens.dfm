@@ -324,12 +324,12 @@ object fmControladorMensagens: TfmControladorMensagens
   end
   object fdConexao: TFDConnection
     Params.Strings = (
-      'DriverID=FB'
-      'Database=D:\Dados\MasterVendas\whatsapp\MASTERVENDAS.FDB'
-      'Port=3055'
+      'Database=C:\MTC\Dados\DADOS.FDB'
+      'Port=3050'
       'Server=127.0.0.1'
       'User_Name=sysdba'
-      'Password=masterkey')
+      'Password=masterkey'
+      'DriverID=FB')
     LoginPrompt = False
     Left = 512
     Top = 48
