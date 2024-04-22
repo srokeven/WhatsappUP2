@@ -146,6 +146,7 @@ type
     function GetOpcoesAtedimento(ANumeroAtedimento: string): string;
     function GetPedidosCliente(AClienteId: integer): string;
     procedure FinalizarAtendimento(ANumeroCliente: string);
+    procedure ExcluirContatoWhatsapp(AclienteID: Integer);
     function ListarVendedores: string;
     function ListarSetores: String;
     function ListarContatos(aSetorID: String): String;
@@ -166,6 +167,8 @@ type
     class function ContatoDosVendedores(AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
     class function MensagemListaSetores(AMensagemRecebida: TmensagemRecebida): TMensagemEnviar;
     class function MensagemListaSetoresContatos(AMensagemRecebida: TmensagemRecebida): TMensagemEnviar;
+    class function MensagemConfirmaContatoWhatsapp(AMensagemRecebida: TmensagemRecebida): TMensagemEnviar;
+    class function MensagemNaoConfirmouContatoWhatsapp(AMensagemRecebida: TmensagemRecebida): TMensagemEnviar;
 
   end;
 
@@ -177,7 +180,7 @@ type
     destructor Destroy; override;
     procedure FinalizarAtendimentosDeDiasAnteriores(ANumeroEmpresa: string);
     procedure ExecutarMensagensTodosCadastros;
-    procedure ProcessarMensagensRecebidas(ANumeroEmpresa: string);
+    procedure  ProcessarMensagensRecebidas(ANumeroEmpresa: string);
   end;
 
 implementation
@@ -289,6 +292,21 @@ begin
     end;
   finally
     lMensagemWhatsapp.Free;
+  end;
+end;
+
+procedure TMensagemWhatsapp.ExcluirContatoWhatsapp(aClienteID: Integer);
+var
+  lQuery: TFDQuery;
+begin
+  lQuery := TFDQuery.Create(nil);
+  try
+    lQuery.Connection := FdmConexao.fdConexao;
+    lQuery.SQL.Text := 'update clientes set whatsapp = '''' where ID = :ID ';
+    lQuery.ParamByName('ID').AsInteger := AclienteID;
+    lQuery.ExecSQL;
+  finally
+    lQuery.Free;
   end;
 end;
 
@@ -559,6 +577,45 @@ begin
   end;
 end;
 
+class function TMensagemWhatsapp.MensagemConfirmaContatoWhatsapp(AMensagemRecebida: TmensagemRecebida): TMensagemEnviar;
+var
+  lMensagemWhatsapp: TMensagemWhatsapp;
+  lTextoPadrao: string;
+begin
+  lMensagemWhatsapp := TMensagemWhatsapp.Create;
+  try
+    if lMensagemWhatsapp.FdmConexao.ConectarBanco then
+    begin
+      lTextoPadrao := lMensagemWhatsapp.GetMensagemPadrao(TP_MENSAGEM_PADRAO_CONFIRMA_CONTATO);
+      lTextoPadrao := StringReplace(lTextoPadrao, '$CLIENTE', AMensagemRecebida.ClienteNome, [rfReplaceAll, rfIgnoreCase]);
+
+      if lTextoPadrao.IsEmpty then
+        lTextoPadrao := 'Obrigado por entrar em contato conosco. Estamos sempre a disposição. Tenha um bom dia';
+      Result := TMensagemEnviar.Novo(0,
+                                    Now,
+                                    AMensagemRecebida.NumeroEmpresa,
+                                    AMensagemRecebida.NumeroCliente,
+                                    AMensagemRecebida.Ticket,
+                                    StartOfTheDay(Now),
+                                    EndOfTheDay(Now),
+                                    STS_MENSAGEM_NAO_ENVIADA,
+                                    TP_INTERACAO_A_PARTIR_DO_USUARIO,
+                                    TP_ENTREGA_FINALIZAR,
+                                    lTextoPadrao,
+                                    STS_ATENDIMENTO_FINALIZADO,
+                                    AMensagemRecebida.ClienteId,
+                                    AMensagemRecebida.ClienteNome,
+                                    EmptyStr);
+      Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+      lMensagemWhatsapp.FinalizarAtendimento(AMensagemRecebida.NumeroCliente);
+      lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+    end;
+  finally
+    lMensagemWhatsapp.Free;
+  end;
+end;
+
+
 class function TMensagemWhatsapp.MensagemFinalizarAtendimento(
   AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
 var
@@ -667,6 +724,50 @@ begin
                                     AMensagemRecebida.ClienteNome,
                                     EmptyStr);
       Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+      lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+    end;
+  finally
+    lMensagemWhatsapp.Free;
+  end;
+end;
+
+
+class function TMensagemWhatsapp.MensagemNaoConfirmouContatoWhatsapp(AMensagemRecebida: TmensagemRecebida): TMensagemEnviar;
+var
+  lMensagemWhatsapp: TMensagemWhatsapp;
+  lTextoPadrao: string;
+  lOpcoesDisponiveis: string;
+  lMensagemParaEnviar: string;
+  lMensagemParaSair: string;
+
+begin
+  lMensagemWhatsapp := TMensagemWhatsapp.Create;
+  try
+    if lMensagemWhatsapp.FdmConexao.ConectarBanco then
+    begin
+      lTextoPadrao := lMensagemWhatsapp.GetMensagemPadrao(TP_MENSAGEM_PADRAO_NAO_CONFIRMA_CONTATO);
+
+      if lTextoPadrao.IsEmpty then
+        lTextoPadrao := 'Obrigado por entrar em contato conosco. Estamos sempre a disposição. Tenha um bom dia';
+      Result := TMensagemEnviar.Novo(0,
+                                    Now,
+                                    AMensagemRecebida.NumeroEmpresa,
+                                    AMensagemRecebida.NumeroCliente,
+                                    AMensagemRecebida.Ticket,
+                                    StartOfTheDay(Now),
+                                    EndOfTheDay(Now),
+                                    STS_MENSAGEM_NAO_ENVIADA,
+                                    TP_INTERACAO_A_PARTIR_DO_USUARIO,
+                                    TP_ENTREGA_FINALIZAR,
+                                    lTextoPadrao,
+                                    STS_ATENDIMENTO_FINALIZADO,
+                                    AMensagemRecebida.ClienteId,
+                                    AMensagemRecebida.ClienteNome,
+                                    EmptyStr);
+      Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+      lMensagemWhatsapp.FinalizarAtendimento(AMensagemRecebida.NumeroCliente);
+      //LIMPA CAMPO WHTASAPP QUANDO O CLIENTE NÃO CONFIRMA O CONTATO
+      lMensagemWhatsapp.ExcluirContatoWhatsapp(AMensagemRecebida.ClienteId);
       lMensagemWhatsapp.FdmConexao.DesconectarBanco;
     end;
   finally
@@ -1074,7 +1175,10 @@ begin
   lQuery := TFDQuery.Create(nil);
   lQuery.Connection := AConexao;
   try
-    lQuery.SQL.Text := 'update WB_MENSAGEM_ENVIO set STATUS_ENVIO = :STATUS_ENVIO where ID = :ID';
+    lQuery.SQL.Text := 'update WB_MENSAGEM_ENVIO set '
+    + 'STATUS_ENVIO = :STATUS_ENVIO, '
+    + 'FINALIZADO = IIF(OPCAO_ENTREGUE = 800, 1, FINALIZADO ) where ID = :ID';  //'update WB_MENSAGEM_ENVIO set STATUS_ENVIO = :STATUS_ENVIO, FINALIZADO = :FINALIZADO where ID = :ID';
+
     lQuery.ParamByName('STATUS_ENVIO').AsInteger := STS_MENSAGEM_ENVIADA;
     lQuery.ParamByName('ID').AsInteger := Id;
     lQuery.ExecSQL;
@@ -1191,6 +1295,12 @@ begin
   else
   if (StringsIguais(ID_ATENDIMENTO_SETORES_EMPRESA, ARespostaUsuario)) then
     Result := TP_RECEBIDA_REQUISITAR_SETORES
+  else
+  if (StringsIguais(ID_CONFIRMA_CONTATO_WHATSAPP, ARespostaUsuario)) then
+    Result := TP_RECEBIDA_CONFIRMA_CONTATO_NOVO_CLIENTE
+  else
+  if (StringsIguais(ID_NAO_CONFIMA_CONTATO_WHATSAPP, ARespostaUsuario)) then
+    Result := TP_RECEBIDA_NAO_CONFIRMA_CONTATO_NOVO_CLIENTE
   else
     Result := TP_RECEBIDA_INVALIDA;
 
@@ -1582,7 +1692,6 @@ function TMensagemBruta.TratarMensagemRecebida(AUltimaMensagemValida: TMensagemE
   var AConexao: TFDConnection): TMensagemRecebida;
 var
   lRespostaTratada: integer;
-  TESTE: Array[0..100] of string;
 begin
   if not (VerificarSeEncerraAtendimento(Self.GetMensagem)) then
   begin
@@ -1653,6 +1762,32 @@ begin
               Protocolo, TP_RECEBIDA_INVALIDA, FMensagem, Finalizado, ClienteId, vClienteNome);
 
         END;
+       TP_ENTREGA_NOVO_CLIENTE:
+          BEGIN
+            lRespostaTratada := ConverterTextoParaOpcaoMenu(Self.GetMensagem);
+
+            case lRespostaTratada of
+              TP_RECEBIDA_CONFIRMA_CONTATO_NOVO_CLIENTE:
+                begin
+                  Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
+                    Protocolo, TP_RECEBIDA_CONFIRMA_CONTATO_NOVO_CLIENTE, FMensagem, Finalizado, ClienteId, vClienteNome);
+                end;
+
+              TP_RECEBIDA_NAO_CONFIRMA_CONTATO_NOVO_CLIENTE: //CASO NÃO CONFIME O CONTATO SERA EXCLUIDO O NUMERO DO WHATS NO CADASTRO DO CLIENTE
+                BEGIN
+                  Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
+                    Protocolo, TP_RECEBIDA_NAO_CONFIRMA_CONTATO_NOVO_CLIENTE, FMensagem, Finalizado, ClienteId, vClienteNome);
+                END;
+
+              else
+                begin
+                   Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
+                   Protocolo, TP_RECEBIDA_INVALIDA, FMensagem, Finalizado, ClienteId, vClienteNome);
+                end;
+            end
+
+          END;
+
     end;
   end
   else  //Encerra os atendimentos se o usuairo digitou "SAIR"
@@ -1777,6 +1912,9 @@ begin
     TP_RECEBIDA_CADASTRO_NAO_ENCONTRADO: Result := TMensagemWhatsapp.RedirecionarParaVendedores(Self);
     TP_RECEBIDA_REQUISITAR_SETORES: Result:= TmensagemWhatsapp.MensagemListaSetores(self);
     TP_RECEBIDA_REQUISITAR_SETORES_CONTATOS: Result:= TmensagemWhatsapp.MensagemListaSetoresContatos(self);
+
+    TP_RECEBIDA_CONFIRMA_CONTATO_NOVO_CLIENTE: Result:= TmensagemWhatsapp.MensagemConfirmaContatoWhatsapp(self);
+    TP_RECEBIDA_NAO_CONFIRMA_CONTATO_NOVO_CLIENTE: Result:= TmensagemWhatsapp.MensagemNaoConfirmouContatoWhatsapp(self);
 
     TP_RECEBIDA_FINALIZAR: Result := TMensagemWhatsapp.MensagemFinalizarAtendimento(Self);
     TP_RECEBIDA_INVALIDA: Result := TMensagemWhatsapp.ReenviaUltimaMensagemValida(Self);
