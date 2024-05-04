@@ -6,7 +6,10 @@ uses
   udmConexao in 'common\udmConexao.pas' {dmConexao: TDataModule},
   whatsapp.constantes in 'common\whatsapp.constantes.pas',
   whatsapp.funcoes in 'common\whatsapp.funcoes.pas',
-  whatsapp.mensagens in 'common\whatsapp.mensagens.pas';
+  whatsapp.mensagens in 'common\whatsapp.mensagens.pas',
+  udmPDFPedidos in 'dataModulePDF\udmPDFPedidos.pas' {dmPDFPedidos: TDataModule},
+  uSystemConfigConsts in '..\MTC\Common\uSystemConfigConsts.pas',
+  uSystemConsts in '..\MTC\Common\uSystemConsts.pas';
 
 {$R *.res}
 

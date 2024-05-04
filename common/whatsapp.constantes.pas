@@ -31,26 +31,27 @@ const
 
   //SQL de consultas
   SQL_CONSULTA_PEDIDOS_MV = 'select ID, ' +
-                                   'coalesce(DATA_VENDA, DATA_CRIACAO) DATA_VENDA, ' +
-                                   'case TIPO ' +
-                                   'when 1 then ''Pedido'' ' +
-                                   'when 2 then ''Orçamento'' ' +
-                                   'when 3 then ''Orçamento'' ' +
-                                   'end TIPO, ' +
+                                   'coalesce(DATA_CONCLUSAO, DATA_CRIACAO) DATA_VENDA, ' +
+//                                   'case TIPO ' +
+//                                   'when 1 then ''Pedido'' ' +
+//                                   'when 2 then ''Orçamento'' ' +
+//                                   'when 3 then ''Orçamento'' ' +
+//                                   'end TIPO, ' +
                                    'iif(STATUS = 1, ''Em Aberto'', ''Fechado'') STATUS, ' +
-                                   'QUANT_PRODUTOS, ' +
-                                   'VALOR_NOTA, ' +
-                                   'VALOR_DESC_REAL, ' +
-                                   'VALOR_PAGAR ' +
+                                 //  'QUANT_PRODUTOS, ' +
+                                   'VALOR_BRUTO, ' +
+                                   'VALOR_DESCONTO, ' +
+                                   'VALOR_LIQUIDO ' +
                             'from PEDIDOS_VENDAS ' +
-                            'where STATUS <> 3 and    ' +
-                                  'CLIENTE_ID = :CLIENTEID and ' +
-                                  '((TIPO = 1 and IMPORTADO in (0, 1)) or (TIPO in (2, 3) and IMPORTADO = 0)) ' +
+                            'where STATUS = 3 and    ' +
+                                  'CLIENTE_ID = :CLIENTEID  ' + // and
+                             //     '((TIPO = 1 and IMPORTADO in (0, 1)) or (TIPO in (2, 3) and IMPORTADO = 0)) ' +
                             'order by ID desc rows 5 ';
   SQL_CONSULTA_VENDEDORES_MV = 'select ID, NOME, coalesce(CELULAR, TELEFONE) FONE from VENDEDORES where CELULAR is not null and INATIVO = 0';
   SQL_CONSULTA_TELEFONE_EMPRESA = 'select ID, NOME_FANTASIA NOME, TELEFONE FONE from EMPRESA';
   SQL_CONSULTA_SETORES_EMPRESA = 'SELECT * FROM SETORES_CONTATOS';
   SQL_CONSULTA_CONTATOS_POR_SETOR = 'SELECT * FROM CONTATOS_EMPRESA WHERE SETOR_ID = :SETOR_ID';
+  SQL_CONSULTA_ULTIMOS_3_PEDIDOS = 'select first 3 ID from pedidos_vendas where cliente_id = :cliente_id  order by id desc';
 
 
   //Constatntes de dialogos

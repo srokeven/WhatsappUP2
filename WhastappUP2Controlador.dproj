@@ -115,6 +115,12 @@
         <DCCReference Include="common\whatsapp.constantes.pas"/>
         <DCCReference Include="common\whatsapp.funcoes.pas"/>
         <DCCReference Include="common\whatsapp.mensagens.pas"/>
+        <DCCReference Include="dataModulePDF\udmPDFPedidos.pas">
+            <Form>dmPDFPedidos</Form>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\MTC\Common\uSystemConfigConsts.pas"/>
+        <DCCReference Include="..\MTC\Common\uSystemConsts.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

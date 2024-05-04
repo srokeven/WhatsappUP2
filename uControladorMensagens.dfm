@@ -124,7 +124,7 @@ object fmControladorMensagens: TfmControladorMensagens
       EditLabel.Height = 13
       EditLabel.Caption = 'Numero empresa'
       TabOrder = 0
-      Text = '558899931319'
+      Text = '55988584261'
     end
     object NumeroCliente: TLabeledEdit
       Left = 160
@@ -135,7 +135,7 @@ object fmControladorMensagens: TfmControladorMensagens
       EditLabel.Height = 13
       EditLabel.Caption = 'Numero cliente'
       TabOrder = 1
-      Text = '8898001832'
+      Text = '88992140949'
     end
     object DataHoraInicio: TcxDateEdit
       Left = 8
@@ -292,7 +292,7 @@ object fmControladorMensagens: TfmControladorMensagens
       EditLabel.Height = 13
       EditLabel.Caption = 'Numero cliente'
       TabOrder = 0
-      Text = '8898001832'
+      Text = '88992140949'
     end
     object NumeroEmpresaRecebido: TLabeledEdit
       Left = 6
@@ -303,7 +303,7 @@ object fmControladorMensagens: TfmControladorMensagens
       EditLabel.Height = 13
       EditLabel.Caption = 'Numero empresa'
       TabOrder = 1
-      Text = '558899931319'
+      Text = '55988584261'
     end
     object mmMensagemCliente: TMemo
       Left = 6
