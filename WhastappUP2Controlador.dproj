@@ -121,6 +121,11 @@
         </DCCReference>
         <DCCReference Include="..\MTC\Common\uSystemConfigConsts.pas"/>
         <DCCReference Include="..\MTC\Common\uSystemConsts.pas"/>
+        <DCCReference Include="dataModulePDF\udmPDFBoletos.pas">
+            <Form>dmPDFBoletos</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

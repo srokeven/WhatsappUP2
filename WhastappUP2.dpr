@@ -7,7 +7,11 @@ uses
   whatsapp.constantes in 'common\whatsapp.constantes.pas',
   whatsapp.funcoes in 'common\whatsapp.funcoes.pas',
   whatsapp.mensagens in 'common\whatsapp.mensagens.pas',
-  udmConexao in 'common\udmConexao.pas' {dmConexao: TDataModule};
+  udmConexao in 'common\udmConexao.pas' {dmConexao: TDataModule},
+  udmPDFBoletos in 'dataModulePDF\udmPDFBoletos.pas' {dmPDFBoletos: TDataModule},
+  udmPDFPedidos in 'dataModulePDF\udmPDFPedidos.pas' {dmPDFPedidos: TDataModule},
+  uSystemConfigConsts in '..\MTC\Common\uSystemConfigConsts.pas',
+  uSystemConsts in '..\MTC\Common\uSystemConsts.pas';
 
 {$R *.res}
 
@@ -42,5 +46,7 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfmMainWhatsapp, fmMainWhatsapp);
+  Application.CreateForm(TdmPDFBoletos, dmPDFBoletos);
+  Application.CreateForm(TdmPDFPedidos, dmPDFPedidos);
   Application.Run;
 end.

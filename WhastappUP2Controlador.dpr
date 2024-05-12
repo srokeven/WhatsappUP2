@@ -9,7 +9,8 @@ uses
   whatsapp.mensagens in 'common\whatsapp.mensagens.pas',
   udmPDFPedidos in 'dataModulePDF\udmPDFPedidos.pas' {dmPDFPedidos: TDataModule},
   uSystemConfigConsts in '..\MTC\Common\uSystemConfigConsts.pas',
-  uSystemConsts in '..\MTC\Common\uSystemConsts.pas';
+  uSystemConsts in '..\MTC\Common\uSystemConsts.pas',
+  udmPDFBoletos in 'dataModulePDF\udmPDFBoletos.pas' {dmPDFBoletos: TDataModule};
 
 {$R *.res}
 

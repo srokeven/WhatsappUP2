@@ -10,7 +10,8 @@ uses
   FireDAC.Phys, FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait, FireDAC.Stan.Param,
   FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, FireDAC.Comp.UI, FireDAC.Phys.IBBase, FireDAC.Phys.FB,
-  whatsapp.funcoes, udmConexao, whatsapp.constantes, System.MaskUtils, udmPDFPedidos ;
+  whatsapp.funcoes, udmConexao, whatsapp.constantes, System.MaskUtils, udmPDFPedidos, udmPDFBoletos ;
+
 
 type
   TMensagemEnviar = record
@@ -169,6 +170,7 @@ type
     class function MensagemListaSetoresContatos(AMensagemRecebida: TmensagemRecebida): TMensagemEnviar;
     class function MensagemConfirmaContatoWhatsapp(AMensagemRecebida: TmensagemRecebida): TMensagemEnviar;
     class function MensagemNaoConfirmouContatoWhatsapp(AMensagemRecebida: TmensagemRecebida): TMensagemEnviar;
+    class function EnviarBoletosEmAbertos(AMensagemRecebida: TmensagemRecebida): TMensagemEnviar;
 
   end;
 
@@ -233,6 +235,75 @@ begin
   inherited;
 end;
 
+class function TMensagemWhatsapp.EnviarBoletosEmAbertos(AMensagemRecebida: TmensagemRecebida): TMensagemEnviar;
+var
+  lMensagemWhatsapp: TMensagemWhatsapp;
+  lTextoPadrao, lTextoPedidos: string;
+  lMensagemParaEnviar: string;
+  ListaAnexosBoletosBase64: TArray<TAnexo>;
+  Count: Integer;
+
+begin
+  lMensagemWhatsapp := TMensagemWhatsapp.Create;
+    try
+    if lMensagemWhatsapp.FdmConexao.ConectarBanco then
+    begin
+      if AMensagemRecebida.ClienteId = 0 then //Se o id do cliente for igual a zero requisitar o cpf
+      begin
+        lTextoPadrao := 'Por favor, informe o número do seu *CPF* ou *CNPJ* (sem caracteres especiais) para que possamos identificar o seu cadastro na loja';
+        lMensagemParaEnviar := lTextoPadrao+sLineBreak+sLineBreak+lMensagemWhatsapp.GetTextoInicioSair;
+        Result := TMensagemEnviar.Novo(0,
+                                      Now,
+                                      AMensagemRecebida.NumeroEmpresa,
+                                      AMensagemRecebida.NumeroCliente,
+                                      AMensagemRecebida.Ticket,
+                                      StartOfTheDay(Now),
+                                      EndOfTheDay(Now),
+                                      STS_MENSAGEM_NAO_ENVIADA,
+                                      TP_INTERACAO_A_PARTIR_DO_USUARIO,
+                                      TP_ENTREGA_BOLETOS_EM_ABERTO_REQUISITAR_CNPJCPF,
+                                      lMensagemParaEnviar,
+                                      STS_ATENDIMENTO_EM_ABERTO,
+                                      AMensagemRecebida.ClienteId,
+                                      AMensagemRecebida.ClienteNome,
+                                      EmptyStr);
+        Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+        Exit;
+      end;
+
+     // ListaAnexosBoletosBase64 := TStringList.Create;
+      ListaAnexosBoletosBase64 := TdmPDFBoletos.GeraPDFBase64(AMensagemRecebida.ClienteId);
+      for Count := Low(ListaAnexosBoletosBase64) to High(ListaAnexosBoletosBase64) do
+          begin
+            //anexoBase64 := TdmPDFPedidos.GerarPDFBase64(ListPedidosID[count].ToInteger, AMensagemRecebida.ClienteId);
+            //lTextoPadrao := 'Boleto em Anexo.';               //'Pedido Nº: ' + ListPedidosID[Count];
+             // lTextoPedidos := lMensagemWhatsapp.GetPedidosCliente(AMensagemRecebida.ClienteId);
+           //   lMensagemParaEnviar := lTextoPadrao; //+ sLineBreak + sLineBreak + lTextoPedidos+ sLineBreak + lMensagemWhatsapp.GetTextoInicioSair;
+
+              Result := TMensagemEnviar.Novo(0,
+                                            Now,
+                                            AMensagemRecebida.NumeroEmpresa,
+                                            AMensagemRecebida.NumeroCliente,
+                                            AMensagemRecebida.Ticket,
+                                            StartOfTheDay(Now),
+                                            EndOfTheDay(Now),
+                                            STS_MENSAGEM_NAO_ENVIADA,
+                                            TP_INTERACAO_A_PARTIR_DO_USUARIO,
+                                            TP_ENTREGA_ANEXO_PDF,
+                                            ListaAnexosBoletosBase64[Count].FMensagem,
+                                            STS_ATENDIMENTO_EM_ABERTO,
+                                            AMensagemRecebida.ClienteId,
+                                            AMensagemRecebida.ClienteNome,
+                                            ListaAnexosBoletosBase64[Count].FAnexoBase64);
+              Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+          end;
+      lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+    end;
+  finally
+    lMensagemWhatsapp.Free;
+  end;
+end;
+
 class function TMensagemWhatsapp.EnviarUltimosPedidos(
   AMensagemRecebida: TMensagemRecebida): TMensagemEnviar;
 var
@@ -274,7 +345,7 @@ begin
       ListPedidosID := ListaUltimos3IDsPedidos(AMensagemRecebida.ClienteId);
       for Count := 0 to ListPedidosID.Count - 1 do
           begin
-            anexoBase64 := TdmPDPPedidos.GerarPDFBase64(ListPedidosID[count].ToInteger, AMensagemRecebida.ClienteId);
+            anexoBase64 := TdmPDFPedidos.GerarPDFBase64(ListPedidosID[count].ToInteger, AMensagemRecebida.ClienteId);
             lTextoPadrao := 'Pedido Nº: ' + ListPedidosID[Count];
              // lTextoPedidos := lMensagemWhatsapp.GetPedidosCliente(AMensagemRecebida.ClienteId);
               lMensagemParaEnviar := lTextoPadrao; //+ sLineBreak + sLineBreak + lTextoPedidos+ sLineBreak + lMensagemWhatsapp.GetTextoInicioSair;
@@ -1293,6 +1364,8 @@ begin
            Result := TP_RECEBIDA_REQUISITAR_ULTIMOS_PEDIDOS
        else if (StringsIguais(ID_ATENDIMENTO_SETORES_EMPRESA, ARespostaUsuario)) then
           Result := TP_RECEBIDA_REQUISITAR_SETORES
+       else if (StringsIguais(ID_ATENDIMENTO_BOLETOS, ARespostaUsuario)) then
+          Result := TP_RECEBIDA_REQUISITAR_BOLETOS_EM_ABERTO
        else
           Result := TP_RECEBIDA_INVALIDA;
       end;
@@ -1739,6 +1812,11 @@ begin
               Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
                 Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, vClienteNome);
             END
+          else If lRespostaTratada = TP_RECEBIDA_REQUISITAR_BOLETOS_EM_ABERTO then
+              BEGIN
+                Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
+                  Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, vClienteNome);
+              END
           else if lRespostaTratada = TP_RECEBIDA_INVALIDA then
             Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
               Protocolo, TP_RECEBIDA_INVALIDA, FMensagem, Finalizado, ClienteId, vClienteNome);
@@ -1790,9 +1868,9 @@ begin
             end
           else
             Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-              Protocolo, TP_RECEBIDA_INVALIDA, FMensagem, Finalizado, ClienteId, vClienteNome);
-
+              Protocolo, TP_RECEBIDA_INICIO_ATENDIMENTO, FMensagem, Finalizado, ClienteId, vClienteNome);
         END;
+
        TP_ENTREGA_NOVO_CLIENTE:
           BEGIN
             lRespostaTratada := ConverterTextoParaOpcaoMenu(Self.GetMensagem,  AUltimaMensagemValida.OpcaoEntregue);
@@ -1818,7 +1896,8 @@ begin
             end
 
           END;
-        TP_ENTREGA_ANEXO_PDF, TP_RECEBIDA_REQUISITAR_SETORES_CONTATOS:
+
+       TP_ENTREGA_ANEXO_PDF, TP_RECEBIDA_REQUISITAR_SETORES_CONTATOS, TP_RECEBIDA_REQUISITAR_BOLETOS_EM_ABERTO:
           BEGIN
              Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
                    Protocolo, TP_RECEBIDA_INICIO_ATENDIMENTO, FMensagem, Finalizado, ClienteId, vClienteNome);
@@ -1947,6 +2026,8 @@ begin
     TP_RECEBIDA_CADASTRO_NAO_ENCONTRADO: Result := TMensagemWhatsapp.RedirecionarParaVendedores(Self);
     TP_RECEBIDA_REQUISITAR_SETORES: Result:= TmensagemWhatsapp.MensagemListaSetores(self);
     TP_RECEBIDA_REQUISITAR_SETORES_CONTATOS: Result:= TmensagemWhatsapp.MensagemListaSetoresContatos(self);
+    TP_RECEBIDA_REQUISITAR_BOLETOS_EM_ABERTO, TP_RECEBIDA_REQUISITAR_BOLETOS_EM_ABERTO_CPFCNPJ_ENCONTRADO:
+        Result := TMensagemWhatsapp.EnviarBoletosEmAbertos(self);
 
     TP_RECEBIDA_CONFIRMA_CONTATO_NOVO_CLIENTE: Result:= TmensagemWhatsapp.MensagemConfirmaContatoWhatsapp(self);
     TP_RECEBIDA_NAO_CONFIRMA_CONTATO_NOVO_CLIENTE: Result:= TmensagemWhatsapp.MensagemNaoConfirmouContatoWhatsapp(self);

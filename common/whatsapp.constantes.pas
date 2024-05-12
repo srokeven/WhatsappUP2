@@ -131,11 +131,12 @@ const
 
   // Ids para cada opção de atendimento testar trabalhar com ids ao inves de descrição, é mais praticos
   ID_ATENDIMENTO_PEDIDOS = '1';
+  ID_ATENDIMENTO_BOLETOS = '2';
+  ID_ATENDIMENTO_SETORES_EMPRESA = '3' ;
+
   ID_ATENDIMENTO_ORDEM_SERVICO = '2';
   ID_ATENDIMENTO_CONTA_RECEBER = '3';
-  ID_ATENDIMENTO_BOLETOS = '4';
   ID_ATENDIMENTO_VENDEDORES = '5';
-  ID_ATENDIMENTO_SETORES_EMPRESA = '6' ;
   ID_ATENDIMENTO_SAIR = 'sair';
   ID_ATENDIMENTO_INICIO = 'inicio';
 

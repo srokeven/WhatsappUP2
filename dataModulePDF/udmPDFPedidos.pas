@@ -1,4 +1,4 @@
-unit udmPDFPEdidos;
+unit udmPDFPedidos;
 
 interface
 
@@ -9,7 +9,7 @@ uses
   FireDAC.Comp.Client, uSystemConsts, math, StrUtils, udmConexao;
 
 type
-  TdmPDPPedidos = class(TDataModule)
+  TdmPDFPedidos = class(TDataModule)
     qrCliente: TFDQuery;
     qrClienteID: TFDAutoIncField;
     qrClienteGRUPOS_CLIENTE_ID: TIntegerField;
@@ -148,7 +148,7 @@ type
   end;
 
 var
-  dmPDPPedidos: TdmPDPPedidos;
+  dmPDFPedidos: TdmPDFPedidos;
 
 implementation
 
@@ -160,14 +160,14 @@ uses whatsapp.funcoes, uSystemConfigConsts;
 
 { TDataModule1 }
 
-class function TdmPDPPedidos.GerarPDFBase64(aID_MOVI, aID_CLIENTE: Integer): String;
+class function TdmPDFPedidos.GerarPDFBase64(aID_MOVI, aID_CLIENTE: Integer): String;
 var
  pathPDF: String;
 begin
   pathPDF := ExtractFilePath(Application.ExeName) + '\Temp\temp.pdf';
-  Application.CreateForm(TdmPDPPedidos, dmPDPPedidos);
+  Application.CreateForm(TdmPDFPedidos, dmPDFPedidos);
   try
-    with dmPDPPedidos do
+    with dmPDFPedidos do
       begin
        ID_MOVI := aID_MOVI;
        ID_CLIENTE := aID_CLIENTE;
@@ -202,11 +202,11 @@ begin
   finally
 
     DeleteFile(pathPDF);
-    FreeAndNil(dmPDPPedidos);
+    FreeAndNil(dmPDFPedidos);
   end;
 end;
 
-procedure TdmPDPPedidos.inforPedido;
+procedure TdmPDFPedidos.inforPedido;
 var
   INSTRUCAO: string;
 begin
@@ -259,7 +259,7 @@ begin
 
 end;
 
-procedure TdmPDPPedidos.InstanciaMemosReport;
+procedure TdmPDFPedidos.InstanciaMemosReport;
 begin
   mmAssinatura := TfrxMemoView(frxReportMain.FindObject('mmAssinatura'));
   mmAssinaturaA4 := TfrxMemoView(frxReportMain.FindObject('mmAssinaturaA4'));
@@ -269,7 +269,7 @@ begin
   dtGarantiaA4 := TfrxMemoView(frxReportMain.FindObject('dtGarantiaA4'));
 end;
 
-procedure TdmPDPPedidos.instanciarPaginas;
+procedure TdmPDFPedidos.instanciarPaginas;
 begin
   pgBobina48c := TfrxPage(frxReportMain.FindObject('pgBobina48c'));
   pgPadraoA4  := TfrxPage(frxReportMain.FindObject('pgPadraoA4'));
@@ -278,7 +278,7 @@ begin
   pgPadraoA4.Visible  := true;
 end;
 
-procedure TdmPDPPedidos.PreencheSumarioReport;
+procedure TdmPDFPedidos.PreencheSumarioReport;
 begin
   mmAssinatura.Visible := qrMainTIPO_PAGAMENTO.AsInteger =  TP_PAGAMENTO_A_PRAZO;
 
@@ -293,7 +293,7 @@ begin
 
 end;
 
-procedure TdmPDPPedidos.camposAexibir;
+procedure TdmPDFPedidos.camposAexibir;
 begin
   fPedidoMobile := QueryValueStr('select PEDIDO_ORIGINAL from PEDIDOS_VENDAS where ID = '+fID_MOVI.ToString);
   if not (fPedidoMobile.IsEmpty) then
@@ -318,7 +318,7 @@ begin
   qrCliente.ParamByName('CLIENTE_ID').AsInteger := fID_CLIENTE;
 end;
 
-procedure TdmPDPPedidos.CarregaCabecalho;
+procedure TdmPDFPedidos.CarregaCabecalho;
 begin
  if GetConfigValueBoolean(TRetaguarda.EXIBIR_IMPRESSAO_RAZAO_SOCIAL) then
   SetReportVariableValue('NOME_EMPRESA', GetEmpresaRazaoSocial,True);
@@ -357,7 +357,7 @@ begin
 end;
 
 
-procedure TdmPDPPedidos.CarregaCliente;
+procedure TdmPDFPedidos.CarregaCliente;
 begin
  {   if chkImpressoraBobina.Checked then // preenche impressira bobina
    begin
@@ -421,7 +421,7 @@ begin
         SetReportVariableValue('OBS_CLIENTE', #13#10 + 'OBS. Cliente: ' + qrCLienteOBS.AsString, false);
 end;
 
-procedure TdmPDPPedidos.DataModuleCreate(Sender: TObject);
+procedure TdmPDFPedidos.DataModuleCreate(Sender: TObject);
 var
   _FdmConexao: TdmConexao;
 begin
@@ -436,7 +436,7 @@ begin
       end;
 end;
 
-procedure TdmPDPPedidos.SetReportVariableValue(aVariableName, aValue: string; aQuotedStr: Boolean = True);
+procedure TdmPDFPedidos.SetReportVariableValue(aVariableName, aValue: string; aQuotedStr: Boolean = True);
 begin
   if aQuotedStr then
     frxReportMain.Variables[aVariableName] := QuotedStr(aValue)
@@ -444,7 +444,7 @@ begin
     frxReportMain.Variables[aVariableName] := aValue;
 end;
 
-procedure TdmPDPPedidos.SaltarLinhas;
+procedure TdmPDFPedidos.SaltarLinhas;
 var
   i,
   _linhas :integer;
@@ -462,7 +462,7 @@ begin
   SetReportVariableValue('CONTEUDO_QUEBRA_LINHA',_TEXT, False);
 end;
 
-function TdmPDPPedidos.GetCaixaPedido: string;
+function TdmPDFPedidos.GetCaixaPedido: string;
 begin
   Result := QueryValueStr('select first 1 C.DESCRICAO '+
                           'from PEDIDOS_VENDAS_PAGAMENTOS PVG '+

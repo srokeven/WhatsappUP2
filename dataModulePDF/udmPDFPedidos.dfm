@@ -1,4 +1,4 @@
-object dmPDPPedidos: TdmPDPPedidos
+object dmPDFPedidos: TdmPDFPedidos
   OldCreateOrder = False
   OnCreate = DataModuleCreate
   Height = 302
