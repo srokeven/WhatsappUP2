@@ -57,8 +57,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitWidth = 338
-        ExplicitHeight = 30
+        ExplicitTop = -1
       end
     end
     object pnlStatusAplicacao: TPanel
@@ -110,71 +109,64 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Left = 0
         Top = 68
         Width = 333
-        Height = 221
+        Height = 268
         Margins.Left = 0
         Margins.Top = 0
         Margins.Right = 0
         Align = alTop
         BevelOuter = bvNone
-        Color = clWhite
+        Color = clInactiveCaption
         ParentBackground = False
         TabOrder = 1
+        ExplicitLeft = -1
         object Label3: TLabel
           Left = 13
-          Top = 108
+          Top = 148
           Width = 310
           Height = 16
           Caption = 'Arquivo de configura'#231#227'o com o banco de dados (*.ini)'
         end
         object SpeedButton1: TSpeedButton
           Left = 298
-          Top = 130
+          Top = 170
           Width = 23
           Height = 22
           OnClick = SpeedButton1Click
         end
         object Label29: TLabel
           Left = 13
-          Top = 160
+          Top = 200
           Width = 304
           Height = 16
           Caption = 'Tempo para monitorar novas mensagens (segundos)'
         end
         object chkPausarEnvioMensagem: TCheckBox
           Left = 13
-          Top = 16
+          Top = 72
           Width = 292
           Height = 17
           Caption = 'Pausar envio de mensagens'
           TabOrder = 0
           OnClick = chkPausarEnvioMensagemClick
         end
-        object chkConectarAoIniciar: TCheckBox
-          Left = 13
-          Top = 62
-          Width = 292
-          Height = 17
-          Caption = 'Conectar-se ao iniciar a aplica'#231#227'o'
-          TabOrder = 2
-        end
         object chkForcarNonoDigito: TCheckBox
           Left = 13
-          Top = 85
+          Top = 120
           Width = 292
           Height = 17
           Caption = 'For'#231'ar usar n'#250'meros com nono digito'
-          TabOrder = 3
+          TabOrder = 2
         end
         object edArquivoIni: TEdit
           Left = 13
-          Top = 130
+          Top = 170
           Width = 279
           Height = 24
-          TabOrder = 4
+          TabOrder = 3
         end
         object chkPausarRecebimento: TCheckBox
           Left = 13
-          Top = 39
+          Top = 95
           Width = 292
           Height = 17
           Caption = 'Pausar recebimento de mensagens'
@@ -183,20 +175,35 @@ object fmMainWhatsapp: TfmMainWhatsapp
         end
         object edTempoMonitorarMensagens: TEdit
           Left = 13
-          Top = 184
+          Top = 224
           Width = 60
           Height = 24
           NumbersOnly = True
-          TabOrder = 5
+          TabOrder = 4
           Text = '5'
+        end
+        object chkInicioAutomatico: TCheckBox
+          Left = 13
+          Top = 24
+          Width = 292
+          Height = 17
+          Caption = 'Inicio automatico'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 5
+          OnClick = chkInicioAutomaticoClick
         end
       end
       object pnlControles: TPanel
         AlignWithMargins = True
         Left = 0
-        Top = 292
+        Top = 339
         Width = 333
-        Height = 193
+        Height = 146
         Margins.Left = 0
         Margins.Top = 0
         Margins.Right = 0
@@ -211,11 +218,13 @@ object fmMainWhatsapp: TfmMainWhatsapp
         ParentBackground = False
         ParentFont = False
         TabOrder = 2
+        ExplicitTop = 292
+        ExplicitHeight = 193
         object lbStatus: TLabel
           Left = 0
           Top = 0
           Width = 333
-          Height = 146
+          Height = 99
           Align = alClient
           Alignment = taCenter
           Caption = 'Offline'
@@ -231,7 +240,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
         end
         object pnlControlesButtons: TPanel
           Left = 0
-          Top = 146
+          Top = 99
           Width = 333
           Height = 47
           Align = alBottom
@@ -243,6 +252,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
           Font.Style = []
           ParentFont = False
           TabOrder = 0
+          ExplicitTop = 146
           object btnDesconectar: TcxButton
             AlignWithMargins = True
             Left = 170
@@ -384,7 +394,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Top = 65
         Width = 675
         Height = 423
-        ActivePage = tsEnvioMensagem
+        ActivePage = tsHorarios
         Align = alClient
         TabOrder = 1
         object tsLogs: TTabSheet
@@ -784,7 +794,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
           end
           object btnSalvarHorarios: TButton
             Left = 504
-            Top = 356
+            Top = 364
             Width = 75
             Height = 25
             Caption = 'Salvar'

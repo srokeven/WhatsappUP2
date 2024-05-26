@@ -30,6 +30,7 @@ function LoadLogoBase64: String;
 function MascaraCPF(vCPF: string): string;
 function MascaraCNPJ(vCNPJ: string): string;
 function ListaUltimos3IDsPedidos(aClienteID: Integer): TStringlist;
+function GetNumeroWhatsappPorFuncao(aTipo: string = ''): string;
 
 // add depois do DataModulo do PDF
 function GetConfigValueBoolean(aConfigCode: string): Boolean;
@@ -48,6 +49,8 @@ function ReplaceChar(const aCaractere: Char; const aTamanho: integer): string;
 function NumbersOnly(const aText: string): string;
 function RetornaNomeTerminal: string;
 function ClearDirectory(aDirectory : String) : Boolean;
+procedure AtualizarDataNotificacaoAniversario(aClienteID: Integer);
+procedure AtualizarDataNotificacaoBoletos(aCbrTituloID: Integer);
 
 function GetEmpresaCnpj(aUsarMascara: Boolean): String;
 function GetEmpresaIE: String;
@@ -59,8 +62,6 @@ function GetEmpresaCidade: String;
 function GetEmpresaTelefone: String;
 function GetEmpresaUF: String;
 function GetEmpresaEmail: string;
-
-
 
 implementation
 
@@ -758,6 +759,64 @@ begin
   Result := True;
 end;
 
+function GetNumeroWhatsappPorFuncao(aTipo: string = ''): string;
+begin
+  Result := '';
+  Result := QueryValueStr('select NUMERO from WB_CONFIGURACOES where id = 1');
+end;
+
+procedure AtualizarDataNotificacaoAniversario(aClienteID: Integer);
+var
+  _Query: TFDQuery;
+  _FdmConexao: TdmConexao;
+
+begin
+  try
+    _Query := TFDQuery.Create(nil);
+    _FdmConexao := TdmConexao.Create(nil);
+
+    if _FdmConexao.ConectarBanco then
+      begin
+        _Query.Connection := _FdmConexao.fdConexao;
+
+        _Query.SQL.Text := 'update clientes set data_notificacao = current_date where ID = :CLIENTE_ID ';
+        _Query.ParamByName('CLIENTE_ID').AsInteger := aClienteID;
+        _Query.Prepare;
+        _Query.ExecSQL;
+
+      end;
+
+  finally
+    _Query.free;
+    _FdmConexao.Free;
+  end;
+end;
+
+procedure AtualizarDataNotificacaoBoletos(aCbrTituloID: Integer);
+var
+  _Query: TFDQuery;
+  _FdmConexao: TdmConexao;
+
+begin
+  try
+    _Query := TFDQuery.Create(nil);
+    _FdmConexao := TdmConexao.Create(nil);
+
+    if _FdmConexao.ConectarBanco then
+      begin
+        _Query.Connection := _FdmConexao.fdConexao;
+
+        _Query.SQL.Text := 'update CBR_TITULOS set data_notificacao = current_date where ID_CBR_TITULOS = :ID_CBR_TITULOS ';
+        _Query.ParamByName('ID_CBR_TITULOS').AsInteger := aCbrTituloID;
+        _Query.Prepare;
+        _Query.ExecSQL;
+      end;
+
+  finally
+    _Query.free;
+    _FdmConexao.Free;
+  end;
+end;
 
 
 end.

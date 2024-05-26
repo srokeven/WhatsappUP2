@@ -152,7 +152,6 @@ type
     function ListarSetores: String;
     function ListarContatos(aSetorID: String): String;
 
-
     function GetTextoInicioSair: string;
   public
     constructor Create;
@@ -182,7 +181,12 @@ type
     destructor Destroy; override;
     procedure FinalizarAtendimentosDeDiasAnteriores(ANumeroEmpresa: string);
     procedure ExecutarMensagensTodosCadastros;
-    procedure  ProcessarMensagensRecebidas(ANumeroEmpresa: string);
+    procedure ProcessarMensagensRecebidas(ANumeroEmpresa: string);
+    procedure NotificaAniversariantes;
+    procedure NotificaBoletosAntesDoVencimento;
+    procedure NotificaBoletosUmdiaAposVencimento;
+    procedure NotificaBoletosAcadaTresDias;
+
   end;
 
 implementation
@@ -346,7 +350,7 @@ begin
       for Count := 0 to ListPedidosID.Count - 1 do
           begin
             anexoBase64 := TdmPDFPedidos.GerarPDFBase64(ListPedidosID[count].ToInteger, AMensagemRecebida.ClienteId);
-            lTextoPadrao := 'Pedido Nº: ' + ListPedidosID[Count];
+            lTextoPadrao := 'Pedido Nº: *' + ListPedidosID[Count]+'*';
              // lTextoPedidos := lMensagemWhatsapp.GetPedidosCliente(AMensagemRecebida.ClienteId);
               lMensagemParaEnviar := lTextoPadrao; //+ sLineBreak + sLineBreak + lTextoPedidos+ sLineBreak + lMensagemWhatsapp.GetTextoInicioSair;
 
@@ -2197,6 +2201,7 @@ var
   I: integer;
 begin
   lListaNumerosAtendimentos := TStringList.Create;
+
   try
     if FdmConexao.ConectarBanco then
     begin
@@ -2215,10 +2220,10 @@ begin
         lQuery.Free;
       end;
       for I := 0 to lListaNumerosAtendimentos.Count - 1 do
-      begin
-        FinalizarAtendimentosDeDiasAnteriores(lListaNumerosAtendimentos[I]);
-        ProcessarMensagensRecebidas(lListaNumerosAtendimentos[I]);
-      end;
+        begin
+          FinalizarAtendimentosDeDiasAnteriores(lListaNumerosAtendimentos[I]);
+          ProcessarMensagensRecebidas(lListaNumerosAtendimentos[I]);
+        end;
     end;
     FdmConexao.DesconectarBanco;
   finally
@@ -2235,6 +2240,272 @@ begin
     ' and DATA_ENVIO_FINAL < current_timestamp and TIPO_INTERACAO = 1 and FINALIZADO = 0');
   FdmConexao.ExecutarSQL('update WB_MENSAGEM_RECEBIDA set FINALIZADO = 2 where NUMERO_EMPRESA = '+QuotedStr(ANumeroEmpresa)+
     ' and DATA_CADASTRO < current_timestamp and FINALIZADO = 0');
+end;
+
+procedure TProcessamentoMensagens.NotificaBoletosAcadaTresDias;
+var
+  lQuery: TFDQuery;
+  lMensagemParaEnviar: string;
+  lMensagemWhatsapp: TMensagemWhatsapp;
+  lEnviarNotificacao: TMensagemEnviar;
+  I: integer;
+
+begin
+  lMensagemWhatsapp := TMensagemWhatsapp.Create;
+
+  try
+    if lMensagemWhatsapp.FdmConexao.ConectarBanco then
+      begin
+        try
+           lQuery := TFDQuery.Create(NIL);
+           lQuery.Connection := FdmConexao.fdConexao;
+           lQuery.open(SQL_CONSULTA_BOLETOS_A_CADA_3_DIAS_APOS_VENCIMENTO);
+
+           if lQuery.RecordCount > 0 then
+            begin
+              lQuery.First;
+              while not lQuery.Eof do
+                begin
+                  try
+                    lMensagemParaEnviar := lMensagemWhatsapp.GetMensagemPadrao(TP_MENSAGEM_PADRAO_BOLETOS_VENCIDOS_HA_CADA_3_DIAS);
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$CLIENTE',  '*'+lQuery.FieldByName('cli_descricao').AsString+'*');
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$NUMERO_BOLETO', '*'+lQuery.FieldByName('ID_CBR_TITULOS').AsString+'*');
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$VALOR_BOLETO',  '*'+ FormatFloat('###,##0.00', lQuery.FieldByName('VALOR').AsCurrency) +'*');
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$VENCIMENTO_BOLETO',  '*'+lQuery.FieldByName('DTVENCIMENTO').AsString+'*');
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$DIAS_VENCIDOS',  '*'+lQuery.FieldByName('DIAS_VENCIDOS').AsString+'*');
+
+
+                    lEnviarNotificacao := TMensagemEnviar.Novo(0,
+                                  Now,
+                                  GetNumeroWhatsappPorFuncao,
+                                  lQuery.FieldByName('WHATSAPP').asString,
+                                  '',
+                                  StartOfTheDay(Now),
+                                  EndOfTheDay(Now),
+                                  STS_MENSAGEM_NAO_ENVIADA,
+                                  TP_INTERACAO_A_PARTIR_DA_EMPRESA,
+                                  TP_ENTREGA_TEXTO_ATIVO,
+                                  lMensagemParaEnviar,
+                                  STS_ATENDIMENTO_EM_ABERTO,
+                                  lQuery.FieldByName('CLIENTE_ID').asInteger,
+                                  lQuery.FieldByName('CLI_DESCRICAO').asString,
+                                  EmptyStr);
+                     lEnviarNotificacao.registraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+                  finally
+                    AtualizarDataNotificacaoBoletos( lQuery.FieldByName('ID_CBR_TITULOS').asInteger);
+                  end;
+                  lQuery.Next;
+                end;
+              lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+            end;
+
+        finally
+          lMensagemWhatsapp.Free;
+          lQuery.Free;
+        end;
+      end;
+
+  finally
+    FdmConexao.DesconectarBanco;
+  end;
+end;
+
+
+procedure TProcessamentoMensagens.NotificaBoletosAntesDoVencimento;
+var
+  lQuery: TFDQuery;
+  lMensagemParaEnviar: string;
+  lMensagemWhatsapp: TMensagemWhatsapp;
+  lEnviarNotificacao: TMensagemEnviar;
+  I: integer;
+
+begin
+  lMensagemWhatsapp := TMensagemWhatsapp.Create;
+
+  try
+    if lMensagemWhatsapp.FdmConexao.ConectarBanco then
+      begin
+        try
+           lQuery := TFDQuery.Create(NIL);
+           lQuery.Connection := FdmConexao.fdConexao;
+           lQuery.open(SQL_CONSULTA_BOLETOS_2_DIAS_ANTES_DE_VENCER);
+
+           if lQuery.RecordCount > 0 then
+            begin
+              lQuery.First;
+              while not lQuery.Eof do
+                begin
+                  try
+                    lMensagemParaEnviar := lMensagemWhatsapp.GetMensagemPadrao(TP_MENSAGEM_PADRAO_BOLETOS_A_VENCER);
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$CLIENTE',  '*'+lQuery.FieldByName('cli_descricao').AsString+'*');
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$NUMERO_BOLETO', '*'+lQuery.FieldByName('ID_CBR_TITULOS').AsString+'*');
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$VALOR_BOLETO',  '*'+ FormatFloat('###,##0.00', lQuery.FieldByName('VALOR').AsCurrency) +'*');
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$VENCIMENTO_BOLETO',  '*'+lQuery.FieldByName('DTVENCIMENTO').AsString+'*');
+
+                    lEnviarNotificacao := TMensagemEnviar.Novo(0,
+                                  Now,
+                                  GetNumeroWhatsappPorFuncao,
+                                  lQuery.FieldByName('WHATSAPP').asString,
+                                  '',
+                                  StartOfTheDay(Now),
+                                  EndOfTheDay(Now),
+                                  STS_MENSAGEM_NAO_ENVIADA,
+                                  TP_INTERACAO_A_PARTIR_DA_EMPRESA,
+                                  TP_ENTREGA_TEXTO_ATIVO,
+                                  lMensagemParaEnviar,
+                                  STS_ATENDIMENTO_EM_ABERTO,
+                                  lQuery.FieldByName('CLIENTE_ID').asInteger,
+                                  lQuery.FieldByName('CLI_DESCRICAO').asString,
+                                  EmptyStr);
+                     lEnviarNotificacao.registraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+                  finally
+                    AtualizarDataNotificacaoBoletos( lQuery.FieldByName('ID_CBR_TITULOS').asInteger);
+                  end;
+                  lQuery.Next;
+                end;
+              lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+            end;
+
+        finally
+          lMensagemWhatsapp.Free;
+          lQuery.Free;
+        end;
+      end;
+
+  finally
+    FdmConexao.DesconectarBanco;
+  end;
+end;
+
+procedure TProcessamentoMensagens.NotificaBoletosUmdiaAposVencimento;
+var
+  lQuery: TFDQuery;
+  lMensagemParaEnviar: string;
+  lMensagemWhatsapp: TMensagemWhatsapp;
+  lEnviarNotificacao: TMensagemEnviar;
+  I: integer;
+
+begin
+  lMensagemWhatsapp := TMensagemWhatsapp.Create;
+
+  try
+    if lMensagemWhatsapp.FdmConexao.ConectarBanco then
+      begin
+        try
+           lQuery := TFDQuery.Create(NIL);
+           lQuery.Connection := FdmConexao.fdConexao;
+           lQuery.open(SQL_CONSULTA_BOLETOS_1_DIA_APOS_VENCIMENTO);
+
+           if lQuery.RecordCount > 0 then
+            begin
+              lQuery.First;
+              while not lQuery.Eof do
+                begin
+                  try
+                    lMensagemParaEnviar := lMensagemWhatsapp.GetMensagemPadrao(TP_MENSAGEM_PADRAO_BOLETOS_VENCIDOS_HA_1_DIA);
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$CLIENTE',  '*'+lQuery.FieldByName('cli_descricao').AsString+'*');
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$NUMERO_BOLETO', '*'+lQuery.FieldByName('ID_CBR_TITULOS').AsString+'*');
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$VALOR_BOLETO',  '*'+ FormatFloat('###,##0.00', lQuery.FieldByName('VALOR').AsCurrency) +'*');
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$VENCIMENTO_BOLETO',  '*'+lQuery.FieldByName('DTVENCIMENTO').AsString+'*');
+
+                    lEnviarNotificacao := TMensagemEnviar.Novo(0,
+                                  Now,
+                                  GetNumeroWhatsappPorFuncao,
+                                  lQuery.FieldByName('WHATSAPP').asString,
+                                  '',
+                                  StartOfTheDay(Now),
+                                  EndOfTheDay(Now),
+                                  STS_MENSAGEM_NAO_ENVIADA,
+                                  TP_INTERACAO_A_PARTIR_DA_EMPRESA,
+                                  TP_ENTREGA_TEXTO_ATIVO,
+                                  lMensagemParaEnviar,
+                                  STS_ATENDIMENTO_EM_ABERTO,
+                                  lQuery.FieldByName('CLIENTE_ID').asInteger,
+                                  lQuery.FieldByName('CLI_DESCRICAO').asString,
+                                  EmptyStr);
+                     lEnviarNotificacao.registraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+                  finally
+                    AtualizarDataNotificacaoBoletos( lQuery.FieldByName('ID_CBR_TITULOS').asInteger);
+                  end;
+                  lQuery.Next;
+                end;
+              lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+            end;
+
+        finally
+          lMensagemWhatsapp.Free;
+          lQuery.Free;
+        end;
+      end;
+
+  finally
+    FdmConexao.DesconectarBanco;
+  end;
+end;
+
+
+procedure TProcessamentoMensagens.NotificaAniversariantes;
+var
+  lQuery: TFDQuery;
+  lMensagemParaEnviar: string;
+  lMensagemWhatsapp: TMensagemWhatsapp;
+  lEnviarNotificacao: TMensagemEnviar;
+  I: integer;
+begin
+   lMensagemWhatsapp := TMensagemWhatsapp.Create;
+
+  try
+    if lMensagemWhatsapp.FdmConexao.ConectarBanco then
+      begin
+        try
+           lQuery := TFDQuery.Create(NIL);
+           lQuery.Connection := FdmConexao.fdConexao;
+           lQuery.open(SQL_CONSULTA_ANIVERSARIANTES);
+
+           if lQuery.RecordCount > 0 then
+            begin
+              lQuery.First;
+              while not lQuery.Eof do
+                begin
+                  try
+                    lMensagemParaEnviar := lMensagemWhatsapp.GetMensagemPadrao(TP_MESAGEM_PADRAO_NOTIFICAR_ANIVERSARIANTES);
+                    lMensagemParaEnviar :=  ReplaceStr(lMensagemParaEnviar,'$CLIENTE',  '*'+lQuery.FieldByName('descricao').AsString+'*');
+
+                    lEnviarNotificacao := TMensagemEnviar.Novo(0,
+                                  Now,
+                                  GetNumeroWhatsappPorFuncao,
+                                  lQuery.FieldByName('WHATSAPP').asString,
+                                  '',
+                                  StartOfTheDay(Now),
+                                  EndOfTheDay(Now),
+                                  STS_MENSAGEM_NAO_ENVIADA,
+                                  TP_INTERACAO_A_PARTIR_DA_EMPRESA,
+                                  TP_ENTREGA_TEXTO_ATIVO,
+                                  lMensagemParaEnviar,
+                                  STS_ATENDIMENTO_EM_ABERTO,
+                                  lQuery.FieldByName('ID').asInteger,
+                                  lQuery.FieldByName('DESCRICAO').asString,
+                                  EmptyStr);
+                     lEnviarNotificacao.registraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+                  finally
+                    AtualizarDataNotificacaoAniversario( lQuery.FieldByName('ID').asInteger);
+                  end;
+                  lQuery.Next;
+                end;
+              lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+            end;
+
+        finally
+          lMensagemWhatsapp.Free;
+          lQuery.Free;
+        end;
+      end;
+
+  finally
+    FdmConexao.DesconectarBanco;
+  end;
+
+
 end;
 
 procedure TProcessamentoMensagens.ProcessarMensagensRecebidas(ANumeroEmpresa: string);

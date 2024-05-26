@@ -22,7 +22,7 @@ object fmControladorMensagens: TfmControladorMensagens
     Align = alTop
     TabOrder = 0
     object Button1: TButton
-      Left = 8
+      Left = 9
       Top = 21
       Width = 75
       Height = 25

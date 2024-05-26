@@ -337,9 +337,9 @@ begin
           NovoAnexo.FMensagem :=
               ' '
               + sLineBreak
-              + 'Boleto Nº ' + qrReceberID_CBR_TITULOS.AsString
+              + 'Boleto Nº: *' + qrReceberID_CBR_TITULOS.AsString+'*'
               + sLineBreak
-              + 'Vencimento ' + qrReceberDTVENCIMENTO.AsString;
+              + 'Vencimento: *' + qrReceberDTVENCIMENTO.AsString+'*';
 
           _ListaAnexos[qrReceber.RecNo - 1] := NovoAnexo;
 

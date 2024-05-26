@@ -38,7 +38,6 @@ type
     cbTipoConexao: TComboBox;
     pnlConfiguracoesGerais: TPanel;
     chkPausarEnvioMensagem: TCheckBox;
-    chkConectarAoIniciar: TCheckBox;
     chkForcarNonoDigito: TCheckBox;
     Label3: TLabel;
     edArquivoIni: TEdit;
@@ -146,6 +145,7 @@ type
     fdConexaoRecebimento: TFDConnection;
     fdConexaoAdmininstrativo: TFDConnection;
     pnlAlertaFinalizando: TPanel;
+    chkInicioAutomatico: TCheckBox;
     procedure SpeedButton1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -176,6 +176,7 @@ type
     procedure btnEnviarMensagemClick(Sender: TObject);
     procedure btnSalvarNoBancoClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure chkInicioAutomaticoClick(Sender: TObject);
   private
     FPathIniSistema: string;
     FCaminhoArquivoIni: string;
@@ -371,7 +372,7 @@ procedure TfmMainWhatsapp.CarregaConfiguracoes;
 begin
   FCaminhoArquivoIni           := LerIni('GERAL', 'INI', '', FPathIniSistema);
   edArquivoIni.Text            := FCaminhoArquivoIni;
-  chkConectarAoIniciar.Checked := StrToBoolean(LerIni('GERAL', 'AUTO_INICIAR', 'N', FPathIniSistema));
+  chkInicioAutomatico.Checked := StrToBoolean(LerIni('GERAL', 'INICIO_AUTOMATICO', 'N', FPathIniSistema));
   chkForcarNonoDigito.Checked  := StrToBoolean(LerIni('GERAL', 'USAR_NONO_DIGITO', 'N', FPathIniSistema));
   cbTipoConexao.ItemIndex      := cbTipoConexao.Items.IndexOf(LerIni('GERAL', 'TIPO_CONEXAO', 'Gerar QR Code', FPathIniSistema));
   edNomeEmpresa.Text           := LerIni('GERAL', 'EMPRESA', 'EMPRESA', FPathIniSistema);
@@ -431,6 +432,15 @@ begin
   mmRecebimentoPausado.Lines.Text := LerIni('GERAL', 'TEXTO_RECEBIMENTO_PAUSADO', '', FPathIniSistema);
 
   VerificaExpediente;
+end;
+
+procedure TfmMainWhatsapp.chkInicioAutomaticoClick(Sender: TObject);
+begin
+ if chkInicioAutomatico.Checked then
+  GravarIni('GERAL','INICIO_AUTOMATICO','S', FPathIniSistema )
+ ELSE
+  GravarIni('GERAL','INICIO_AUTOMATICO','N', FPathIniSistema );
+
 end;
 
 procedure TfmMainWhatsapp.chkPausarEnvioMensagemClick(Sender: TObject);
@@ -638,6 +648,10 @@ begin
   FMarcarMensagensRecebidasComoLidasAoPausar := False;
   CarregaConfiguracoes;
   pcInformacoes.ActivePageIndex := 0;
+
+  if chkInicioAutomatico.Checked then
+  btnConectar.Click;
+
 end;
 
 function TfmMainWhatsapp.GetNomeAtendente: string;
@@ -793,7 +807,7 @@ end;
 procedure TfmMainWhatsapp.SalvarConfiguracoes;
 begin
   GravarIni('GERAL', 'TIPO_CONEXAO', cbTipoConexao.Text, FPathIniSistema);
-  GravarIni('GERAL', 'AUTO_INICIAR', BooleanToStr(chkConectarAoIniciar.Checked), FPathIniSistema);
+  GravarIni('GERAL', 'AUTO_INICIAR', BooleanToStr(chkInicioAutomatico.Checked), FPathIniSistema);
   GravarIni('GERAL', 'USAR_NONO_DIGITO', BooleanToStr(chkForcarNonoDigito.Checked), FPathIniSistema);
   GravarIni('GERAL', 'TIPO_CONEXAO', cbTipoConexao.Text, FPathIniSistema);
   GravarIni('GERAL', 'INI', edArquivoIni.Text, FPathIniSistema);

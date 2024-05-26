@@ -248,6 +248,7 @@ end;
 procedure TfmControladorMensagens.FormShow(Sender: TObject);
 begin
   fdConexao.Open();
+  tmCiclos.Enabled := True;
 end;
 
 procedure TfmControladorMensagens.tmCiclosTimer(Sender: TObject);
@@ -258,6 +259,10 @@ begin
   lProcessar := TProcessamentoMensagens.Create;
   try
     lProcessar.ExecutarMensagensTodosCadastros;
+    lProcessar.NotificaAniversariantes;
+    lProcessar.NotificaBoletosAntesDoVencimento;
+    lProcessar.NotificaBoletosUmdiaAposVencimento;
+    lProcessar.NotificaBoletosAcadaTresDias;
   finally
     tmCiclos.Enabled := True;
     lProcessar.Free;
