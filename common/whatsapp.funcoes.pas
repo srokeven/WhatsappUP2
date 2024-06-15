@@ -48,6 +48,7 @@ function PadR(const aTexto: string; const aTamanho: integer; const aCaractere: C
 function ReplaceChar(const aCaractere: Char; const aTamanho: integer): string;
 function NumbersOnly(const aText: string): string;
 function RetornaNomeTerminal: string;
+function GetDataInicialNotificaBoletos: Tdate;
 function ClearDirectory(aDirectory : String) : Boolean;
 procedure AtualizarDataNotificacaoAniversario(aClienteID: Integer);
 procedure AtualizarDataNotificacaoBoletos(aCbrTituloID: Integer);
@@ -817,6 +818,32 @@ begin
     _FdmConexao.Free;
   end;
 end;
+
+
+function GetDataInicialNotificaBoletos: Tdate;
+var
+  _Query: TFDQuery;
+  _FdmConexao: TdmConexao;
+
+ begin
+    try
+      _Query := TFDQuery.Create(nil);
+      _FdmConexao := TdmConexao.Create(nil);
+
+      if _FdmConexao.ConectarBanco then
+        begin
+          _Query.Connection := _FdmConexao.fdConexao;
+
+          _Query.SQL.Text := 'select  DATA_INICIAL_NOTIF_BOLETO from WB_CONFIGURACOES';
+          _Query.OPEN;
+        end;
+
+    finally
+      RESULT := _Query.FieldByName('DATA_INICIAL_NOTIF_BOLETO').AsDateTime;
+      _Query.free;
+      _FdmConexao.Free;
+    end;
+ end;
 
 
 end.

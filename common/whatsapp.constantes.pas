@@ -2,6 +2,8 @@
 
 interface
 
+
+
 const
   SIM = 1;
   NAO = 2;
@@ -80,11 +82,12 @@ const
       'inner join                                                                                  '+
       '    CLIENTES CLI on CBR_TITULOS.CLIENTE_ID = CLI.ID                                         '+
       'where                                                                                       '+
+      '    CBR_TITULOS.dtemissao >= :DATA_EMISSAO AND                                              '+
       '    CBR_TITULOS.SITUACAO = ''A'' and                                                        '+
       '    CBR_TITULOS.REMESSA = ''S'' and                                                         '+
       '    coalesce(CLI.whatsapp, '''') <> '''' and                                                '+
       '    cbr_titulos.dtvencimento = DATEADD(2 DAY TO current_date) and                           '+
-      '    cast(coalesce(cbr_titulos.data_notificacao, ''01.01.1989'') as date) < current_date    '+
+      '    cast(coalesce(cbr_titulos.data_notificacao, ''01.01.1989'') as date) < current_date     '+
       'order by                                                                                    '+
       'ID_CBR_TITULOS desc                                                                         ';
 
@@ -98,6 +101,7 @@ const
       'inner join                                                                                 '+
       '    CLIENTES CLI on CBR_TITULOS.CLIENTE_ID = CLI.ID                                        '+
       'where                                                                                      '+
+      '    CBR_TITULOS.dtemissao >= :DATA_EMISSAO AND                                             '+
       '    CBR_TITULOS.SITUACAO = ''A'' and                                                       '+
       '    CBR_TITULOS.REMESSA = ''S'' and                                                        '+
       '    coalesce(CLI.whatsapp, '''') <> '''' and                                               '+
@@ -118,6 +122,7 @@ const
       'inner join                                             '+
       '    CLIENTES CLI on CBR_TITULOS.CLIENTE_ID = CLI.ID    '+
       'where                                                  '+
+      '    CBR_TITULOS.dtemissao >= :DATA_EMISSAO AND         '+
       '    CBR_TITULOS.SITUACAO = ''A'' and                   '+
       '    CBR_TITULOS.REMESSA = ''S'' and                    '+
       '    cbr_titulos.dtvencimento < current_date and        '+

@@ -2259,7 +2259,9 @@ begin
         try
            lQuery := TFDQuery.Create(NIL);
            lQuery.Connection := FdmConexao.fdConexao;
-           lQuery.open(SQL_CONSULTA_BOLETOS_A_CADA_3_DIAS_APOS_VENCIMENTO);
+           lQuery.SQL.Text := SQL_CONSULTA_BOLETOS_A_CADA_3_DIAS_APOS_VENCIMENTO;
+           lQuery.ParamByName('DATA_EMISSAO').AsDate := GetDataInicialNotificaBoletos;
+           lQuery.Open;
 
            if lQuery.RecordCount > 0 then
             begin
@@ -2328,7 +2330,9 @@ begin
         try
            lQuery := TFDQuery.Create(NIL);
            lQuery.Connection := FdmConexao.fdConexao;
-           lQuery.open(SQL_CONSULTA_BOLETOS_2_DIAS_ANTES_DE_VENCER);
+           lQuery.SQL.Text := SQL_CONSULTA_BOLETOS_2_DIAS_ANTES_DE_VENCER;
+           lQuery.ParamByName('DATA_EMISSAO').AsDate := GetDataInicialNotificaBoletos;
+           lQuery.Open;
 
            if lQuery.RecordCount > 0 then
             begin
@@ -2394,7 +2398,9 @@ begin
         try
            lQuery := TFDQuery.Create(NIL);
            lQuery.Connection := FdmConexao.fdConexao;
-           lQuery.open(SQL_CONSULTA_BOLETOS_1_DIA_APOS_VENCIMENTO);
+           lQuery.SQL.Text := SQL_CONSULTA_BOLETOS_1_DIA_APOS_VENCIMENTO;
+           lQuery.ParamByName('DATA_EMISSAO').AsDate := GetDataInicialNotificaBoletos;
+           lQuery.Open;
 
            if lQuery.RecordCount > 0 then
             begin
