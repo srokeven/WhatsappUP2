@@ -57,7 +57,8 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitTop = -1
+        ExplicitWidth = 338
+        ExplicitHeight = 30
       end
     end
     object pnlStatusAplicacao: TPanel
@@ -118,7 +119,6 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Color = clInactiveCaption
         ParentBackground = False
         TabOrder = 1
-        ExplicitLeft = -1
         object Label3: TLabel
           Left = 13
           Top = 148
@@ -218,8 +218,6 @@ object fmMainWhatsapp: TfmMainWhatsapp
         ParentBackground = False
         ParentFont = False
         TabOrder = 2
-        ExplicitTop = 292
-        ExplicitHeight = 193
         object lbStatus: TLabel
           Left = 0
           Top = 0
@@ -252,7 +250,6 @@ object fmMainWhatsapp: TfmMainWhatsapp
           Font.Style = []
           ParentFont = False
           TabOrder = 0
-          ExplicitTop = 146
           object btnDesconectar: TcxButton
             AlignWithMargins = True
             Left = 170
@@ -399,15 +396,18 @@ object fmMainWhatsapp: TfmMainWhatsapp
         TabOrder = 1
         object tsLogs: TTabSheet
           Caption = 'Logs'
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Label5: TLabel
             AlignWithMargins = True
             Left = 3
             Top = 3
-            Width = 661
+            Width = 158
             Height = 16
             Align = alTop
             Caption = 'Log das '#250'ltimas mensagens'
-            ExplicitWidth = 158
           end
           object mmMensagens: TMemo
             Left = 0
@@ -805,6 +805,10 @@ object fmMainWhatsapp: TfmMainWhatsapp
         object tsRespostasAutomaticas: TTabSheet
           Caption = 'Respostas Autom'#225'ticas'
           ImageIndex = 3
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Label26: TLabel
             Left = 16
             Top = 14
@@ -860,6 +864,10 @@ object fmMainWhatsapp: TfmMainWhatsapp
         object tsEnvioMensagem: TTabSheet
           Caption = 'Envio de mensagem'
           ImageIndex = 1
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           DesignSize = (
             667
             392)

@@ -442,7 +442,7 @@ object dmPDFBoletos: TdmPDFBoletos
     NumeroArquivo = 0
     LayoutRemessa = c240
     ACBrBoletoFC = ACBrBoletoFCFortes1
-    Configuracoes.Arquivos.LogRegistro = False
+    Configuracoes.Arquivos.LogNivel = logNenhum
     Configuracoes.WebService.SSLHttpLib = httpOpenSSL
     Configuracoes.WebService.StoreName = 'My'
     Configuracoes.WebService.Ambiente = taProducao

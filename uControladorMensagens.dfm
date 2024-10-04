@@ -324,13 +324,14 @@ object fmControladorMensagens: TfmControladorMensagens
   end
   object fdConexao: TFDConnection
     Params.Strings = (
-      'Database=C:\MTC\Dados\DADOS.FDB'
+      'Database=c:\sistemas\mtc\dados.fdb'
       'Port=3050'
-      'Server=127.0.0.1'
+      'Server=45.234.92.126'
       'User_Name=sysdba'
       'Password=masterkey'
       'DriverID=FB')
     LoginPrompt = False
+    BeforeConnect = fdConexaoBeforeConnect
     Left = 512
     Top = 48
   end

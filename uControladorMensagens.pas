@@ -12,7 +12,7 @@ uses
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys,
   FireDAC.Phys.FB, FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait, FireDAC.Comp.UI,
   FireDAC.Phys.IBBase, Data.DB, FireDAC.Comp.Client, whatsapp.constantes,
-  System.DateUtils;
+  System.DateUtils, IniFiles;
 
 type
   TfmControladorMensagens = class(TForm)
@@ -61,7 +61,11 @@ type
     procedure tmCiclosTimer(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure fdConexaoBeforeConnect(Sender: TObject);
   private
+    FPathIniSistema,
+    FCaminhoArquivoIni: string;
+    function LerIni(ASecao, AIdent, AValorDefault, AIniFile: string): string;
     { Private declarations }
   public
     { Public declarations }
@@ -245,8 +249,32 @@ begin
   end;
 end;
 
+procedure TfmControladorMensagens.fdConexaoBeforeConnect(Sender: TObject);
+begin
+  fdConexao.Params.Values['Server'] := LerIni('DB', 'SERVER', '', FCaminhoArquivoIni);
+  fdConexao.Params.Values['Database'] := LerIni('DB', 'DATABASE', '', FCaminhoArquivoIni);
+  fdConexao.Params.Values['Port'] := LerIni('DB', 'PORT', '', FCaminhoArquivoIni);
+  fdConexao.Params.Values['UserName'] := LerIni('DB', 'USER_NAME', '', FCaminhoArquivoIni);
+  fdConexao.Params.Values['Password'] := LerIni('DB', 'PASSWORD', '', FCaminhoArquivoIni);
+end;
+
+function TfmControladorMensagens.LerIni(ASecao, AIdent, AValorDefault,
+  AIniFile: string): string;
+var
+  vIni: TIniFile;
+begin
+  vIni := TIniFile.Create(AIniFile);
+  try
+    Result := vIni.ReadString(ASecao, AIdent, AValorDefault);
+  finally
+    vIni.Free;
+  end;
+end;
+
 procedure TfmControladorMensagens.FormShow(Sender: TObject);
 begin
+  FPathIniSistema := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'ConfTInject.ini';
+  FCaminhoArquivoIni           := LerIni('GERAL', 'INI', '', FPathIniSistema);
   fdConexao.Open();
   tmCiclos.Enabled := True;
 end;
