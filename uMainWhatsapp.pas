@@ -50,7 +50,7 @@ type
     lbStatus: TLabel;
     pnlInformacoes: TPanel;
     lbMeuNumero: TLabel;
-    Label5: TLabel;
+    W: TLabel;
     mmMensagens: TMemo;
     FDPhysFBDriverLink1: TFDPhysFBDriverLink;
     FDGUIxWaitCursor1: TFDGUIxWaitCursor;
@@ -146,6 +146,7 @@ type
     fdConexaoAdmininstrativo: TFDConnection;
     pnlAlertaFinalizando: TPanel;
     chkInicioAutomatico: TCheckBox;
+    chkNaoListarLog: TCheckBox;
     procedure SpeedButton1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -177,6 +178,7 @@ type
     procedure btnSalvarNoBancoClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure chkInicioAutomaticoClick(Sender: TObject);
+    procedure chkNaoListarLogClick(Sender: TObject);
   private
     FPathIniSistema: string;
     FCaminhoArquivoIni: string;
@@ -186,7 +188,7 @@ type
     FMarcarMensagensRecebidasComoLidasAoPausar: boolean;
     function StrToBoolean(AString: string): boolean;
     function BooleanToStr(ABoolean: boolean): string;
-    procedure RegistraLog(ADirecao: integer; ANumero, ANome, AMensagem, AInformacoes: string);
+    procedure RegistraLog(ADirecao: integer; ANumero, ANome, AMensagem, AInformacoes: string );
       //Manipulação de arquivos
     procedure GravarIni(ASecao, AIdent, AValor, AIniFile: string);
     function LerIni(ASecao, AIdent, AValorDefault, AIniFile: string): string;
@@ -372,11 +374,13 @@ procedure TfmMainWhatsapp.CarregaConfiguracoes;
 begin
   FCaminhoArquivoIni           := LerIni('GERAL', 'INI', '', FPathIniSistema);
   edArquivoIni.Text            := FCaminhoArquivoIni;
-  chkInicioAutomatico.Checked := StrToBoolean(LerIni('GERAL', 'INICIO_AUTOMATICO', 'N', FPathIniSistema));
+  chkInicioAutomatico.Checked  := StrToBoolean(LerIni('GERAL', 'INICIO_AUTOMATICO', 'N', FPathIniSistema));
   chkForcarNonoDigito.Checked  := StrToBoolean(LerIni('GERAL', 'USAR_NONO_DIGITO', 'N', FPathIniSistema));
   cbTipoConexao.ItemIndex      := cbTipoConexao.Items.IndexOf(LerIni('GERAL', 'TIPO_CONEXAO', 'Gerar QR Code', FPathIniSistema));
   edNomeEmpresa.Text           := LerIni('GERAL', 'EMPRESA', 'EMPRESA', FPathIniSistema);
   edTempoMonitorarMensagens.Text := LerIni('GERAL', 'TEMPO_MONITORAR', '5', FPathIniSistema);
+  chkNaoListarLog.Checked         := StrToBoolean(LerIni('GERAL', 'LISTAR_LOG', 'S', FPathIniSistema ));
+
 
   // Segunda-feira
   chkMonitorarSegunda.Checked := StrToBoolean(LerIni('GERAL', 'FUNCIONAMENTO_SEQUNDA', 'N', FPathIniSistema));
@@ -456,6 +460,14 @@ begin
     if ShowQuestion('Deseja marcar as mensagens recebidas como lidas?') then
       FMarcarMensagensRecebidasComoLidasAoPausar := True;
   end;
+end;
+
+procedure TfmMainWhatsapp.chkNaoListarLogClick(Sender: TObject);
+begin
+  if chkInicioAutomatico.Checked then
+    GravarIni('GERAL','LISTAR_LOG','S', FPathIniSistema )
+  ELSE
+    GravarIni('GERAL','LISTAR_LOG','N', FPathIniSistema );
 end;
 
 function TfmMainWhatsapp.ConectarBancoAdmininstrativo: boolean;
@@ -757,21 +769,25 @@ procedure TfmMainWhatsapp.RegistraLog(ADirecao: integer; ANumero, ANome, AMensag
 var
   lTexto: string;
 begin
-  case ADirecao of
-    LOG_ERRO: lTexto := Format('######## [>>>> ERROR <<<<] - [%s - %s] - [%s] - %s',
-      [ANumero, ANome, FormatDateTime('dd/mm/yyyy hh:nn:ss', Now), AMensagem]);
-    LOG_OPERACAO: lTexto := Format('######## [<<<< INFORMAÇÃO >>>>] - [%s - %s] - [%s] - %s',
-      [ANumero, ANome, FormatDateTime('dd/mm/yyyy hh:nn:ss', Now), AMensagem]);
-    TP_OPCAO_ENTREGA_PARA_EMPRESA: lTexto := Format('>>>>>>>> [MENSAGEM RECEBIDA] - [%s - %s] - [%s] - %s',
-      [ANumero, ANome, FormatDateTime('dd/mm/yyyy hh:nn:ss', Now), AMensagem]);
-    TP_OPCAO_ENTREGA_PARA_USUARIO: lTexto := Format('<<<<<<<< [MENSAGEM ENVIADA] - [%s - %s] - [%s] - %s',
-      [ANumero, ANome, FormatDateTime('dd/mm/yyyy hh:nn:ss', Now), AMensagem]);
-  end;
-  if not (AInformacoes.IsEmpty) then
-    lTexto := lTexto + sLineBreak + AInformacoes;
-  mmMensagens.Lines.Add(lTexto);
-  GravaLog(lTexto, 'LOG_'+FMeuNumero+'_');
-  mmMensagens.Lines.Add('----------------------------------------------------------------------------------------------------------------------------------');
+
+  if not chkNaoListarLog.Checked then
+    begin
+      case ADirecao of
+        LOG_ERRO: lTexto := Format('######## [>>>> ERROR <<<<] - [%s - %s] - [%s] - %s',
+          [ANumero, ANome, FormatDateTime('dd/mm/yyyy hh:nn:ss', Now), AMensagem]);
+        LOG_OPERACAO: lTexto := Format('######## [<<<< INFORMAÇÃO >>>>] - [%s - %s] - [%s] - %s',
+          [ANumero, ANome, FormatDateTime('dd/mm/yyyy hh:nn:ss', Now), AMensagem]);
+        TP_OPCAO_ENTREGA_PARA_EMPRESA: lTexto := Format('>>>>>>>> [MENSAGEM RECEBIDA] - [%s - %s] - [%s] - %s',
+          [ANumero, ANome, FormatDateTime('dd/mm/yyyy hh:nn:ss', Now), AMensagem]);
+        TP_OPCAO_ENTREGA_PARA_USUARIO: lTexto := Format('<<<<<<<< [MENSAGEM ENVIADA] - [%s - %s] - [%s] - %s',
+          [ANumero, ANome, FormatDateTime('dd/mm/yyyy hh:nn:ss', Now), AMensagem]);
+      end;
+      if not (AInformacoes.IsEmpty) then
+        lTexto := lTexto + sLineBreak + AInformacoes;
+      mmMensagens.Lines.Add(lTexto);
+      GravaLog(lTexto, 'LOG_'+FMeuNumero+'_');
+      mmMensagens.Lines.Add('----------------------------------------------------------------------------------------------------------------------------------');
+    end;
 end;
 
 procedure TfmMainWhatsapp.SalvaMensagemRecebida(ANumeroCliente, ANomeCliente, AProtocolo, AMensagemTexto,

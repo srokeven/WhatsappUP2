@@ -391,23 +391,20 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Top = 65
         Width = 675
         Height = 423
-        ActivePage = tsHorarios
+        ActivePage = tsLogs
         Align = alClient
         TabOrder = 1
         object tsLogs: TTabSheet
           Caption = 'Logs'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
-          object Label5: TLabel
+          object W: TLabel
             AlignWithMargins = True
             Left = 3
             Top = 3
-            Width = 158
+            Width = 661
             Height = 16
             Align = alTop
             Caption = 'Log das '#250'ltimas mensagens'
+            ExplicitWidth = 158
           end
           object mmMensagens: TMemo
             Left = 0
@@ -416,6 +413,15 @@ object fmMainWhatsapp: TfmMainWhatsapp
             Height = 370
             Align = alClient
             TabOrder = 0
+          end
+          object chkNaoListarLog: TCheckBox
+            Left = 559
+            Top = -1
+            Width = 105
+            Height = 17
+            Caption = 'N'#227'o listar logs'
+            TabOrder = 1
+            OnClick = chkNaoListarLogClick
           end
         end
         object tsHorarios: TTabSheet
@@ -805,10 +811,6 @@ object fmMainWhatsapp: TfmMainWhatsapp
         object tsRespostasAutomaticas: TTabSheet
           Caption = 'Respostas Autom'#225'ticas'
           ImageIndex = 3
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Label26: TLabel
             Left = 16
             Top = 14
@@ -864,10 +866,6 @@ object fmMainWhatsapp: TfmMainWhatsapp
         object tsEnvioMensagem: TTabSheet
           Caption = 'Envio de mensagem'
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           DesignSize = (
             667
             392)

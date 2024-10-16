@@ -191,7 +191,7 @@ object dmPDFPedidos: TdmPDFPedidos
       '    PEDIDOS_VENDAS PV'
       'join VENDEDORES VEN on VEN.ID = PV.VENDEDOR_ID  '
       'join clientes cli on cli.id = pv.vendedor_id'
-      'where pv.id = :ID_MOVI')
+      'where pv.id = :ID_MOVI order by PV.id ')
     Left = 40
     Top = 24
     ParamData = <

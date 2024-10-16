@@ -5,35 +5,38 @@ object dmPDFBoletos: TdmPDFBoletos
   Width = 386
   object qrReceber: TFDQuery
     SQL.Strings = (
-      'select 0 as SEL, CBR_TITULOS.*,'
-      '       case CBR_TITULOS.SITUACAO'
-      '         when '#39'A'#39' then '#39'Aberto'#39
-      '         when '#39'L'#39' then '#39'Liquidado'#39
-      '         when '#39'B'#39' then '#39'Baixado'#39
-      '         when '#39'C'#39' then '#39'Cancelado'#39
-      '       end as SITUACAO_DESRICAO,'
-      '       case CBR_TITULOS.REGISTRO_STATUS'
-      '         when '#39'A'#39' then '#39'Sem Registro'#39
-      '         when '#39'R'#39' then '#39'Registrada'#39
-      '         when '#39'E'#39' then '#39'Rejeitada'#39
-      '       end as REGISTRO_STATUS_DESCRICAO,'
-      '       CLI.DESCRICAO as CLI_DESCRICAO,'
-      
-        '       iif(CLI.TIPOCLIENTE = 0, CLI.CPF, CLI.CNPJ) as CLI_CPF_CN' +
-        'PJ,'
-      '       CLI.ENDERECO as CLI_ENDERECO,'
-      '       CLI.NUMERO as CLI_ENDNUMERO,'
-      '       CLI.BAIRRO as CLI_ENDBAIRRO,'
-      '       CLI.CIDADE as CLI_ENDCIDADE,'
-      '       CLI.UF as CLI_ENDUF,'
-      '       CLI.CEP as CLI_ENDCEP'
-      'from CBR_TITULOS'
-      'inner join CLIENTES CLI on CBR_TITULOS.CLIENTE_ID = CLI.ID'
+      'select first 3'
+      '    0 as SEL,'
+      '    CBR_TITULOS.*,'
+      '    case CBR_TITULOS.SITUACAO'
+      '      when '#39'A'#39' then '#39'Aberto'#39
+      '      when '#39'L'#39' then '#39'Liquidado'#39
+      '      when '#39'B'#39' then '#39'Baixado'#39
+      '      when '#39'C'#39' then '#39'Cancelado'#39
+      '    end as SITUACAO_DESRICAO,'
+      '    case CBR_TITULOS.REGISTRO_STATUS'
+      '      when '#39'A'#39' then '#39'Sem Registro'#39
+      '      when '#39'R'#39' then '#39'Registrada'#39
+      '      when '#39'E'#39' then '#39'Rejeitada'#39
+      '    end as REGISTRO_STATUS_DESCRICAO,'
+      '    CLI.DESCRICAO as CLI_DESCRICAO,'
+      '    iif(CLI.TIPOCLIENTE = 0, CLI.CPF, CLI.CNPJ) as CLI_CPF_CNPJ,'
+      '    CLI.ENDERECO as CLI_ENDERECO,'
+      '    CLI.NUMERO as CLI_ENDNUMERO,'
+      '    CLI.BAIRRO as CLI_ENDBAIRRO,'
+      '    CLI.CIDADE as CLI_ENDCIDADE,'
+      '    CLI.UF as CLI_ENDUF,'
+      '    CLI.CEP as CLI_ENDCEP'
+      'from'
+      '    CBR_TITULOS'
+      'inner join'
+      '    CLIENTES CLI on CBR_TITULOS.CLIENTE_ID = CLI.ID'
       'where'
-      '  CBR_TITULOS.SITUACAO = '#39'A'#39' AND'
-      '  CBR_TITULOS.REMESSA = '#39'S'#39' AND '
-      '  CBR_TITULOS.CLIENTE_ID = :CLIENTE_ID'
-      'order by ID_CBR_TITULOS desc')
+      '    CBR_TITULOS.SITUACAO = '#39'A'#39' and'
+      '    CBR_TITULOS.REMESSA = '#39'S'#39' and'
+      '    CBR_TITULOS.CLIENTE_ID = :CLIENTE_ID'
+      'order by'
+      '    DTVENCIMENTO')
     Left = 32
     Top = 32
     ParamData = <

@@ -1,4 +1,4 @@
-program WhastappUP2;
+program WhatsAppUP2;
 
 uses
   Vcl.Forms,

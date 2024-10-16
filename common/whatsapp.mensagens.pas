@@ -460,7 +460,7 @@ begin
         Result := Result + 'Digite *'+TP_PALAVRA_CHAVE_ATENDIMENTO_CONTA_RECEBER+'* para exibir o extrato das contas em abertos'+sLineBreak;
 
       if lQuery.FieldByName('FEEDBACK_BOLETOS').AsInteger = 1 then
-        Result := Result + 'Digite *[ '+ID_ATENDIMENTO_BOLETOS+' ]* para receber a 2ª via dos *Boletos*'+sLineBreak;
+        Result := Result + 'Digite *[ '+ID_ATENDIMENTO_BOLETOS+' ]* para receber a 2ª via dos próximos 3 *Boletos* a vencer'+sLineBreak;
 
       if lQuery.FieldByName('VENDEDORES').AsInteger = 1 then
         Result := Result + 'Digite *'+TP_PALAVRA_CHAVE_ATENDIMENTO_VENDEDORES+'* para receber os contatos dos vendedores'+sLineBreak;
