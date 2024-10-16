@@ -27,6 +27,7 @@ object fmControladorMensagens: TfmControladorMensagens
       Width = 75
       Height = 25
       Caption = 'Iniciar'
+      Enabled = False
       TabOrder = 0
       OnClick = Button1Click
     end
@@ -36,6 +37,7 @@ object fmControladorMensagens: TfmControladorMensagens
       Width = 75
       Height = 25
       Caption = 'Parar'
+      Enabled = False
       TabOrder = 1
       OnClick = Button2Click
     end

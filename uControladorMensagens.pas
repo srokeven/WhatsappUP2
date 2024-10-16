@@ -276,7 +276,6 @@ begin
   FPathIniSistema := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'ConfTInject.ini';
   FCaminhoArquivoIni           := LerIni('GERAL', 'INI', '', FPathIniSistema);
   fdConexao.Open();
-  tmCiclos.Enabled := True;
 end;
 
 procedure TfmControladorMensagens.tmCiclosTimer(Sender: TObject);

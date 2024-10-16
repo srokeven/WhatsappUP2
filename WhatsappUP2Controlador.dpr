@@ -10,13 +10,14 @@ uses
   udmPDFPedidos in 'dataModulePDF\udmPDFPedidos.pas' {dmPDFPedidos: TDataModule},
   uSystemConfigConsts in '..\MTC\Common\uSystemConfigConsts.pas',
   uSystemConsts in '..\MTC\Common\uSystemConsts.pas',
-  udmPDFBoletos in 'dataModulePDF\udmPDFBoletos.pas' {dmPDFBoletos: TDataModule};
+  udmPDFBoletos in 'dataModulePDF\udmPDFBoletos.pas' {dmPDFBoletos: TDataModule},
+  uMainControlador in 'uMainControlador.pas' {frmMainControlador};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TfmControladorMensagens, fmControladorMensagens);
+  Application.CreateForm(TfrmMainControlador, frmMainControlador);
   Application.Run;
 end.
