@@ -32,7 +32,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
       Height = 57
       Align = alTop
       BevelOuter = bvNone
-      Caption = 'Gerenciador de mensagens do          integrado'
+      Caption = 'Gerenciador de mensagens do Whatsapp integrado'
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -49,7 +49,6 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Height = 57
         Align = alClient
         Alignment = taCenter
-        Caption = '                  Whatsapp'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clGreen
         Font.Height = -23
@@ -57,7 +56,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitWidth = 338
+        ExplicitWidth = 13
         ExplicitHeight = 30
       end
     end
