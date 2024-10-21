@@ -57,8 +57,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitWidth = 338
-        ExplicitHeight = 30
+        ExplicitTop = -1
       end
     end
     object pnlStatusAplicacao: TPanel
@@ -971,8 +970,8 @@ object fmMainWhatsapp: TfmMainWhatsapp
     end
   end
   object pnlAlertaFinalizando: TPanel
-    Left = 856
-    Top = 8
+    Left = 864
+    Top = 25
     Width = 33
     Height = 26
     Caption = 'Finalizando o aplicativo. Por favor, aguarde!'

@@ -243,7 +243,8 @@ class function TMensagemWhatsapp.EnviarBoletosEmAbertos(AMensagemRecebida: Tmens
 var
   lMensagemWhatsapp: TMensagemWhatsapp;
   lTextoPadrao, lTextoPedidos: string;
-  lMensagemParaEnviar: string;
+  lMensagemParaEnviar,
+  lMensagemParaSair: string;
   ListaAnexosBoletosBase64: TArray<TAnexo>;
   Count: Integer;
 
@@ -253,36 +254,66 @@ begin
     if lMensagemWhatsapp.FdmConexao.ConectarBanco then
     begin
       if AMensagemRecebida.ClienteId = 0 then //Se o id do cliente for igual a zero requisitar o cpf
-      begin
-        lTextoPadrao := 'Por favor, informe o número do seu *CPF* ou *CNPJ* (sem caracteres especiais) para que possamos identificar o seu cadastro na loja';
-        lMensagemParaEnviar := lTextoPadrao+sLineBreak+sLineBreak+lMensagemWhatsapp.GetTextoInicioSair;
-        Result := TMensagemEnviar.Novo(0,
-                                      Now,
-                                      AMensagemRecebida.NumeroEmpresa,
-                                      AMensagemRecebida.NumeroCliente,
-                                      AMensagemRecebida.Ticket,
-                                      StartOfTheDay(Now),
-                                      EndOfTheDay(Now),
-                                      STS_MENSAGEM_NAO_ENVIADA,
-                                      TP_INTERACAO_A_PARTIR_DO_USUARIO,
-                                      TP_ENTREGA_BOLETOS_EM_ABERTO_REQUISITAR_CNPJCPF,
-                                      lMensagemParaEnviar,
-                                      STS_ATENDIMENTO_EM_ABERTO,
-                                      AMensagemRecebida.ClienteId,
-                                      AMensagemRecebida.ClienteNome,
-                                      EmptyStr);
-        Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
-        Exit;
-      end;
+        begin
+          lTextoPadrao := 'Por favor, informe o número do seu *CPF* ou *CNPJ* (sem caracteres especiais) para que possamos identificar o seu cadastro na loja';
+          lMensagemParaEnviar := lTextoPadrao+sLineBreak+sLineBreak+lMensagemWhatsapp.GetTextoInicioSair;
+          Result := TMensagemEnviar.Novo(0,
+                                        Now,
+                                        AMensagemRecebida.NumeroEmpresa,
+                                        AMensagemRecebida.NumeroCliente,
+                                        AMensagemRecebida.Ticket,
+                                        StartOfTheDay(Now),
+                                        EndOfTheDay(Now),
+                                        STS_MENSAGEM_NAO_ENVIADA,
+                                        TP_INTERACAO_A_PARTIR_DO_USUARIO,
+                                        TP_ENTREGA_BOLETOS_EM_ABERTO_REQUISITAR_CNPJCPF,
+                                        lMensagemParaEnviar,
+                                        STS_ATENDIMENTO_EM_ABERTO,
+                                        AMensagemRecebida.ClienteId,
+                                        AMensagemRecebida.ClienteNome,
+                                        EmptyStr);
+          Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+          Exit;
+        end
+      else
+        begin
+          ListaAnexosBoletosBase64 := TdmPDFBoletos.GeraPDFBase64(AMensagemRecebida.ClienteId);
+          if Length(ListaAnexosBoletosBase64) > 0 then
+            begin
+              for Count := Low(ListaAnexosBoletosBase64) to High(ListaAnexosBoletosBase64) do
+                begin
+                 // lTextoPedidos := lMensagemWhatsapp.GetPedidosCliente(AMensagemRecebida.ClienteId);
+                 // lMensagemParaEnviar := lTextoPadrao; //+ sLineBreak + sLineBreak + lTextoPedidos+ sLineBreak + lMensagemWhatsapp.GetTextoInicioSair;
 
-     // ListaAnexosBoletosBase64 := TStringList.Create;
-      ListaAnexosBoletosBase64 := TdmPDFBoletos.GeraPDFBase64(AMensagemRecebida.ClienteId);
-      for Count := Low(ListaAnexosBoletosBase64) to High(ListaAnexosBoletosBase64) do
-          begin
-            //anexoBase64 := TdmPDFPedidos.GerarPDFBase64(ListPedidosID[count].ToInteger, AMensagemRecebida.ClienteId);
-            //lTextoPadrao := 'Boleto em Anexo.';               //'Pedido Nº: ' + ListPedidosID[Count];
-             // lTextoPedidos := lMensagemWhatsapp.GetPedidosCliente(AMensagemRecebida.ClienteId);
-           //   lMensagemParaEnviar := lTextoPadrao; //+ sLineBreak + sLineBreak + lTextoPedidos+ sLineBreak + lMensagemWhatsapp.GetTextoInicioSair;
+                    Result := TMensagemEnviar.Novo(0,
+                                                  Now,
+                                                  AMensagemRecebida.NumeroEmpresa,
+                                                  AMensagemRecebida.NumeroCliente,
+                                                  AMensagemRecebida.Ticket,
+                                                  StartOfTheDay(Now),
+                                                  EndOfTheDay(Now),
+                                                  STS_MENSAGEM_NAO_ENVIADA,
+                                                  TP_INTERACAO_A_PARTIR_DO_USUARIO,
+                                                  TP_ENTREGA_ANEXO_PDF,
+                                                  ListaAnexosBoletosBase64[Count].FMensagem,
+                                                  STS_ATENDIMENTO_EM_ABERTO,
+                                                  AMensagemRecebida.ClienteId,
+                                                  AMensagemRecebida.ClienteNome,
+                                                  ListaAnexosBoletosBase64[Count].FAnexoBase64);
+                    Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
+                end;
+            end
+          else
+            begin
+              lTextoPadrao := 'Nenhum *boleto* encontrado, por favor selecione outra opção!';
+              lMensagemParaSair := 'Digite *SAIR* para finalizar o atendimento.';
+              lMensagemParaEnviar := lTextoPadrao
+              + slinebreak
+              + slinebreak
+              + lMensagemWhatsapp.GetOpcoesAtedimento(AMensagemRecebida.NumeroEmpresa)
+              + sLineBreak
+              + sLineBreak
+              + lMensagemParaSair;
 
               Result := TMensagemEnviar.Novo(0,
                                             Now,
@@ -293,17 +324,20 @@ begin
                                             EndOfTheDay(Now),
                                             STS_MENSAGEM_NAO_ENVIADA,
                                             TP_INTERACAO_A_PARTIR_DO_USUARIO,
-                                            TP_ENTREGA_ANEXO_PDF,
-                                            ListaAnexosBoletosBase64[Count].FMensagem,
+                                            TP_ENTREGA_MENU_INICIAL,
+                                            lMensagemParaEnviar,
                                             STS_ATENDIMENTO_EM_ABERTO,
                                             AMensagemRecebida.ClienteId,
                                             AMensagemRecebida.ClienteNome,
-                                            ListaAnexosBoletosBase64[Count].FAnexoBase64);
+                                            '');
               Result.RegistraMensagem(lMensagemWhatsapp.FdmConexao.fdConexao);
-          end;
-      lMensagemWhatsapp.FdmConexao.DesconectarBanco;
+            end;
+        end;
+
+      
     end;
   finally
+    lMensagemWhatsapp.FdmConexao.DesconectarBanco;
     lMensagemWhatsapp.Free;
   end;
 end;
