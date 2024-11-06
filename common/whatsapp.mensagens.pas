@@ -1410,11 +1410,14 @@ begin
 
     TP_ENTREGA_NOVO_CLIENTE:
       begin
-        if (StringsIguais(ID_CONFIRMA_CONTATO_WHATSAPP, ARespostaUsuario)) then
-          Result := TP_RECEBIDA_CONFIRMA_CONTATO_NOVO_CLIENTE
+        if ( StringsIguais(ID_CONFIRMA_CONTATO_WHATSAPP, ARespostaUsuario) or
+          StringsIguais('SIM', UpperCase(ARespostaUsuario)) ) then
+            Result := TP_RECEBIDA_CONFIRMA_CONTATO_NOVO_CLIENTE
         else
-        if (StringsIguais(ID_NAO_CONFIMA_CONTATO_WHATSAPP, ARespostaUsuario)) then
-          Result := TP_RECEBIDA_NAO_CONFIRMA_CONTATO_NOVO_CLIENTE
+        if (StringsIguais(ID_NAO_CONFIMA_CONTATO_WHATSAPP, ARespostaUsuario) or
+          StringsIguais('NAO', UpperCase(ARespostaUsuario)) or
+          StringsIguais('NÃO', UpperCase(ARespostaUsuario)) ) then
+            Result := TP_RECEBIDA_NAO_CONFIRMA_CONTATO_NOVO_CLIENTE
         else
           Result := TP_RECEBIDA_INVALIDA;
       end;

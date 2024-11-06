@@ -87,6 +87,7 @@ const
       '    CBR_TITULOS.REMESSA = ''S'' and                                                         '+
       '    coalesce(CLI.whatsapp, '''') <> '''' and                                                '+
       '    cbr_titulos.dtvencimento = DATEADD(2 DAY TO current_date) and                           '+
+      '    cbr_titulos.conta_pr_id > 0  and                                                        '+
       '    cast(coalesce(cbr_titulos.data_notificacao, ''01.01.1989'') as date) < current_date     '+
       'order by                                                                                    '+
       'ID_CBR_TITULOS desc                                                                         ';
@@ -106,6 +107,7 @@ const
       '    CBR_TITULOS.REMESSA = ''S'' and                                                        '+
       '    coalesce(CLI.whatsapp, '''') <> '''' and                                               '+
       '    DATEDIFF(DAY, cbr_titulos.dtvencimento, current_date ) = 1 and                         '+
+      '    cbr_titulos.conta_pr_id > 0  and                                                       '+
       '    cast(coalesce(cbr_titulos.data_notificacao, ''01.01.1989'') as date) < current_date    '+
       'order by                                                                                   '+
       '    ID_CBR_TITULOS desc                                                                    ';
@@ -127,6 +129,7 @@ const
       '    CBR_TITULOS.REMESSA = ''S'' and                    '+
       '    cbr_titulos.dtvencimento < current_date and        '+
       '    coalesce(CLI.whatsapp, '''') <> '''' and           '+
+      '    cbr_titulos.conta_pr_id > 0  and                                                      '+
       '    (mod(datediff(day, cbr_titulos.dtvencimento, current_date), 3) = 0) and               '+
       '    cast(coalesce(cbr_titulos.data_notificacao, ''01.01.1989'') as date) < current_date   '+
       'order by                                                                                  '+
