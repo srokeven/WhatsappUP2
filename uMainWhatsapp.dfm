@@ -56,7 +56,6 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Font.Style = []
         ParentFont = False
         Layout = tlCenter
-        ExplicitTop = -1
         ExplicitWidth = 13
         ExplicitHeight = 30
       end
@@ -391,7 +390,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Top = 65
         Width = 675
         Height = 423
-        ActivePage = tsLogs
+        ActivePage = tsHorarios
         Align = alClient
         TabOrder = 1
         object tsLogs: TTabSheet

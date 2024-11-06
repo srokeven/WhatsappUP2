@@ -903,10 +903,13 @@ procedure TfmMainWhatsapp.tmEnvioMensagensTimer(Sender: TObject);
 begin
   try
     tmEnvioMensagens.Enabled := False;
-    FEnvioAtivoAtivado := True;
-    tmEnvioMensagens.Interval := StrToIntDef(edTempoMonitorarMensagens.Text, 5) * 1000;
-    if not (chkPausarEnvioMensagem.Checked) then
-      ConsultarMensagensParaEnviar;
+    if EstarNoHorario then
+    begin
+      FEnvioAtivoAtivado := True;
+      tmEnvioMensagens.Interval := StrToIntDef(edTempoMonitorarMensagens.Text, 5) * 1000;
+      if not (chkPausarEnvioMensagem.Checked) then
+        ConsultarMensagensParaEnviar;
+    end;
   finally
     FEnvioAtivoAtivado := False;
     tmEnvioMensagens.Enabled := True;
