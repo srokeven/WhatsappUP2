@@ -390,7 +390,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Top = 65
         Width = 675
         Height = 423
-        ActivePage = tsHorarios
+        ActivePage = tsLogs
         Align = alClient
         TabOrder = 1
         object tsLogs: TTabSheet

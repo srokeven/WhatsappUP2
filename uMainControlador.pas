@@ -4,7 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, whatsapp.mensagens, uControladorMensagens;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, System.DateUtils, IniFiles,
+  whatsapp.mensagens, uControladorMensagens;
 
 type
   TfrmMainControlador = class(TForm)
@@ -19,8 +20,13 @@ type
     procedure btnIniciarClick(Sender: TObject);
     procedure btnPararClick(Sender: TObject);
     procedure btnOpcoesAvancadasClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
+    FPathIniSistema: string;
     procedure Log(ATexto: string);
+    function StrToBoolean(const Value: string): boolean;
+    function VerificaExpediente: boolean;
+    function LerIni(ASecao, AIdent, AValorDefault, AIniFile: string): string;
   public
     { Public declarations }
   end;
@@ -62,9 +68,26 @@ begin
   btnParar.Enabled := not (btnParar.Enabled);
 end;
 
+procedure TfrmMainControlador.FormCreate(Sender: TObject);
+begin
+  FPathIniSistema := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'ConfTInject.ini';
+end;
+
 procedure TfrmMainControlador.FormShow(Sender: TObject);
 begin
   btnIniciarClick(btnIniciar);
+end;
+
+function TfrmMainControlador.LerIni(ASecao, AIdent, AValorDefault, AIniFile: string): string;
+var
+  vIni: TIniFile;
+begin
+  vIni := TIniFile.Create(AIniFile);
+  try
+    Result := vIni.ReadString(ASecao, AIdent, AValorDefault);
+  finally
+    vIni.Free;
+  end;
 end;
 
 procedure TfrmMainControlador.Log(ATexto: string);
@@ -72,10 +95,17 @@ begin
   mmLog.Lines.Add(FormatDatetime('dd/mm/yyyy hh:nn:ss', Now)+' - '+ATexto);
 end;
 
+function TfrmMainControlador.StrToBoolean(const Value: string): boolean;
+begin
+  Result := SameText(Value, 'S');
+end;
+
 procedure TfrmMainControlador.tmCiclosTimer(Sender: TObject);
 var
   lProcessar: TProcessamentoMensagens;
 begin
+  if not (VerificaExpediente) then
+    Exit;
   tmCiclos.Enabled := False;
   mmLog.Lines.Clear;
   Log('Processo iniciado');
@@ -95,6 +125,146 @@ begin
   finally
     tmCiclos.Enabled := True;
     lProcessar.Free;
+  end;
+end;
+
+function TfrmMainControlador.VerificaExpediente: boolean;
+begin
+  Result := True;
+  case DayOfTheWeek(Now) of
+    DayMonday:
+      begin
+        if not (StrToBoolean(LerIni('GERAL', 'FUNCIONAMENTO_SEQUNDA', 'N', FPathIniSistema))) then
+          Exit(False)
+        else
+        begin
+          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'SEQUNDA_INICIO', '00:00:00', FPathIniSistema)),
+                                    StrToTime(LerIni('GERAL', 'SEQUNDA_FIM', '00:00:00', FPathIniSistema)), True)) then
+          begin
+            Exit(False);
+          end;
+          if StrToTime(LerIni('GERAL', 'SEQUNDA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
+          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'SEQUNDA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+                               StrToTime(LerIni('GERAL', 'SEQUNDA_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
+          begin
+            Exit(False);
+          end;
+        end;
+      end;
+    DayTuesday:
+      begin
+        if not (StrToBoolean(LerIni('GERAL', 'FUNCIONAMENTO_TERCA', 'N', FPathIniSistema))) then
+          Exit(False)
+        else
+        begin
+          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'TERCA_INICIO', '00:00:00', FPathIniSistema)),
+                                    StrToTime(LerIni('GERAL', 'TERCA_FIM', '00:00:00', FPathIniSistema)), True)) then
+          begin
+            Exit(False);
+          end;
+          if StrToTime(LerIni('GERAL', 'TERCA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
+          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'TERCA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+                               StrToTime(LerIni('GERAL', 'TERCA_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
+          begin
+            Exit(False);
+          end;
+        end;
+      end;
+    DayWednesday:
+      begin
+        if not (StrToBoolean(LerIni('GERAL', 'FUNCIONAMENTO_QUARTA', 'N', FPathIniSistema))) then
+          Exit(False)
+        else
+        begin
+          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'QUARTA_INICIO', '00:00:00', FPathIniSistema)),
+                                    StrToTime(LerIni('GERAL', 'QUARTA_FIM', '00:00:00', FPathIniSistema)), True)) then
+          begin
+            Exit(False);
+          end;
+          if StrToTime(LerIni('GERAL', 'QUARTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
+          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'QUARTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+                               StrToTime(LerIni('GERAL', 'QUARTA_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
+          begin
+            Exit(False);
+          end;
+        end;
+      end;
+    DayThursday:
+      begin
+        if not (StrToBoolean(LerIni('GERAL', 'FUNCIONAMENTO_QUINTA', 'N', FPathIniSistema))) then
+          Exit(False)
+        else
+        begin
+          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'QUINTA_INICIO', '00:00:00', FPathIniSistema)),
+                                    StrToTime(LerIni('GERAL', 'QUINTA_FIM', '00:00:00', FPathIniSistema)), True)) then
+          begin
+            Exit(False);
+          end;
+          if StrToTime(LerIni('GERAL', 'QUINTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
+          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'QUINTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+                               StrToTime(LerIni('GERAL', 'QUINTA_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
+          begin
+            Exit(False);
+          end;
+        end;
+      end;
+    DayFriday:
+      begin
+        if not (StrToBoolean(LerIni('GERAL', 'FUNCIONAMENTO_SEXTA', 'N', FPathIniSistema))) then
+          Exit(False)
+        else
+        begin
+          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'SEXTA_INICIO', '00:00:00', FPathIniSistema)),
+                                    StrToTime(LerIni('GERAL', 'SEXTA_FIM', '00:00:00', FPathIniSistema)), True)) then
+          begin
+            Exit(False);
+          end;
+          if StrToTime(LerIni('GERAL', 'SEXTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
+          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'SEXTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+                               StrToTime(LerIni('GERAL', 'SEXTA_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
+          begin
+            Exit(False);
+          end;
+        end;
+      end;
+    DaySaturday:
+      begin
+        if not (StrToBoolean(LerIni('GERAL', 'FUNCIONAMENTO_SABADO', 'N', FPathIniSistema))) then
+          Exit(False)
+        else
+        begin
+          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'SABADO_INICIO', '00:00:00', FPathIniSistema)),
+                                    StrToTime(LerIni('GERAL', 'SABADO_FIM', '00:00:00', FPathIniSistema)), True)) then
+          begin
+            Exit(False);
+          end;
+          if StrToTime(LerIni('GERAL', 'SABADO_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
+          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'SABADO_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+                               StrToTime(LerIni('GERAL', 'SABADO_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
+          begin
+            Exit(False);
+          end;
+        end;
+      end;
+    DaySunday:
+      begin
+        if not (StrToBoolean(LerIni('GERAL', 'FUNCIONAMENTO_DOMINGO', 'N', FPathIniSistema))) then
+          Exit(False)
+        else
+        begin
+          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'DOMINGO_INICIO', '00:00:00', FPathIniSistema)),
+                                    StrToTime(LerIni('GERAL', 'DOMINGO_FIM', '00:00:00', FPathIniSistema)), True)) then
+          begin
+            Exit(False);
+          end;
+          if StrToTime(LerIni('GERAL', 'DOMINGO_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
+          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'DOMINGO_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+                               StrToTime(LerIni('GERAL', 'DOMINGO_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
+          begin
+            Exit(False);
+          end;
+        end;
+      end;
   end;
 end;
 

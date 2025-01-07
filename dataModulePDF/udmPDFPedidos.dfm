@@ -15,14 +15,13 @@ object dmPDFPedidos: TdmPDFPedidos
         ParamType = ptInput
         Value = 10
       end>
-    object qrClienteID: TFDAutoIncField
+    object qrClienteID: TIntegerField
       FieldName = 'ID'
       Origin = 'ID'
-      ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
     end
     object qrClienteGRUPOS_CLIENTE_ID: TIntegerField
-      AutoGenerateValue = arDefault
       FieldName = 'GRUPOS_CLIENTE_ID'
       Origin = 'GRUPOS_CLIENTE_ID'
     end
@@ -32,7 +31,6 @@ object dmPDFPedidos: TdmPDFPedidos
       Size = 70
     end
     object qrClienteTIPOCLIENTE: TSmallintField
-      AutoGenerateValue = arDefault
       FieldName = 'TIPOCLIENTE'
       Origin = 'TIPOCLIENTE'
     end
@@ -95,7 +93,7 @@ object dmPDFPedidos: TdmPDFPedidos
     object qrClienteNUMERO: TWideStringField
       FieldName = 'NUMERO'
       Origin = 'NUMERO'
-      Size = 6
+      Size = 10
     end
     object qrClienteTELEFONE: TWideStringField
       FieldName = 'TELEFONE'
@@ -110,7 +108,6 @@ object dmPDFPedidos: TdmPDFPedidos
       Origin = 'DATANASCIMENTO'
     end
     object qrClienteESTADOCIVIL: TSmallintField
-      AutoGenerateValue = arDefault
       FieldName = 'ESTADOCIVIL'
       Origin = 'ESTADOCIVIL'
     end
@@ -136,22 +133,20 @@ object dmPDFPedidos: TdmPDFPedidos
     object qrClienteOBS: TWideStringField
       FieldName = 'OBS'
       Origin = 'OBS'
-      Size = 1000
+      Size = 8191
     end
     object qrClienteEMAIL: TWideStringField
       FieldName = 'EMAIL'
       Origin = 'EMAIL'
       Size = 100
     end
-    object qrClienteLIMITECREDITO: TBCDField
-      AutoGenerateValue = arDefault
+    object qrClienteLIMITECREDITO: TFMTBCDField
       FieldName = 'LIMITECREDITO'
       Origin = 'LIMITECREDITO'
       Precision = 18
       Size = 2
     end
     object qrClienteTIPOCONTRIBUINTE: TSmallintField
-      AutoGenerateValue = arDefault
       FieldName = 'TIPOCONTRIBUINTE'
       Origin = 'TIPOCONTRIBUINTE'
     end
@@ -160,17 +155,14 @@ object dmPDFPedidos: TdmPDFPedidos
       Origin = 'DATACADASTRO'
     end
     object qrClienteSTATUS: TSmallintField
-      AutoGenerateValue = arDefault
       FieldName = 'STATUS'
       Origin = 'STATUS'
     end
     object qrClienteINATIVO: TSmallintField
-      AutoGenerateValue = arDefault
       FieldName = 'INATIVO'
       Origin = 'INATIVO'
     end
-    object qrClienteCREDITO: TBCDField
-      AutoGenerateValue = arDefault
+    object qrClienteCREDITO: TFMTBCDField
       FieldName = 'CREDITO'
       Origin = 'CREDITO'
       Precision = 18
@@ -179,6 +171,32 @@ object dmPDFPedidos: TdmPDFPedidos
     object qrClienteUSUARIOS_ID: TIntegerField
       FieldName = 'USUARIOS_ID'
       Origin = 'USUARIOS_ID'
+    end
+    object qrClienteDATAHORA_ATUALIZADO: TSQLTimeStampField
+      FieldName = 'DATAHORA_ATUALIZADO'
+      Origin = 'DATAHORA_ATUALIZADO'
+    end
+    object qrClienteCADASTRO_MATRIZ_ID: TIntegerField
+      FieldName = 'CADASTRO_MATRIZ_ID'
+      Origin = 'CADASTRO_MATRIZ_ID'
+    end
+    object qrClienteTEXTO_GARANTIA: TWideStringField
+      FieldName = 'TEXTO_GARANTIA'
+      Origin = 'TEXTO_GARANTIA'
+      Size = 1000
+    end
+    object qrClienteUSAR_GARANTIA: TSmallintField
+      FieldName = 'USAR_GARANTIA'
+      Origin = 'USAR_GARANTIA'
+    end
+    object qrClienteWHATSAPP: TWideStringField
+      FieldName = 'WHATSAPP'
+      Origin = 'WHATSAPP'
+      Size = 11
+    end
+    object qrClienteDATA_NOTIFICACAO: TDateField
+      FieldName = 'DATA_NOTIFICACAO'
+      Origin = 'DATA_NOTIFICACAO'
     end
   end
   object qrMain: TFDQuery
@@ -200,11 +218,11 @@ object dmPDFPedidos: TdmPDFPedidos
         DataType = ftInteger
         ParamType = ptInput
       end>
-    object qrMainID: TFDAutoIncField
+    object qrMainID: TIntegerField
       FieldName = 'ID'
       Origin = 'ID'
-      ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
     end
     object qrMainUSUARIO_ID: TIntegerField
       FieldName = 'USUARIO_ID'
@@ -238,38 +256,45 @@ object dmPDFPedidos: TdmPDFPedidos
       FieldName = 'DATA_CONCLUSAO'
       Origin = 'DATA_CONCLUSAO'
     end
-    object qrMainVALOR_BRUTO: TBCDField
-      AutoGenerateValue = arDefault
+    object qrMainVALOR_BRUTO: TFMTBCDField
       FieldName = 'VALOR_BRUTO'
       Origin = 'VALOR_BRUTO'
       Precision = 18
       Size = 2
     end
-    object qrMainVALOR_DESCONTO: TBCDField
-      AutoGenerateValue = arDefault
+    object qrMainVALOR_DESCONTO: TFMTBCDField
       FieldName = 'VALOR_DESCONTO'
       Origin = 'VALOR_DESCONTO'
       Precision = 18
       Size = 2
     end
-    object qrMainVALOR_LIQUIDO: TBCDField
-      AutoGenerateValue = arDefault
+    object qrMainVALOR_LIQUIDO: TFMTBCDField
       FieldName = 'VALOR_LIQUIDO'
       Origin = 'VALOR_LIQUIDO'
       Precision = 18
       Size = 2
     end
-    object qrMainVALOR_RECEBIDO: TBCDField
-      AutoGenerateValue = arDefault
+    object qrMainVALOR_RECEBIDO: TFMTBCDField
       FieldName = 'VALOR_RECEBIDO'
       Origin = 'VALOR_RECEBIDO'
       Precision = 18
       Size = 2
     end
-    object qrMainVALOR_TROCO: TBCDField
-      AutoGenerateValue = arDefault
+    object qrMainVALOR_TROCO: TFMTBCDField
       FieldName = 'VALOR_TROCO'
       Origin = 'VALOR_TROCO'
+      Precision = 18
+      Size = 2
+    end
+    object qrMainVALOR_FRETE_AGREGADO: TFMTBCDField
+      FieldName = 'VALOR_FRETE_AGREGADO'
+      Origin = 'VALOR_FRETE_AGREGADO'
+      Precision = 18
+      Size = 2
+    end
+    object qrMainVALOR_ABATIDO_FRETE: TFMTBCDField
+      FieldName = 'VALOR_ABATIDO_FRETE'
+      Origin = 'VALOR_ABATIDO_FRETE'
       Precision = 18
       Size = 2
     end
@@ -279,7 +304,6 @@ object dmPDFPedidos: TdmPDFPedidos
       Size = 100
     end
     object qrMainINTEGRACAO: TIntegerField
-      AutoGenerateValue = arDefault
       FieldName = 'INTEGRACAO'
       Origin = 'INTEGRACAO'
     end
@@ -289,9 +313,17 @@ object dmPDFPedidos: TdmPDFPedidos
       Size = 1000
     end
     object qrMainSTATUS_MOVIMENTO: TIntegerField
-      AutoGenerateValue = arDefault
       FieldName = 'STATUS_MOVIMENTO'
       Origin = 'STATUS_MOVIMENTO'
+    end
+    object qrMainTEXTO_GARANTIA: TWideStringField
+      FieldName = 'TEXTO_GARANTIA'
+      Origin = 'TEXTO_GARANTIA'
+      Size = 1000
+    end
+    object qrMainWHATSAPP: TWideStringField
+      FieldName = 'WHATSAPP'
+      Origin = 'WHATSAPP'
     end
     object qrMainCLIENTE_ID_DESC: TWideStringField
       AutoGenerateValue = arDefault
@@ -308,24 +340,6 @@ object dmPDFPedidos: TdmPDFPedidos
       ProviderFlags = []
       ReadOnly = True
       Size = 269
-    end
-    object qrMainVALOR_FRETE_AGREGADO: TBCDField
-      FieldName = 'VALOR_FRETE_AGREGADO'
-      Origin = 'VALOR_FRETE_AGREGADO'
-      Precision = 18
-      Size = 2
-    end
-    object qrMainVALOR_ABATIDO_FRETE: TBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'VALOR_ABATIDO_FRETE'
-      Origin = 'VALOR_ABATIDO_FRETE'
-      Precision = 18
-      Size = 2
-    end
-    object qrMainTEXTO_GARANTIA: TWideStringField
-      FieldName = 'TEXTO_GARANTIA'
-      Origin = 'TEXTO_GARANTIA'
-      Size = 1000
     end
   end
   object qrDetail: TFDQuery
@@ -384,31 +398,31 @@ object dmPDFPedidos: TdmPDFPedidos
       FixedChar = True
       Size = 3
     end
-    object qrDetailVALOR_UNITARIO: TBCDField
+    object qrDetailVALOR_UNITARIO: TFMTBCDField
       FieldName = 'VALOR_UNITARIO'
       Origin = 'VALOR_UNITARIO'
       Precision = 18
       Size = 2
     end
-    object qrDetailVALOR_DESCONTO: TBCDField
+    object qrDetailVALOR_DESCONTO: TFMTBCDField
       FieldName = 'VALOR_DESCONTO'
       Origin = 'VALOR_DESCONTO'
       Precision = 18
       Size = 2
     end
-    object qrDetailVALOR_ACRESCIMO: TBCDField
+    object qrDetailVALOR_ACRESCIMO: TFMTBCDField
       FieldName = 'VALOR_ACRESCIMO'
       Origin = 'VALOR_ACRESCIMO'
       Precision = 18
       Size = 2
     end
-    object qrDetailQUANTIDADE: TBCDField
+    object qrDetailQUANTIDADE: TFMTBCDField
       FieldName = 'QUANTIDADE'
       Origin = 'QUANTIDADE'
       Precision = 18
       Size = 2
     end
-    object qrDetailVALOR_TOTAL: TBCDField
+    object qrDetailVALOR_TOTAL: TFMTBCDField
       FieldName = 'VALOR_TOTAL'
       Origin = 'VALOR_TOTAL'
       Precision = 18
@@ -431,7 +445,7 @@ object dmPDFPedidos: TdmPDFPedidos
       ReadOnly = True
       Size = 50
     end
-    object qrDetailPRECO_VENDA: TBCDField
+    object qrDetailPRECO_VENDA: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'PRECO_VENDA'
       Origin = 'PRECO_VENDA'
@@ -440,7 +454,7 @@ object dmPDFPedidos: TdmPDFPedidos
       Precision = 18
       Size = 2
     end
-    object qrDetailPRECO_VENDA_PRZ: TBCDField
+    object qrDetailPRECO_VENDA_PRZ: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'PRECO_VENDA_PRZ'
       Origin = 'PRECO_VENDA_PRZ'
@@ -449,7 +463,7 @@ object dmPDFPedidos: TdmPDFPedidos
       Precision = 18
       Size = 2
     end
-    object qrDetailPRECO_VENDA_ATA: TBCDField
+    object qrDetailPRECO_VENDA_ATA: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'PRECO_VENDA_ATA'
       Origin = 'PRECO_VENDA_ATA'
@@ -458,7 +472,7 @@ object dmPDFPedidos: TdmPDFPedidos
       Precision = 18
       Size = 2
     end
-    object qrDetailPRECO_VENDA_ATA_PRZ: TBCDField
+    object qrDetailPRECO_VENDA_ATA_PRZ: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'PRECO_VENDA_ATA_PRZ'
       Origin = 'PRECO_VENDA_ATA_PRZ'
@@ -503,11 +517,11 @@ object dmPDFPedidos: TdmPDFPedidos
         ParamType = ptInput
         Value = Null
       end>
-    object qrSubDetailID: TFDAutoIncField
+    object qrSubDetailID: TIntegerField
       FieldName = 'ID'
       Origin = 'ID'
-      ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
     end
     object qrSubDetailORDEM: TIntegerField
       FieldName = 'ORDEM'
@@ -537,7 +551,7 @@ object dmPDFPedidos: TdmPDFPedidos
       FieldName = 'TIPO_TITULO'
       Origin = 'TIPO_TITULO'
     end
-    object qrSubDetailVALOR_PAGAMENTO: TBCDField
+    object qrSubDetailVALOR_PAGAMENTO: TFMTBCDField
       FieldName = 'VALOR_PAGAMENTO'
       Origin = 'VALOR_PAGAMENTO'
       Precision = 18
@@ -558,7 +572,7 @@ object dmPDFPedidos: TdmPDFPedidos
     end
   end
   object frxReportMain: TfrxReport
-    Version = '5.4.6'
+    Version = '6.9.14'
     DotMatrixReport = False
     IniFile = '\Software\Fast Reports'
     PreviewOptions.AllowEdit = False
@@ -630,15 +644,23 @@ object dmPDFPedidos: TdmPDFPedidos
       RightMargin = 3.000000000000000000
       TopMargin = 3.000000000000000000
       BottomMargin = 3.000000000000000000
+      Frame.Typ = []
       EndlessHeight = True
+      MirrorMode = []
       PrintIfEmpty = False
       object ReportTitle1: TfrxReportTitle
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 60.472480000000000000
         Top = 18.897650000000000000
         Width = 279.685220000000000000
         Stretched = True
         object Memo1: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Top = 2.118120000000000000
           Width = 249.448980000000000000
@@ -648,12 +670,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haCenter
           Memo.UTF8W = (
             '[TIPO_PEDIDO]')
           ParentFont = False
         end
         object Memo2: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Top = 21.015770000000000000
           Width = 102.047310000000000000
@@ -663,12 +687,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             'C'#243'digo: [PEDIDO_ID]')
           ParentFont = False
           WordWrap = False
         end
         object Memo3: TfrxMemoView
+          AllowVectorExport = True
           Left = 117.165430000000000000
           Top = 21.015770000000000000
           Width = 132.283550000000000000
@@ -678,12 +704,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Data: [DATA_PEDIDO]')
           ParentFont = False
         end
         object Memo4: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Top = 43.692950000000000000
           Width = 249.448980000000000000
@@ -693,6 +721,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haCenter
           Memo.UTF8W = (
             
@@ -712,6 +741,7 @@ object dmPDFPedidos: TdmPDFPedidos
             end>
         end
         object Memo18: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Top = 49.227833720000000000
           Width = 253.228510000000000000
@@ -759,17 +789,25 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object Header1: TfrxHeader
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 38.354360000000000000
         Top = 139.842610000000000000
         Width = 279.685220000000000000
         object Line4: TfrxLineView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Top = 3.779530000000000000
           Width = 251.338582680000000000
           Color = clBlack
+          Frame.Typ = []
           Diagonal = True
         end
         object Memo5: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Top = 7.559060000000000000
           Width = 34.015770000000000000
@@ -779,12 +817,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             'C'#243'd.')
           ParentFont = False
           WordWrap = False
         end
         object Memo6: TfrxMemoView
+          AllowVectorExport = True
           Left = 49.133890000000000000
           Top = 7.559060000000000000
           Width = 207.874150000000000000
@@ -794,19 +834,23 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             'Produto')
           ParentFont = False
           WordWrap = False
         end
         object Line3: TfrxLineView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Top = 34.574830000000000000
           Width = 251.338582680000000000
           Color = clBlack
+          Frame.Typ = []
           Diagonal = True
         end
         object Memo7: TfrxMemoView
+          AllowVectorExport = True
           Left = 88.913551020000000000
           Top = 18.897637795275600000
           Width = 29.608990340000000000
@@ -816,12 +860,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             'Qtde.')
           ParentFont = False
           WordWrap = False
         end
         object Memo8: TfrxMemoView
+          AllowVectorExport = True
           Left = 121.064652200000000000
           Top = 18.558666950000000000
           Width = 18.897650000000000000
@@ -831,12 +877,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             'Un.')
           ParentFont = False
           WordWrap = False
         end
         object Memo9: TfrxMemoView
+          AllowVectorExport = True
           Left = 141.978989320000000000
           Top = 18.897650000000000000
           Width = 36.540800680000000000
@@ -846,6 +894,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'V. Unit.')
@@ -853,6 +902,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo11: TfrxMemoView
+          AllowVectorExport = True
           Left = 180.008425240000000000
           Top = 18.897650000000000000
           Width = 33.388520340000000000
@@ -862,6 +912,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Desc.')
@@ -869,6 +920,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo12: TfrxMemoView
+          AllowVectorExport = True
           Left = 215.316010470000000000
           Top = 18.897650000000000000
           Width = 41.692029530000000000
@@ -878,6 +930,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Total')
@@ -885,6 +938,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo21: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.906976740000000000
           Top = 20.157390000000000000
           Width = 34.015770000000000000
@@ -894,6 +948,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             'Marca')
           ParentFont = False
@@ -902,6 +957,11 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object MasterData: TfrxMasterData
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 22.999213900000000000
         Top = 200.315090000000000000
         Width = 279.685220000000000000
@@ -909,6 +969,7 @@ object dmPDFPedidos: TdmPDFPedidos
         DataSetName = 'frxDBDatasetDetail'
         RowCount = 0
         object mmProduto: TfrxMemoView
+          AllowVectorExport = True
           Left = 49.133890000000000000
           Width = 207.874150000000000000
           Height = 11.338590000000000000
@@ -920,12 +981,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetDetail."DESCRICAO"]')
           ParentFont = False
           WordWrap = False
         end
         object frxdbdsProdutoPedidoPRODUTO_ID: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Width = 34.015770000000000000
           Height = 11.338590000000000000
@@ -937,12 +1000,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetDetail."PRODUTOS_ID"]')
           ParentFont = False
           WordWrap = False
         end
         object frxdbdsProdutoPedidoQUANTIDADE: TfrxMemoView
+          AllowVectorExport = True
           Left = 87.557618810000000000
           Top = 11.338590000000000000
           Width = 30.992125984252000000
@@ -957,12 +1022,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetDetail."QUANTIDADE"]')
           ParentFont = False
           WordWrap = False
         end
         object Memo13: TfrxMemoView
+          AllowVectorExport = True
           Left = 121.708720000000000000
           Top = 11.338582680000000000
           Width = 18.897650000000000000
@@ -975,12 +1042,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetDetail."UNIDADEMEDIDA"]')
           ParentFont = False
           WordWrap = False
         end
         object Memo14: TfrxMemoView
+          AllowVectorExport = True
           Left = 141.978989320000000000
           Top = 11.321640850000000000
           Width = 36.879783730000000000
@@ -993,6 +1062,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetDetail."VALOR_UNITARIO"]')
@@ -1000,6 +1070,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo16: TfrxMemoView
+          AllowVectorExport = True
           Left = 181.025374390000000000
           Top = 11.464723230000000000
           Width = 32.371571190000000000
@@ -1013,6 +1084,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetDetail."VALOR_DESCONTO"]')
@@ -1020,6 +1092,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo15: TfrxMemoView
+          AllowVectorExport = True
           Left = 215.316010470000000000
           Top = 11.338590000000000000
           Width = 41.692029530000000000
@@ -1033,6 +1106,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetDetail."VALOR_TOTAL"]')
@@ -1040,6 +1114,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object frxDBDatasetDetailMARCA_DESCRICAO: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.355143880000000000
           Top = 11.338582680000000000
           Width = 78.283812030000000000
@@ -1052,6 +1127,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetDetail."MARCA_DESCRICAO"]')
           ParentFont = False
@@ -1060,10 +1136,16 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object FooterQtdeItens: TfrxFooter
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 15.118120000000000000
         Top = 245.669450000000000000
         Width = 279.685220000000000000
         object Memo79: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Width = 147.401670000000000000
           Height = 11.338590000000000000
@@ -1072,6 +1154,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             'Qtd. Itens:[COUNT(MasterData)]')
           ParentFont = False
@@ -1079,12 +1162,18 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object ReportSummary1: TfrxReportSummary
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 267.905494720000000000
         Top = 396.850650000000000000
         Width = 279.685220000000000000
         Stretched = True
         object Memo71: TfrxMemoView
           Align = baCenter
+          AllowVectorExport = True
           Left = 8.000000000000000000
           Top = 3.779530000000000000
           Width = 263.685220000000000000
@@ -1103,6 +1192,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmTipoVenda: TfrxMemoView
+          AllowVectorExport = True
           Left = 75.590600000000000000
           Top = 22.677180000000000000
           Width = 94.488250000000000000
@@ -1112,6 +1202,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Tipo de Venda:')
@@ -1119,6 +1210,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmValorTotal: TfrxMemoView
+          AllowVectorExport = True
           Left = 75.590600000000000000
           Top = 56.692950000000000000
           Width = 94.488250000000000000
@@ -1128,6 +1220,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Valor Total:')
@@ -1135,6 +1228,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmValorDesconto: TfrxMemoView
+          AllowVectorExport = True
           Left = 56.692950000000000000
           Top = 68.031540000000000000
           Width = 113.385900000000000000
@@ -1144,6 +1238,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Valor Desconto:')
@@ -1151,6 +1246,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmValorLiquido: TfrxMemoView
+          AllowVectorExport = True
           Left = 75.590600000000000000
           Top = 90.708668740000000000
           Width = 94.488250000000000000
@@ -1160,6 +1256,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Valor L'#237'quido:')
@@ -1167,6 +1264,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtTipoVenda: TfrxMemoView
+          AllowVectorExport = True
           Left = 177.637910000000000000
           Top = 22.677180000000000000
           Width = 71.811070000000000000
@@ -1176,6 +1274,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[TIPO_VENDA]')
@@ -1183,6 +1282,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtValorTotal: TfrxMemoView
+          AllowVectorExport = True
           Left = 177.637910000000000000
           Top = 56.692950000000000000
           Width = 71.811070000000000000
@@ -1194,6 +1294,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             
@@ -1203,6 +1304,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtValorDesconto: TfrxMemoView
+          AllowVectorExport = True
           Left = 177.637910000000000000
           Top = 68.031540000000000000
           Width = 71.811070000000000000
@@ -1214,6 +1316,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetMain."VALOR_DESCONTO"]')
@@ -1221,6 +1324,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtValorLiquido: TfrxMemoView
+          AllowVectorExport = True
           Left = 177.637910000000000000
           Top = 90.708668740000000000
           Width = 71.811070000000000000
@@ -1232,6 +1336,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetMain."VALOR_LIQUIDO"]')
@@ -1239,6 +1344,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmInstrucoes: TfrxMemoView
+          AllowVectorExport = True
           Left = 15.118120000000000000
           Top = 146.503824720000000000
           Width = 249.448980000000000000
@@ -1261,6 +1367,7 @@ object dmPDFPedidos: TdmPDFPedidos
             end>
         end
         object mmAssinatura: TfrxMemoView
+          AllowVectorExport = True
           Left = 15.118120000000000000
           Top = 196.299124720000000000
           Width = 249.448980000000000000
@@ -1287,6 +1394,7 @@ object dmPDFPedidos: TdmPDFPedidos
         end
         object mmQuebra: TfrxMemoView
           Align = baCenter
+          AllowVectorExport = True
           Left = 15.118120000000000000
           Top = 215.228314720000000000
           Width = 249.448980000000000000
@@ -1297,6 +1405,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -7
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haCenter
           Memo.UTF8W = (
             '[CONTEUDO_QUEBRA_LINHA] '
@@ -1305,6 +1414,7 @@ object dmPDFPedidos: TdmPDFPedidos
           VAlign = vaCenter
         end
         object mmValorRecebido: TfrxMemoView
+          AllowVectorExport = True
           Left = 75.590600000000000000
           Top = 102.047251420000000000
           Width = 94.488250000000000000
@@ -1314,6 +1424,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Valor Recebido:')
@@ -1321,6 +1432,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtValorRecebido: TfrxMemoView
+          AllowVectorExport = True
           Left = 177.637910000000000000
           Top = 102.047251420000000000
           Width = 71.811070000000000000
@@ -1332,6 +1444,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetMain."VALOR_RECEBIDO"]')
@@ -1339,6 +1452,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmTroco: TfrxMemoView
+          AllowVectorExport = True
           Left = 75.590600000000000000
           Top = 113.385834090000000000
           Width = 94.488250000000000000
@@ -1348,6 +1462,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Troco:')
@@ -1355,6 +1470,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtTroco: TfrxMemoView
+          AllowVectorExport = True
           Left = 177.637910000000000000
           Top = 113.385834090000000000
           Width = 71.811070000000000000
@@ -1366,6 +1482,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetMain."VALOR_TROCO"]')
@@ -1373,6 +1490,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmPercentualDesconto: TfrxMemoView
+          AllowVectorExport = True
           Left = 56.692950000000000000
           Top = 79.370130000000000000
           Width = 113.385900000000000000
@@ -1382,6 +1500,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Percentual Desconto:')
@@ -1389,6 +1508,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtPercentualDesconto: TfrxMemoView
+          AllowVectorExport = True
           Left = 177.637910000000000000
           Top = 79.370130000000000000
           Width = 71.811070000000000000
@@ -1401,6 +1521,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             
@@ -1410,6 +1531,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmValorFrete: TfrxMemoView
+          AllowVectorExport = True
           Left = 75.611008160000000000
           Top = 45.354316060000000000
           Width = 94.488250000000000000
@@ -1419,6 +1541,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Valor Frete:')
@@ -1426,6 +1549,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtValorFrete: TfrxMemoView
+          AllowVectorExport = True
           Left = 177.658318160000000000
           Top = 45.354316060000000000
           Width = 71.811070000000000000
@@ -1437,6 +1561,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetMain."VALOR_FRETE_AGREGADO"]')
@@ -1444,6 +1569,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo24: TfrxMemoView
+          AllowVectorExport = True
           Left = 75.590600000000000000
           Top = 34.015770000000000000
           Width = 94.488250000000000000
@@ -1453,6 +1579,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Valor dos Produtos:')
@@ -1460,6 +1587,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo25: TfrxMemoView
+          AllowVectorExport = True
           Left = 177.637910000000000000
           Top = 34.015770000000000000
           Width = 71.811070000000000000
@@ -1471,6 +1599,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[SUM(<frxDBDatasetDetail."VALOR_TOTAL">,MasterData,2)]')
@@ -1480,18 +1609,26 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object HeaderTitulos: TfrxHeader
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 17.007876460000000000
         Top = 283.464750000000000000
         Width = 279.685220000000000000
         OnBeforePrint = 'Header2OnBeforePrint'
         object Line7: TfrxLineView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Top = 3.779530000000020000
           Width = 251.338582680000000000
           Color = clBlack
+          Frame.Typ = []
           Diagonal = True
         end
         object Memo30: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Top = 3.779530000000000000
           Width = 41.574830000000000000
@@ -1501,12 +1638,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             'Parcela')
           ParentFont = False
           WordWrap = False
         end
         object Memo31: TfrxMemoView
+          AllowVectorExport = True
           Left = 158.740260000000000000
           Top = 3.779530000000000000
           Width = 56.692950000000000000
@@ -1516,12 +1655,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             'Vencimento')
           ParentFont = False
           WordWrap = False
         end
         object Memo32: TfrxMemoView
+          AllowVectorExport = True
           Left = 211.653680000000000000
           Top = 3.779530000000000000
           Width = 45.354360000000000000
@@ -1531,6 +1672,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'Valor R$')
@@ -1538,6 +1680,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmTipoDocumento: TfrxMemoView
+          AllowVectorExport = True
           Left = 56.692950000000000000
           Top = 3.779530000000000000
           Width = 109.606370000000000000
@@ -1547,6 +1690,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             'Tipo de DOC./PAG.')
           ParentFont = False
@@ -1555,6 +1699,11 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object MasterDataTitulos: TfrxMasterData
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 11.338590000000000000
         Top = 325.039580000000000000
         Width = 279.685220000000000000
@@ -1562,6 +1711,7 @@ object dmPDFPedidos: TdmPDFPedidos
         DataSetName = 'frxDBDatasetSubDetail'
         RowCount = 0
         object frxdbdsPagamentosREFERENCIA: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Width = 49.133890000000000000
           Height = 11.338590000000000000
@@ -1573,11 +1723,13 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetSubDetail."HISTORICO"]')
           ParentFont = False
         end
         object frxdbdsPagamentosDATA: TfrxMemoView
+          AllowVectorExport = True
           Left = 158.740260000000000000
           Width = 49.133890000000000000
           Height = 11.338590000000000000
@@ -1588,12 +1740,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetSubDetail."DATA"]')
           ParentFont = False
           WordWrap = False
         end
         object frxdbdsPagamentosVALOR_PAGAR: TfrxMemoView
+          AllowVectorExport = True
           Left = 211.653680000000000000
           Width = 45.354360000000000000
           Height = 11.338590000000000000
@@ -1606,6 +1760,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetSubDetail."VALOR_PAGAMENTO"]')
@@ -1613,6 +1768,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmTipoDocData: TfrxMemoView
+          AllowVectorExport = True
           Left = 56.692950000000000000
           Width = 102.047310000000000000
           Height = 11.338590000000000000
@@ -1625,6 +1781,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -9
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetSubDetail."DESCRICAO_PAG_DOC"]')
           ParentFont = False
@@ -1644,14 +1801,22 @@ object dmPDFPedidos: TdmPDFPedidos
       RightMargin = 5.000000000000000000
       TopMargin = 5.000000000000000000
       BottomMargin = 5.000000000000000000
+      Frame.Typ = []
+      MirrorMode = []
       object PageHeader1: TfrxPageHeader
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 105.826840000000000000
         Top = 120.944960000000000000
         Width = 755.906000000000000000
         PrintChildIfInvisible = True
         Stretched = True
         object Memo10: TfrxMemoView
+          AllowVectorExport = True
           Left = 377.953000000000000000
           Width = 377.953000000000000000
           Height = 30.236240000000000000
@@ -1660,12 +1825,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -24
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[TIPO_PEDIDO]')
           ParentFont = False
         end
         object Memo17: TfrxMemoView
+          AllowVectorExport = True
           Left = 419.527830000000000000
           Top = 30.236240000000000000
           Width = 336.378170000000000000
@@ -1676,6 +1843,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -12
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             
@@ -1694,6 +1862,7 @@ object dmPDFPedidos: TdmPDFPedidos
         end
         object Memo39: TfrxMemoView
           Align = baLeft
+          AllowVectorExport = True
           Left = 117.165430000000000000
           Top = 34.015750470000000000
           Width = 309.921460000000000000
@@ -1703,6 +1872,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -12
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[STATUS_PEDIDO], '
             'Data: [DATA_PEDIDO]'
@@ -1724,6 +1894,7 @@ object dmPDFPedidos: TdmPDFPedidos
         end
         object Memo102: TfrxMemoView
           Align = baLeft
+          AllowVectorExport = True
           Left = 117.165430000000000000
           Width = 211.653680000000000000
           Height = 30.236240000000000000
@@ -1732,15 +1903,18 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -24
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             'N'#176': [PEDIDO_ID]')
           ParentFont = False
         end
         object picLogo: TfrxPictureView
+          AllowVectorExport = True
           Left = 3.779530000000000000
           Width = 113.385900000000000000
           Height = 102.051880000000000000
           Center = True
+          Frame.Typ = []
           HightQuality = False
           Transparent = False
           TransparentColor = clWhite
@@ -1748,11 +1922,17 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object Header3: TfrxHeader
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 36.464591340000000000
         Top = 393.071120000000000000
         Width = 755.906000000000000000
         PrintChildIfInvisible = True
         object Memo40: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.559060000000000000
           Top = 20.346471340000000000
           Width = 41.574830000000000000
@@ -1769,6 +1949,7 @@ object dmPDFPedidos: TdmPDFPedidos
           ParentFont = False
         end
         object MemoDescricaoProduto: TfrxMemoView
+          AllowVectorExport = True
           Left = 60.472480000000000000
           Top = 20.566941340000000000
           Width = 270.064574240000000000
@@ -1785,6 +1966,7 @@ object dmPDFPedidos: TdmPDFPedidos
           ParentFont = False
         end
         object Memo43: TfrxMemoView
+          AllowVectorExport = True
           Left = 468.661720000000000000
           Top = 21.165354330000000000
           Width = 30.236240000000000000
@@ -1801,6 +1983,7 @@ object dmPDFPedidos: TdmPDFPedidos
           ParentFont = False
         end
         object Memo44: TfrxMemoView
+          AllowVectorExport = True
           Left = 510.236550000000000000
           Top = 21.165354330000000000
           Width = 52.913420000000000000
@@ -1819,6 +2002,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo45: TfrxMemoView
+          AllowVectorExport = True
           Left = 631.181510000000000000
           Top = 21.165354330000000000
           Width = 49.133890000000000000
@@ -1837,6 +2021,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo47: TfrxMemoView
+          AllowVectorExport = True
           Left = 687.874460000000000000
           Top = 21.165354330000000000
           Width = 64.252010000000000000
@@ -1855,6 +2040,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo52: TfrxMemoView
+          AllowVectorExport = True
           Left = 7.559055120000000000
           Width = 743.811016300000000000
           Height = 15.118120000000000000
@@ -1872,6 +2058,7 @@ object dmPDFPedidos: TdmPDFPedidos
           ParentFont = False
         end
         object Memo19: TfrxMemoView
+          AllowVectorExport = True
           Left = 570.709030000000000000
           Top = 21.165354330000000000
           Width = 52.913420000000000000
@@ -1890,6 +2077,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object MemoLOCALIZACAO: TfrxMemoView
+          AllowVectorExport = True
           Left = 336.800000000000000000
           Top = 20.409448820000000000
           Width = 123.162248660000000000
@@ -1908,12 +2096,18 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object FooterRESUMO: TfrxFooter
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 175.944336560000000000
         Top = 491.338900000000000000
         Width = 755.906000000000000000
         PrintChildIfInvisible = True
         Stretched = True
         object Memo54: TfrxMemoView
+          AllowVectorExport = True
           Left = 517.354670000000000000
           Top = 12.779530000000000000
           Width = 234.330860000000000000
@@ -1931,6 +2125,7 @@ object dmPDFPedidos: TdmPDFPedidos
           ParentFont = False
         end
         object mmTotRegistros: TfrxMemoView
+          AllowVectorExport = True
           Left = 507.212598430000000000
           Top = 32.708720000000000000
           Width = 151.181102360000000000
@@ -1948,6 +2143,7 @@ object dmPDFPedidos: TdmPDFPedidos
           ParentFont = False
         end
         object mmTotReg: TfrxMemoView
+          AllowVectorExport = True
           Left = 665.197280000000000000
           Top = 33.031540000000000000
           Width = 71.811070000000000000
@@ -1958,6 +2154,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[COUNT(MasterData1)]')
@@ -1965,6 +2162,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmTipoVendaA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 507.212598430000000000
           Top = 46.110236220000000000
           Width = 151.181102360000000000
@@ -1983,6 +2181,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmValorTotalA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 507.212598430000000000
           Top = 85.795275590000000000
           Width = 151.181102360000000000
@@ -2001,6 +2200,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmValorDescontoA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 507.212598430000000000
           Top = 99.149660000000000000
           Width = 151.181102360000000000
@@ -2019,6 +2219,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmValorLiquidoA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 507.212598430000000000
           Top = 125.480314960000000000
           Width = 151.181102360000000000
@@ -2037,6 +2238,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtTipoVendaA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 665.378170000000000000
           Top = 46.110236220000000000
           Width = 71.811070000000000000
@@ -2046,6 +2248,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[TIPO_VENDA]')
@@ -2053,6 +2256,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtValorTotalA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 665.378170000000000000
           Top = 85.795275590000000000
           Width = 71.811070000000000000
@@ -2064,6 +2268,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             
@@ -2073,6 +2278,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtValorDescontoA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 665.378170000000000000
           Top = 99.149660000000000000
           Width = 71.811070000000000000
@@ -2084,6 +2290,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetMain."VALOR_DESCONTO"]')
@@ -2091,6 +2298,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmValorRecebidoA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 507.212598430000000000
           Top = 138.708661420000000000
           Width = 151.181102360000000000
@@ -2109,6 +2317,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmTrocoA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 507.212598430000000000
           Top = 151.937007870000000000
           Width = 151.181102360000000000
@@ -2127,6 +2336,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmPercentualDescontoA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 507.212598430000000000
           Top = 112.251966060000000000
           Width = 151.181102360000000000
@@ -2145,6 +2355,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtPercentualDescontoA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 665.196850390000000000
           Top = 112.251968500000000000
           Width = 71.811070000000000000
@@ -2157,6 +2368,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             
@@ -2166,6 +2378,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtValorLiquidoA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 665.196850390000000000
           Top = 125.480314960000000000
           Width = 71.811070000000000000
@@ -2177,6 +2390,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetMain."VALOR_LIQUIDO"]')
@@ -2184,6 +2398,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtValorRecebidoA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 665.196850390000000000
           Top = 138.708661420000000000
           Width = 71.811070000000000000
@@ -2195,6 +2410,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetMain."VALOR_RECEBIDO"]')
@@ -2202,6 +2418,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtTrocoA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 665.196850390000000000
           Top = 151.937007870000000000
           Width = 71.811070000000000000
@@ -2213,6 +2430,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetMain."VALOR_TROCO"]')
@@ -2220,6 +2438,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object mmValorFreteA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 507.212598430000000000
           Top = 72.188976380000000000
           Width = 151.181102360000000000
@@ -2238,6 +2457,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object dtValorFreteA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 665.196850390000000000
           Top = 72.188976380000000000
           Width = 71.811023620000000000
@@ -2249,6 +2469,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetMain."VALOR_FRETE_AGREGADO"]')
@@ -2256,15 +2477,18 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object ShapeAssinaturaA4: TfrxShapeView
+          AllowVectorExport = True
           Left = 10.338590000000000000
           Top = 15.118120000000000000
           Width = 351.496290000000000000
           Height = 151.181200000000000000
           Curve = 2
           Frame.Color = 15000804
+          Frame.Typ = []
           Shape = skRoundRectangle
         end
         object mmAreaAssinaturaA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 15.118120000000000000
           Top = 17.385831650000000000
           Width = 219.212740000000000000
@@ -2275,11 +2499,13 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             #193'rea de Assinatura')
           ParentFont = False
         end
         object mmAssinaturaA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 15.118120000000000000
           Top = 140.504020000000000000
           Width = 343.937230000000000000
@@ -2298,6 +2524,7 @@ object dmPDFPedidos: TdmPDFPedidos
           ParentFont = False
         end
         object Memo22: TfrxMemoView
+          AllowVectorExport = True
           Left = 507.212598430000000000
           Top = 58.960629920000000000
           Width = 151.181102360000000000
@@ -2316,6 +2543,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo23: TfrxMemoView
+          AllowVectorExport = True
           Left = 665.196850390000000000
           Top = 58.960629920000000000
           Width = 71.811070000000000000
@@ -2327,6 +2555,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[SUM(<frxDBDatasetDetail."VALOR_TOTAL">,MasterData1,2)]')
@@ -2336,10 +2565,16 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object PageFooter1: TfrxPageFooter
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 18.897650000000000000
         Top = 997.795920000000000000
         Width = 755.906000000000000000
         object Memo72: TfrxMemoView
+          AllowVectorExport = True
           Left = 551.811380000000000000
           Width = 204.094620000000000000
           Height = 18.897650000000000000
@@ -2348,6 +2583,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             'P'#225'gina[Page#] de [TotalPages#]')
@@ -2359,6 +2595,7 @@ object dmPDFPedidos: TdmPDFPedidos
             end>
         end
         object Memo73: TfrxMemoView
+          AllowVectorExport = True
           Width = 548.031850000000000000
           Height = 18.897650000000000000
           Font.Charset = DEFAULT_CHARSET
@@ -2366,6 +2603,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[INFO_IMPRESSAO]')
           ParentFont = False
@@ -2374,12 +2612,18 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object HeaderCliente: TfrxHeader
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 62.031540000000000000
         Top = 287.244280000000000000
         Width = 755.906000000000000000
         PrintChildIfInvisible = True
         Stretched = True
         object MemoCliente: TfrxMemoView
+          AllowVectorExport = True
           Left = 11.338590000000000000
           Top = 24.456710000000000000
           Width = 480.000310000000000000
@@ -2391,6 +2635,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -12
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             
               '[NOME_CLIENTE][APELIDO_CLIENTE][CPF_CLIENTE][ENDERECO_CLIENTE][B' +
@@ -2418,6 +2663,7 @@ object dmPDFPedidos: TdmPDFPedidos
             end>
         end
         object Memo37: TfrxMemoView
+          AllowVectorExport = True
           Left = 11.338590000000000000
           Top = 3.779530000000000000
           Width = 744.567410000000000000
@@ -2434,6 +2680,7 @@ object dmPDFPedidos: TdmPDFPedidos
           ParentFont = False
         end
         object Memo113: TfrxMemoView
+          AllowVectorExport = True
           Left = 498.897960000000000000
           Top = 24.236240000000000000
           Width = 257.008040000000000000
@@ -2444,6 +2691,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -12
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             ' [OBS_CLIENTE]')
           ParentFont = False
@@ -2451,22 +2699,32 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object ReportTitleCanhoto: TfrxReportTitle
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 79.370130000000000000
         Top = 18.897650000000000000
         Visible = False
         Width = 755.906000000000000000
         object Shape73: TfrxShapeView
+          AllowVectorExport = True
           Width = 648.945265120000000000
           Height = 30.236227800000000000
           Frame.Color = clSilver
+          Frame.Typ = []
         end
         object Shape75: TfrxShapeView
+          AllowVectorExport = True
           Top = 30.236220472440900000
           Width = 119.811065120000000000
           Height = 34.015757800000000000
           Frame.Color = clSilver
+          Frame.Typ = []
         end
         object Memo103: TfrxMemoView
+          AllowVectorExport = True
           Left = 83.149660000000000000
           Width = 355.275820000000000000
           Height = 13.228346456692900000
@@ -2475,11 +2733,13 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             '[NOME_EMPRESA] - CNPJ: [CNPJ_EMPRESA]')
           ParentFont = False
         end
         object Memo104: TfrxMemoView
+          AllowVectorExport = True
           Left = 3.779530000000000000
           Width = 75.590600000000000000
           Height = 13.228346456692900000
@@ -2488,11 +2748,13 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             'Recebemos de ')
           ParentFont = False
         end
         object Memo105: TfrxMemoView
+          AllowVectorExport = True
           Left = 533.693260000000000000
           Width = 113.385900000000000000
           Height = 13.228344020000000000
@@ -2502,12 +2764,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             'R$ [VALOR_LIQUIDO]')
           ParentFont = False
           WordWrap = False
         end
         object Memo106: TfrxMemoView
+          AllowVectorExport = True
           Left = 533.693260000000000000
           Top = 13.118120000000000000
           Width = 109.606370000000000000
@@ -2517,11 +2781,13 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[DATA_PEDIDO]')
           ParentFont = False
         end
         object Memo107: TfrxMemoView
+          AllowVectorExport = True
           Left = 445.984540000000000000
           Width = 86.929190000000000000
           Height = 13.228346460000000000
@@ -2530,11 +2796,13 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             'Valor do Pedido:')
           ParentFont = False
         end
         object Memo108: TfrxMemoView
+          AllowVectorExport = True
           Left = 445.984540000000000000
           Top = 13.118120000000000000
           Width = 86.929190000000000000
@@ -2544,11 +2812,13 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             'Criado Em:')
           ParentFont = False
         end
         object Memo109: TfrxMemoView
+          AllowVectorExport = True
           Left = 3.779530000000000000
           Top = 13.118120000000000000
           Width = 317.480520000000000000
@@ -2558,11 +2828,13 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             'os produtos referentes ao pedido indicado '#224' direita.')
           ParentFont = False
         end
         object Memo110: TfrxMemoView
+          AllowVectorExport = True
           Left = 3.779530000000000000
           Top = 30.236240000000000000
           Width = 109.606370000000000000
@@ -2572,11 +2844,13 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             'Data de recebimento.')
           ParentFont = False
         end
         object Memo111: TfrxMemoView
+          AllowVectorExport = True
           Left = 4.157480314960630000
           Top = 45.354360000000000000
           Width = 75.590600000000000000
@@ -2586,11 +2860,13 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -13
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '__/__/____')
           ParentFont = False
         end
         object Memo112: TfrxMemoView
+          AllowVectorExport = True
           Left = 128.504020000000000000
           Top = 30.236240000000000000
           Width = 325.039580000000000000
@@ -2606,12 +2882,15 @@ object dmPDFPedidos: TdmPDFPedidos
           ParentFont = False
         end
         object Shape74: TfrxShapeView
+          AllowVectorExport = True
           Left = 648.944881890000000000
           Width = 100.913385830000000000
           Height = 63.874015750000000000
           Frame.Color = clSilver
+          Frame.Typ = []
         end
         object Memo38: TfrxMemoView
+          AllowVectorExport = True
           Left = 653.858690000000000000
           Top = 0.779530000000000000
           Width = 94.488250000000000000
@@ -2621,19 +2900,23 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             '[TIPO_PEDIDO]'
             'N'#176': [PEDIDO_ID]')
           ParentFont = False
         end
         object Shape76: TfrxShapeView
+          AllowVectorExport = True
           Left = 120.188976380000000000
           Top = 30.236240000000000000
           Width = 528.000305120000000000
           Height = 34.015757800000000000
           Frame.Color = clSilver
+          Frame.Typ = []
         end
         object Line2: TfrxLineView
+          AllowVectorExport = True
           Left = 16.897650000000000000
           Top = 71.811070000000000000
           Width = 733.228820000000000000
@@ -2642,10 +2925,12 @@ object dmPDFPedidos: TdmPDFPedidos
           Frame.Typ = [ftTop]
         end
         object Picture1: TfrxPictureView
+          AllowVectorExport = True
           Left = 3.000000000000000000
           Top = 66.031540000000000000
           Width = 15.118120000000000000
           Height = 11.338590000000000000
+          Frame.Typ = []
           HightQuality = False
           Transparent = False
           TransparentColor = clWhite
@@ -2653,6 +2938,11 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object MasterData1: TfrxMasterData
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 15.118120000000000000
         Top = 453.543600000000000000
         Width = 755.906000000000000000
@@ -2662,6 +2952,7 @@ object dmPDFPedidos: TdmPDFPedidos
         PrintIfDetailEmpty = True
         RowCount = 0
         object frxdbdsProdutoPedidoID: TfrxMemoView
+          AllowVectorExport = True
           Left = 6.779530000000000000
           Top = 0.779530000000000000
           Width = 41.574830000000000000
@@ -2674,6 +2965,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetDetail."PRODUTOS_ID"]')
@@ -2681,6 +2973,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object frxdbdsProdutoPedidoDESCRICAOA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 61.692950000000000000
           Top = 1.000000000000000000
           Width = 268.870356770000000000
@@ -2693,12 +2986,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetDetail."DESCRICAO"]')
           ParentFont = False
           WordWrap = False
         end
         object frxdbdsProdutoPedidoUNIDADEMEDIDA: TfrxMemoView
+          AllowVectorExport = True
           Left = 468.661720000000000000
           Top = 0.889763780000000000
           Width = 30.236240000000000000
@@ -2711,12 +3006,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetDetail."UNIDADEMEDIDA"]')
           ParentFont = False
           WordWrap = False
         end
         object Memo46: TfrxMemoView
+          AllowVectorExport = True
           Left = 510.236550000000000000
           Top = 0.889763780000000000
           Width = 52.913420000000000000
@@ -2729,6 +3026,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetDetail."VALOR_UNITARIO"]')
@@ -2736,6 +3034,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo48: TfrxMemoView
+          AllowVectorExport = True
           Left = 629.181510000000000000
           Top = 0.889763780000000000
           Width = 52.913420000000000000
@@ -2750,6 +3049,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetDetail."QUANTIDADE"]')
@@ -2757,6 +3057,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo49: TfrxMemoView
+          AllowVectorExport = True
           Left = 689.874460000000000000
           Top = 0.889763780000000000
           Width = 60.472480000000000000
@@ -2771,6 +3072,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetDetail."VALOR_TOTAL"]')
@@ -2778,6 +3080,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo20: TfrxMemoView
+          AllowVectorExport = True
           Left = 570.709030000000000000
           Top = 0.755905510000000000
           Width = 52.913420000000000000
@@ -2792,6 +3095,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetDetail."VALOR_DESCONTO"]')
@@ -2799,6 +3103,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object frxDBDatasetDetailLOCALIZACAO: TfrxMemoView
+          AllowVectorExport = True
           Left = 336.600000000000000000
           Top = 1.133858270000000000
           Width = 124.050650000000000000
@@ -2811,6 +3116,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetDetail."MARCA_DESCRICAO"]')
           ParentFont = False
@@ -2819,6 +3125,11 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object MasterData_do_Header_cliente: TfrxMasterData
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Top = 370.393940000000000000
         Width = 755.906000000000000000
         DataSet = frxDBDatasetDetail
@@ -2829,10 +3140,16 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object Header4: TfrxHeader
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 37.795300000000000000
         Top = 691.653990000000000000
         Width = 755.906000000000000000
         object Memo62: TfrxMemoView
+          AllowVectorExport = True
           Left = 4.425519060000000000
           Width = 743.811023620000000000
           Height = 15.118120000000000000
@@ -2849,6 +3166,7 @@ object dmPDFPedidos: TdmPDFPedidos
           ParentFont = False
         end
         object Memo63: TfrxMemoView
+          AllowVectorExport = True
           Left = 3.779530000000000000
           Top = 20.566941340000000000
           Width = 128.504020000000000000
@@ -2865,6 +3183,7 @@ object dmPDFPedidos: TdmPDFPedidos
           ParentFont = False
         end
         object Memo64: TfrxMemoView
+          AllowVectorExport = True
           Left = 143.622140000000000000
           Top = 20.409448820000000000
           Width = 249.448980000000000000
@@ -2881,6 +3200,7 @@ object dmPDFPedidos: TdmPDFPedidos
           ParentFont = False
         end
         object Memo69: TfrxMemoView
+          AllowVectorExport = True
           Left = 638.740570000000000000
           Top = 20.409448820000000000
           Width = 109.606370000000000000
@@ -2899,6 +3219,7 @@ object dmPDFPedidos: TdmPDFPedidos
           WordWrap = False
         end
         object Memo67: TfrxMemoView
+          AllowVectorExport = True
           Left = 494.677490000000000000
           Top = 20.409448820000000000
           Width = 128.504020000000000000
@@ -2917,12 +3238,22 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object Footer3: TfrxFooter
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 3.779530000000000000
         Top = 789.921770000000000000
         Width = 755.906000000000000000
       end
       object MasterData2: TfrxMasterData
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 14.118110240000000000
         Top = 752.126470000000000000
         Width = 755.906000000000000000
@@ -2930,6 +3261,7 @@ object dmPDFPedidos: TdmPDFPedidos
         DataSetName = 'frxDBDatasetSubDetail'
         RowCount = 0
         object frxdbdsPagamentosREFERENCIA1: TfrxMemoView
+          AllowVectorExport = True
           Left = 4.338590000000000000
           Top = 0.889763780000000000
           Width = 128.504020000000000000
@@ -2942,12 +3274,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetSubDetail."HISTORICO"]')
           ParentFont = False
           WordWrap = False
         end
         object frxdbdsPagamentosDESCRICAO: TfrxMemoView
+          AllowVectorExport = True
           Left = 145.181200000000000000
           Top = 0.889763780000000000
           Width = 336.378170000000000000
@@ -2960,11 +3294,13 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetSubDetail."DESCRICAO_PAG_DOC"]')
           ParentFont = False
         end
         object frxdbdsPagamentosDATA1: TfrxMemoView
+          AllowVectorExport = True
           Left = 494.897960000000000000
           Top = 0.889763780000000000
           Width = 124.724490000000000000
@@ -2977,12 +3313,14 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetSubDetail."DATA"]')
           ParentFont = False
           WordWrap = False
         end
         object Memo65: TfrxMemoView
+          AllowVectorExport = True
           Left = 636.520100000000000000
           Top = 0.889763780000000000
           Width = 109.606370000000000000
@@ -2997,6 +3335,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           HAlign = haRight
           Memo.UTF8W = (
             '[frxDBDatasetSubDetail."VALOR_PAGAMENTO"]')
@@ -3006,6 +3345,11 @@ object dmPDFPedidos: TdmPDFPedidos
       end
       object MasterData3: TfrxMasterData
         FillType = ftBrush
+        FillGap.Top = 0
+        FillGap.Left = 0
+        FillGap.Bottom = 0
+        FillGap.Right = 0
+        Frame.Typ = []
         Height = 120.944896540000000000
         Top = 816.378480000000000000
         Width = 755.906000000000000000
@@ -3014,6 +3358,7 @@ object dmPDFPedidos: TdmPDFPedidos
         RowCount = 1
         Stretched = True
         object frxdbdsPedidoVendaOBSERVACOES: TfrxMemoView
+          AllowVectorExport = True
           Left = 5.779530000000000000
           Top = 26.118120000000000000
           Width = 374.173470000000000000
@@ -3027,6 +3372,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -12
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetMain."OBSERVACOES"]')
           ParentFont = False
@@ -3034,6 +3380,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Wysiwyg = False
         end
         object Memo66: TfrxMemoView
+          AllowVectorExport = True
           Left = 6.779530000000000000
           Top = 10.000000000000000000
           Width = 132.283550000000000000
@@ -3044,11 +3391,13 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             'Observa'#231#245'es do Pedido:')
           ParentFont = False
         end
         object dtGarantiaA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 383.732530000000000000
           Top = 26.118120000000000000
           Width = 366.614410000000000000
@@ -3063,6 +3412,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -12
           Font.Name = 'Arial'
           Font.Style = []
+          Frame.Typ = []
           Memo.UTF8W = (
             '[frxDBDatasetMain."TEXTO_GARANTIA"]')
           ParentFont = False
@@ -3070,6 +3420,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Wysiwyg = False
         end
         object mmGarantiaA4: TfrxMemoView
+          AllowVectorExport = True
           Left = 384.732530000000000000
           Top = 10.000000000000000000
           Width = 132.283550000000000000
@@ -3081,6 +3432,7 @@ object dmPDFPedidos: TdmPDFPedidos
           Font.Height = -11
           Font.Name = 'Arial'
           Font.Style = [fsBold]
+          Frame.Typ = []
           Memo.UTF8W = (
             'Garantia do Cliente:')
           ParentFont = False
@@ -3338,6 +3690,9 @@ object dmPDFPedidos: TdmPDFPedidos
     ShowProgress = True
     OverwritePrompt = False
     DataOnly = False
+    EmbedFontsIfProtected = False
+    InteractiveFormsFontSubset = 'A-Z,a-z,0-9,#43-#47 '
+    OpenAfterExport = False
     PrintOptimized = False
     Outline = False
     Background = False
@@ -3354,6 +3709,8 @@ object dmPDFPedidos: TdmPDFPedidos
     CenterWindow = False
     PrintScaling = False
     PdfA = False
+    PDFStandard = psNone
+    PDFVersion = pv17
     Left = 152
     Top = 72
   end

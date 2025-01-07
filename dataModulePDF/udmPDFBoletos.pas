@@ -11,25 +11,24 @@ uses
 type
   TdmPDFBoletos = class(TDataModule)
     qrReceber: TFDQuery;
+    ACBrBoleto1: TACBrBoleto;
+    qryCBR_CONFIG: TFDQuery;
+    ACBrBoletoFCFortes1: TACBrBoletoFCFortes;
     qrReceberSEL: TIntegerField;
     qrReceberID_EMISSOR: TIntegerField;
     qrReceberID_CBR_TITULOS: TLargeintField;
-    qrReceberPEDIDOS_VENDAS_ID: TIntegerField;
     qrReceberSITUACAO: TWideStringField;
     qrReceberCLIENTE_ID: TIntegerField;
-    qrReceberCLI_DESCRICAO: TWideStringField;
     qrReceberDTEMISSAO: TDateField;
     qrReceberDTALTERACAO: TSQLTimeStampField;
     qrReceberDTVENCIMENTO: TDateField;
     qrReceberDTCANCELAMENTO: TDateField;
-    qrReceberVALOR: TBCDField;
+    qrReceberVALOR: TFMTBCDField;
     qrReceberHISTORICO: TWideStringField;
-    qrReceberVLJURO: TBCDField;
-    qrReceberDIAS_CARENCIA: TIntegerField;
-    qrReceberVALOR_MULTA: TBCDField;
-    qrReceberVLACRESCIMO: TBCDField;
-    qrReceberVLDESCONTO: TBCDField;
-    qrReceberVLPAGO: TBCDField;
+    qrReceberVLJURO: TFMTBCDField;
+    qrReceberVLACRESCIMO: TFMTBCDField;
+    qrReceberVLDESCONTO: TFMTBCDField;
+    qrReceberVLPAGO: TFMTBCDField;
     qrReceberDTCADASTRO: TSQLTimeStampField;
     qrReceberDTPAGAMENTO: TDateField;
     qrReceberALTERACAO_LOJA: TWideStringField;
@@ -50,8 +49,18 @@ type
     qrReceberRETORNO_HISTORICO: TWideStringField;
     qrReceberOBS: TWideStringField;
     qrReceberID_CBR_REMESSA_UUID: TWideStringField;
+    qrReceberPEDIDOS_VENDAS_ID: TIntegerField;
+    qrReceberCONTA_PR_ID: TIntegerField;
+    qrReceberCAIXA_BANCO_ID: TIntegerField;
+    qrReceberVALOR_MULTA: TFMTBCDField;
+    qrReceberTIPO_COBRANCA_JUROS: TIntegerField;
+    qrReceberTIPO_MULTA: TIntegerField;
+    qrReceberDIAS_CARENCIA: TIntegerField;
+    qrReceberCODIGO_BARRAS: TWideStringField;
+    qrReceberDATA_NOTIFICACAO: TDateField;
     qrReceberSITUACAO_DESRICAO: TWideStringField;
     qrReceberREGISTRO_STATUS_DESCRICAO: TWideStringField;
+    qrReceberCLI_DESCRICAO: TWideStringField;
     qrReceberCLI_CPF_CNPJ: TWideStringField;
     qrReceberCLI_ENDERECO: TWideStringField;
     qrReceberCLI_ENDNUMERO: TWideStringField;
@@ -59,18 +68,12 @@ type
     qrReceberCLI_ENDCIDADE: TWideStringField;
     qrReceberCLI_ENDUF: TWideStringField;
     qrReceberCLI_ENDCEP: TWideStringField;
-    qrReceberCONTA_PR_ID: TIntegerField;
-    qrReceberCAIXA_BANCO_ID: TIntegerField;
-    qrReceberTIPO_COBRANCA_JUROS: TIntegerField;
-    qrReceberTIPO_MULTA: TIntegerField;
-    ACBrBoleto1: TACBrBoleto;
-    qryCBR_CONFIG: TFDQuery;
     qryCBR_CONFIGID_EMISSOR: TIntegerField;
     qryCBR_CONFIGDESCRICAO: TWideStringField;
     qryCBR_CONFIGDIRRECEBE: TWideStringField;
     qryCBR_CONFIGDIRENVIA: TWideStringField;
     qryCBR_CONFIGDIRRECEBEBKP: TWideStringField;
-    qryCBR_CONFIGVLRTARIFABOLETA: TBCDField;
+    qryCBR_CONFIGVLRTARIFABOLETA: TFMTBCDField;
     qryCBR_CONFIGTIPOCOBRANCA: TWideStringField;
     qryCBR_CONFIGCODBANCO: TSmallintField;
     qryCBR_CONFIGAGENCIA: TSmallintField;
@@ -88,15 +91,6 @@ type
     qryCBR_CONFIGLOCALPAGTO: TWideStringField;
     qryCBR_CONFIGINSTRUCAO1: TWideStringField;
     qryCBR_CONFIGINSTRUCAO2: TWideStringField;
-    qryCBR_CONFIGEMP_RAZAOSOCIAL: TWideStringField;
-    qryCBR_CONFIGEMP_CNPJ: TWideStringField;
-    qryCBR_CONFIGEMP_ENDERECO: TWideStringField;
-    qryCBR_CONFIGEMP_COMPLEMENTO: TWideStringField;
-    qryCBR_CONFIGEMP_BAIRRO: TWideStringField;
-    qryCBR_CONFIGEMP_CIDADE: TWideStringField;
-    qryCBR_CONFIGEMP_UF: TWideStringField;
-    qryCBR_CONFIGEMP_CEP: TWideStringField;
-    qryCBR_CONFIGEMP_TELEFONE: TWideStringField;
     qryCBR_CONFIGJUROS: TFMTBCDField;
     qryCBR_CONFIGMULTA: TFMTBCDField;
     qryCBR_CONFIGCARENCIA_JUROS: TIntegerField;
@@ -107,7 +101,16 @@ type
     qryCBR_CONFIGWS_SCOPE: TWideStringField;
     qryCBR_CONFIGWS_INDICADORPIX: TIntegerField;
     qryCBR_CONFIGLAYOUT: TIntegerField;
-    ACBrBoletoFCFortes1: TACBrBoletoFCFortes;
+    qryCBR_CONFIGOBSERVACOES: TWideStringField;
+    qryCBR_CONFIGEMP_RAZAOSOCIAL: TWideStringField;
+    qryCBR_CONFIGEMP_CNPJ: TWideStringField;
+    qryCBR_CONFIGEMP_ENDERECO: TWideStringField;
+    qryCBR_CONFIGEMP_COMPLEMENTO: TWideStringField;
+    qryCBR_CONFIGEMP_BAIRRO: TWideStringField;
+    qryCBR_CONFIGEMP_CIDADE: TWideStringField;
+    qryCBR_CONFIGEMP_UF: TWideStringField;
+    qryCBR_CONFIGEMP_CEP: TWideStringField;
+    qryCBR_CONFIGEMP_TELEFONE: TWideStringField;
     procedure DataModuleCreate(Sender: TObject);
   private
     FRemessaID: integer;
@@ -231,7 +234,7 @@ begin
     ACBrBoleto1.Cedente.CedenteWS.KeyUser       := qryCBR_CONFIG.FieldByName('WS_KEYUSER').AsString;
     ACBrBoleto1.Cedente.CedenteWS.IndicadorPix  := qryCBR_CONFIG.FieldByName('WS_INDICADORPIX').AsInteger = SIM; //utilizado para boleto hibrido, necessário o cliente possuir chave PIX no banco do brasil
 
-    ACBrBoleto1.Configuracoes.WebService.Ambiente := taProducao;
+    ACBrBoleto1.Configuracoes.WebService.Ambiente := tawsProducao;
 
     //ACBrBoleto1.Configuracoes.WebService.Operacao            := tpConsulta; //[tpConsulta,tpAltera,tpBaixa,tpInclui] // utilizado para o tipo de operação
     ACBrBoletoFCFortes1.DirLogo := ExtractFilePath(Application.ExeName) + 'Logos';

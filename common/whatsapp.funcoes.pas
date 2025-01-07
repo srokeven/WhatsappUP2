@@ -254,12 +254,18 @@ _Query: TFDQuery;
 _FdmConexao: TdmConexao;
 begin
   _Query := TFDQuery.Create(nil);
-  try
-    _Query.Connection := _FdmConexao.fdConexao;
+  _FdmConexao := TdmConexao.Create(nil);
+
+  if _FdmConexao.ConectarBanco then
+  begin
+    try
+      _Query.Connection := _FdmConexao.fdConexao;
     _Query.open('select INSCRICAO_ESTADUAL from empresa');
     Result := _query.fieldbyname('INSCRICAO_ESTADUAL').asstring;
-  finally
-    _Query.free;
+    finally
+      _Query.free;
+      _FdmConexao.Free;
+    end;
   end;
 end;
 
@@ -269,13 +275,18 @@ _Query: TFDQuery;
 _FdmConexao: TdmConexao;
 begin
   _Query := TFDQuery.Create(nil);
-  try
-    _Query.Connection := _FdmConexao.fdConexao;
-    _Query.open('select RAZAO_SOCIAL from empresa');
-    Result := _query.fieldbyname('RAZAO_SOCIAL').asstring;
-  finally
-    _Query.free;
-    _FdmConexao.Free;
+  _FdmConexao := TdmConexao.Create(nil);
+
+  if _FdmConexao.ConectarBanco then
+  begin
+    try
+      _Query.Connection := _FdmConexao.fdConexao;
+      _Query.open('select RAZAO_SOCIAL from empresa');
+      Result := _query.fieldbyname('RAZAO_SOCIAL').asstring;
+    finally
+      _Query.free;
+      _FdmConexao.Free;
+    end;
   end;
 end;
 
@@ -370,7 +381,7 @@ _Query: TFDQuery;
 _FdmConexao: TdmConexao;
 begin
   _Query := TFDQuery.Create(nil);
-   _FdmConexao := TdmConexao.Create(nil);
+  _FdmConexao := TdmConexao.Create(nil);
 
   if _FdmConexao.ConectarBanco then
   begin
@@ -390,13 +401,19 @@ var
 _Query: TFDQuery;
 _FdmConexao: TdmConexao;
 begin
-  try
-    _Query := TFDQuery.Create(nil);
-    _Query.Connection := _FdmConexao.fdConexao;
+  _Query := TFDQuery.Create(nil);
+  _FdmConexao := TdmConexao.Create(nil);
+
+  if _FdmConexao.ConectarBanco then
+  begin
+    try
+      _Query.Connection := _FdmConexao.fdConexao;
     _Query.open('select UF from empresa');
     Result := _query.fieldbyname('UF').asstring;
-  finally
-    _Query.free;
+    finally
+      _Query.free;
+      _FdmConexao.Free;
+    end;
   end;
 end;
 
@@ -405,13 +422,19 @@ var
 _Query: TFDQuery;
 _FdmConexao: TdmConexao;
 begin
-  try
-    _Query := TFDQuery.Create(nil);
-    _Query.Connection := _FdmConexao.fdConexao;
-    _Query.open('select EMAIL from empresa');
-    Result := _query.fieldbyname('EMAIL').AsString;
-  finally
-    _Query.free;
+  _Query := TFDQuery.Create(nil);
+  _FdmConexao := TdmConexao.Create(nil);
+
+  if _FdmConexao.ConectarBanco then
+  begin
+    try
+      _Query.Connection := _FdmConexao.fdConexao;
+      _Query.open('select EMAIL from empresa');
+      Result := _query.fieldbyname('EMAIL').AsString;
+    finally
+      _Query.free;
+      _FdmConexao.Free;
+    end;
   end;
 end;
 
@@ -500,38 +523,35 @@ var
   query: TFDQuery;
   _FdmConexao: TdmConexao;
 begin
-  _FdmConexao.fdConexao.Open;
+  _FdmConexao := TdmConexao.Create(nil);
   query := TFDQuery.Create(nil);
   try
-    query.Connection := _FdmConexao.fdConexao;
-    query.SQL.Text := aSQL;
-    try
-      query.Open;
-      if not (query.IsEmpty) then
-      begin
-        try
-          Result := query.Fields[0].AsInteger;
-        except
+    if _FdmConexao.ConectarBanco then
+    begin
+      query.Connection := _FdmConexao.fdConexao;
+      query.SQL.Text := aSQL;
+      try
+        query.Open;
+        if not (query.IsEmpty) then
+        begin
+          try
+            Result := query.Fields[0].AsInteger;
+          except
+            Result := aDefaultValue;
+          end;
+        end
+        else Result := aDefaultValue;
+      except
+        on E: exception do
+        begin
           Result := aDefaultValue;
         end;
-      end
-      else Result := aDefaultValue;
-    except
-      on E: exception do
-      begin
-        Result := aDefaultValue;
-   //     RegistraAuditoriaErros(MODULO_UTILITARIO_BANCO_DADOS,
-   //                   'Erro: '+E.Message+#13#10+
-   //                   'SQL usado: '+aSQL,
-   //     IdUsuarioLogado);
       end;
     end;
   finally
-    _FdmConexao.fdConexao.Close;
+    _FdmConexao.Free;
     query.Free;
   end;
-
-
 end;
 
 function LoadLogoBase64: String;

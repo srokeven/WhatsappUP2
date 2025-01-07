@@ -42,211 +42,136 @@ object dmPDFBoletos: TdmPDFBoletos
     ParamData = <
       item
         Name = 'CLIENTE_ID'
+        DataType = ftInteger
         ParamType = ptInput
       end>
     object qrReceberSEL: TIntegerField
       AutoGenerateValue = arDefault
-      DisplayLabel = '[ ]'
-      DisplayWidth = 3
       FieldName = 'SEL'
       Origin = 'SEL'
       ProviderFlags = []
+      ReadOnly = True
     end
     object qrReceberID_EMISSOR: TIntegerField
       FieldName = 'ID_EMISSOR'
       Origin = 'ID_EMISSOR'
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
-      Visible = False
     end
     object qrReceberID_CBR_TITULOS: TLargeintField
-      DisplayLabel = 'C'#243'digo'
-      DisplayWidth = 10
       FieldName = 'ID_CBR_TITULOS'
       Origin = 'ID_CBR_TITULOS'
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object qrReceberPEDIDOS_VENDAS_ID: TIntegerField
-      DisplayLabel = 'Pedido'
-      DisplayWidth = 6
-      FieldName = 'PEDIDOS_VENDAS_ID'
-      Origin = 'PEDIDOS_VENDAS_ID'
-    end
     object qrReceberSITUACAO: TWideStringField
-      DisplayLabel = 'Situa'#231#227'o'
       FieldName = 'SITUACAO'
       Origin = 'SITUACAO'
-      Visible = False
       FixedChar = True
       Size = 1
     end
     object qrReceberCLIENTE_ID: TIntegerField
       FieldName = 'CLIENTE_ID'
       Origin = 'CLIENTE_ID'
-      Visible = False
-    end
-    object qrReceberCLI_DESCRICAO: TWideStringField
-      AutoGenerateValue = arDefault
-      DisplayLabel = 'Cliente'
-      DisplayWidth = 40
-      FieldName = 'CLI_DESCRICAO'
-      Origin = 'DESCRICAO'
-      ProviderFlags = []
-      ReadOnly = True
-      Size = 70
     end
     object qrReceberDTEMISSAO: TDateField
-      DisplayLabel = 'Emiss'#227'o'
       FieldName = 'DTEMISSAO'
       Origin = 'DTEMISSAO'
     end
     object qrReceberDTALTERACAO: TSQLTimeStampField
       FieldName = 'DTALTERACAO'
       Origin = 'DTALTERACAO'
-      Visible = False
     end
     object qrReceberDTVENCIMENTO: TDateField
-      DisplayLabel = 'Vencimento'
       FieldName = 'DTVENCIMENTO'
       Origin = 'DTVENCIMENTO'
     end
     object qrReceberDTCANCELAMENTO: TDateField
-      DisplayLabel = 'Cancelamento'
       FieldName = 'DTCANCELAMENTO'
       Origin = 'DTCANCELAMENTO'
     end
-    object qrReceberVALOR: TBCDField
-      DisplayLabel = 'Valor'
-      DisplayWidth = 10
+    object qrReceberVALOR: TFMTBCDField
       FieldName = 'VALOR'
       Origin = 'VALOR'
-      DisplayFormat = '#,##0.00'
       Precision = 18
       Size = 2
     end
     object qrReceberHISTORICO: TWideStringField
-      DisplayLabel = 'Hist'#243'rico'
-      DisplayWidth = 50
       FieldName = 'HISTORICO'
       Origin = 'HISTORICO'
       Size = 100
     end
-    object qrReceberVLJURO: TBCDField
-      DisplayLabel = 'Juros'
-      DisplayWidth = 10
+    object qrReceberVLJURO: TFMTBCDField
       FieldName = 'VLJURO'
       Origin = 'VLJURO'
-      DisplayFormat = '#,##0.00'
       Precision = 18
       Size = 2
     end
-    object qrReceberDIAS_CARENCIA: TIntegerField
-      AutoGenerateValue = arDefault
-      DisplayLabel = 'Car'#234'ncia'
-      FieldName = 'DIAS_CARENCIA'
-      Origin = 'DIAS_CARENCIA'
-      Visible = False
-    end
-    object qrReceberVALOR_MULTA: TBCDField
-      AutoGenerateValue = arDefault
-      DisplayLabel = 'Multa'
-      DisplayWidth = 10
-      FieldName = 'VALOR_MULTA'
-      Origin = 'VALOR_MULTA'
-      DisplayFormat = '#,##0.00'
-      Precision = 18
-      Size = 2
-    end
-    object qrReceberVLACRESCIMO: TBCDField
-      DisplayLabel = 'Acr'#233'scimo'
-      DisplayWidth = 10
+    object qrReceberVLACRESCIMO: TFMTBCDField
       FieldName = 'VLACRESCIMO'
       Origin = 'VLACRESCIMO'
-      DisplayFormat = '#,##0.00'
       Precision = 18
       Size = 2
     end
-    object qrReceberVLDESCONTO: TBCDField
-      DisplayLabel = 'Desconto'
-      DisplayWidth = 10
+    object qrReceberVLDESCONTO: TFMTBCDField
       FieldName = 'VLDESCONTO'
       Origin = 'VLDESCONTO'
-      DisplayFormat = '#,##0.00'
       Precision = 18
       Size = 2
     end
-    object qrReceberVLPAGO: TBCDField
-      DisplayLabel = 'Valor pago'
-      DisplayWidth = 10
+    object qrReceberVLPAGO: TFMTBCDField
       FieldName = 'VLPAGO'
       Origin = 'VLPAGO'
-      DisplayFormat = '#,##0.00'
       Precision = 18
       Size = 2
     end
     object qrReceberDTCADASTRO: TSQLTimeStampField
-      DisplayLabel = 'Cadastro'
-      DisplayWidth = 14
       FieldName = 'DTCADASTRO'
       Origin = 'DTCADASTRO'
-      DisplayFormat = 'dd/mm/yy hh:nn'
     end
     object qrReceberDTPAGAMENTO: TDateField
-      DisplayLabel = 'Pagamento'
       FieldName = 'DTPAGAMENTO'
       Origin = 'DTPAGAMENTO'
     end
     object qrReceberALTERACAO_LOJA: TWideStringField
-      DisplayLabel = 'Altera'#231#227'o (Loja)'
       FieldName = 'ALTERACAO_LOJA'
       Origin = 'ALTERACAO_LOJA'
       FixedChar = True
       Size = 1
     end
     object qrReceberPAGAMENTO_LOJA: TWideStringField
-      DisplayLabel = 'Pagamento (Loja)'
       FieldName = 'PAGAMENTO_LOJA'
       Origin = 'PAGAMENTO_LOJA'
       FixedChar = True
       Size = 1
     end
     object qrReceberCANCELAMENTO_LOJA: TWideStringField
-      DisplayLabel = 'Cancelamento (Loja)'
       FieldName = 'CANCELAMENTO_LOJA'
       Origin = 'CANCELAMENTO_LOJA'
       FixedChar = True
       Size = 1
     end
     object qrReceberCANCELAMENTO_DATA: TSQLTimeStampField
-      DisplayLabel = 'Cancelamento'
-      DisplayWidth = 14
       FieldName = 'CANCELAMENTO_DATA'
       Origin = 'CANCELAMENTO_DATA'
-      DisplayFormat = 'dd/mm/yy hh:nn'
     end
     object qrReceberREMESSA: TWideStringField
-      DisplayLabel = 'Remessa'
       FieldName = 'REMESSA'
       Origin = 'REMESSA'
       FixedChar = True
       Size = 1
     end
     object qrReceberREMESSA_REENVIAR: TWideStringField
-      DisplayLabel = 'Remessa reenviada'
       FieldName = 'REMESSA_REENVIAR'
       Origin = 'REMESSA_REENVIAR'
       FixedChar = True
       Size = 1
     end
     object qrReceberREMESSA_DATA: TDateField
-      DisplayLabel = 'Dt. da Remessa'
       FieldName = 'REMESSA_DATA'
       Origin = 'REMESSA_DATA'
     end
     object qrReceberREMESSA_ARQUIVO: TWideStringField
-      DisplayLabel = 'Arquivo Remessa'
-      DisplayWidth = 40
       FieldName = 'REMESSA_ARQUIVO'
       Origin = 'REMESSA_ARQUIVO'
       Size = 200
@@ -254,25 +179,18 @@ object dmPDFBoletos: TdmPDFBoletos
     object qrReceberREGISTRO_ID_CBR_RETORNO: TLargeintField
       FieldName = 'REGISTRO_ID_CBR_RETORNO'
       Origin = 'REGISTRO_ID_CBR_RETORNO'
-      Visible = False
     end
     object qrReceberREGISTRO_STATUS: TWideStringField
-      DisplayLabel = 'Status'
       FieldName = 'REGISTRO_STATUS'
       Origin = 'REGISTRO_STATUS'
       FixedChar = True
       Size = 1
     end
     object qrReceberREGISTRO_DATA: TSQLTimeStampField
-      DisplayLabel = 'Dt. Registro'
-      DisplayWidth = 10
       FieldName = 'REGISTRO_DATA'
       Origin = 'REGISTRO_DATA'
-      DisplayFormat = 'dd/mm/yyyy'
     end
     object qrReceberREGISTRO_ARQUIVO: TWideStringField
-      DisplayLabel = 'Arquivo de reg.'
-      DisplayWidth = 40
       FieldName = 'REGISTRO_ARQUIVO'
       Origin = 'REGISTRO_ARQUIVO'
       Size = 200
@@ -280,44 +198,76 @@ object dmPDFBoletos: TdmPDFBoletos
     object qrReceberREGISTRO_HISTORICO: TWideStringField
       FieldName = 'REGISTRO_HISTORICO'
       Origin = 'REGISTRO_HISTORICO'
-      Visible = False
       Size = 200
     end
     object qrReceberREGISTRO_SEM_REGISTRO: TWideStringField
       FieldName = 'REGISTRO_SEM_REGISTRO'
       Origin = 'REGISTRO_SEM_REGISTRO'
-      Visible = False
       FixedChar = True
       Size = 1
     end
     object qrReceberREGISTRO_LIMITE_PRAZO: TWideStringField
       FieldName = 'REGISTRO_LIMITE_PRAZO'
       Origin = 'REGISTRO_LIMITE_PRAZO'
-      Visible = False
       FixedChar = True
       Size = 1
     end
     object qrReceberRETORNO_HISTORICO: TWideStringField
       FieldName = 'RETORNO_HISTORICO'
       Origin = 'RETORNO_HISTORICO'
-      Visible = False
       Size = 300
     end
     object qrReceberOBS: TWideStringField
       FieldName = 'OBS'
       Origin = 'OBS'
-      Visible = False
       Size = 300
     end
     object qrReceberID_CBR_REMESSA_UUID: TWideStringField
       FieldName = 'ID_CBR_REMESSA_UUID'
       Origin = 'ID_CBR_REMESSA_UUID'
-      Visible = False
       Size = 44
+    end
+    object qrReceberPEDIDOS_VENDAS_ID: TIntegerField
+      FieldName = 'PEDIDOS_VENDAS_ID'
+      Origin = 'PEDIDOS_VENDAS_ID'
+    end
+    object qrReceberCONTA_PR_ID: TIntegerField
+      FieldName = 'CONTA_PR_ID'
+      Origin = 'CONTA_PR_ID'
+    end
+    object qrReceberCAIXA_BANCO_ID: TIntegerField
+      FieldName = 'CAIXA_BANCO_ID'
+      Origin = 'CAIXA_BANCO_ID'
+    end
+    object qrReceberVALOR_MULTA: TFMTBCDField
+      FieldName = 'VALOR_MULTA'
+      Origin = 'VALOR_MULTA'
+      Precision = 18
+      Size = 2
+    end
+    object qrReceberTIPO_COBRANCA_JUROS: TIntegerField
+      FieldName = 'TIPO_COBRANCA_JUROS'
+      Origin = 'TIPO_COBRANCA_JUROS'
+    end
+    object qrReceberTIPO_MULTA: TIntegerField
+      FieldName = 'TIPO_MULTA'
+      Origin = 'TIPO_MULTA'
+    end
+    object qrReceberDIAS_CARENCIA: TIntegerField
+      FieldName = 'DIAS_CARENCIA'
+      Origin = 'DIAS_CARENCIA'
+    end
+    object qrReceberCODIGO_BARRAS: TWideStringField
+      FieldName = 'CODIGO_BARRAS'
+      Origin = 'CODIGO_BARRAS'
+      Size = 100
+    end
+    object qrReceberDATA_NOTIFICACAO: TDateField
+      FieldName = 'DATA_NOTIFICACAO'
+      Origin = 'DATA_NOTIFICACAO'
     end
     object qrReceberSITUACAO_DESRICAO: TWideStringField
       AutoGenerateValue = arDefault
-      DisplayLabel = 'Situa'#231#227'o'
       FieldName = 'SITUACAO_DESRICAO'
       Origin = 'SITUACAO_DESRICAO'
       ProviderFlags = []
@@ -327,7 +277,6 @@ object dmPDFBoletos: TdmPDFBoletos
     end
     object qrReceberREGISTRO_STATUS_DESCRICAO: TWideStringField
       AutoGenerateValue = arDefault
-      DisplayLabel = 'Reg. Status'
       FieldName = 'REGISTRO_STATUS_DESCRICAO'
       Origin = 'REGISTRO_STATUS_DESCRICAO'
       ProviderFlags = []
@@ -335,9 +284,16 @@ object dmPDFBoletos: TdmPDFBoletos
       FixedChar = True
       Size = 12
     end
+    object qrReceberCLI_DESCRICAO: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CLI_DESCRICAO'
+      Origin = 'DESCRICAO'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 70
+    end
     object qrReceberCLI_CPF_CNPJ: TWideStringField
       AutoGenerateValue = arDefault
-      DisplayLabel = 'CPF/CNPJ'
       FieldName = 'CLI_CPF_CNPJ'
       Origin = 'CLI_CPF_CNPJ'
       ProviderFlags = []
@@ -346,8 +302,6 @@ object dmPDFBoletos: TdmPDFBoletos
     end
     object qrReceberCLI_ENDERECO: TWideStringField
       AutoGenerateValue = arDefault
-      DisplayLabel = 'Endere'#231'o'
-      DisplayWidth = 40
       FieldName = 'CLI_ENDERECO'
       Origin = 'ENDERECO'
       ProviderFlags = []
@@ -356,17 +310,14 @@ object dmPDFBoletos: TdmPDFBoletos
     end
     object qrReceberCLI_ENDNUMERO: TWideStringField
       AutoGenerateValue = arDefault
-      DisplayLabel = 'Numero'
       FieldName = 'CLI_ENDNUMERO'
       Origin = 'NUMERO'
       ProviderFlags = []
       ReadOnly = True
-      Size = 6
+      Size = 10
     end
     object qrReceberCLI_ENDBAIRRO: TWideStringField
       AutoGenerateValue = arDefault
-      DisplayLabel = 'Bairro'
-      DisplayWidth = 35
       FieldName = 'CLI_ENDBAIRRO'
       Origin = 'BAIRRO'
       ProviderFlags = []
@@ -375,8 +326,6 @@ object dmPDFBoletos: TdmPDFBoletos
     end
     object qrReceberCLI_ENDCIDADE: TWideStringField
       AutoGenerateValue = arDefault
-      DisplayLabel = 'Cidade'
-      DisplayWidth = 25
       FieldName = 'CLI_ENDCIDADE'
       Origin = 'CIDADE'
       ProviderFlags = []
@@ -385,7 +334,6 @@ object dmPDFBoletos: TdmPDFBoletos
     end
     object qrReceberCLI_ENDUF: TWideStringField
       AutoGenerateValue = arDefault
-      DisplayLabel = 'UF'
       FieldName = 'CLI_ENDUF'
       Origin = 'UF'
       ProviderFlags = []
@@ -395,34 +343,11 @@ object dmPDFBoletos: TdmPDFBoletos
     end
     object qrReceberCLI_ENDCEP: TWideStringField
       AutoGenerateValue = arDefault
-      DisplayLabel = 'CEP'
       FieldName = 'CLI_ENDCEP'
       Origin = 'CEP'
       ProviderFlags = []
       ReadOnly = True
-      Size = 10
-    end
-    object qrReceberCONTA_PR_ID: TIntegerField
-      FieldName = 'CONTA_PR_ID'
-      Origin = 'CONTA_PR_ID'
-      Visible = False
-    end
-    object qrReceberCAIXA_BANCO_ID: TIntegerField
-      FieldName = 'CAIXA_BANCO_ID'
-      Origin = 'CAIXA_BANCO_ID'
-      Visible = False
-    end
-    object qrReceberTIPO_COBRANCA_JUROS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'TIPO_COBRANCA_JUROS'
-      Origin = 'TIPO_COBRANCA_JUROS'
-      Visible = False
-    end
-    object qrReceberTIPO_MULTA: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'TIPO_MULTA'
-      Origin = 'TIPO_MULTA'
-      Visible = False
+      Size = 9
     end
   end
   object ACBrBoleto1: TACBrBoleto
@@ -448,7 +373,7 @@ object dmPDFBoletos: TdmPDFBoletos
     Configuracoes.Arquivos.LogNivel = logNenhum
     Configuracoes.WebService.SSLHttpLib = httpOpenSSL
     Configuracoes.WebService.StoreName = 'My'
-    Configuracoes.WebService.Ambiente = taProducao
+    Configuracoes.WebService.Ambiente = tawsHomologacao
     Configuracoes.WebService.Operacao = tpInclui
     Configuracoes.WebService.VersaoDF = '1.2'
     Left = 79
@@ -507,7 +432,7 @@ object dmPDFBoletos: TdmPDFBoletos
       Origin = 'DIRRECEBEBKP'
       Size = 300
     end
-    object qryCBR_CONFIGVLRTARIFABOLETA: TBCDField
+    object qryCBR_CONFIGVLRTARIFABOLETA: TFMTBCDField
       FieldName = 'VLRTARIFABOLETA'
       Origin = 'VLRTARIFABOLETA'
       Precision = 18
@@ -599,6 +524,59 @@ object dmPDFBoletos: TdmPDFBoletos
       Origin = 'INSTRUCAO2'
       Size = 300
     end
+    object qryCBR_CONFIGJUROS: TFMTBCDField
+      FieldName = 'JUROS'
+      Origin = 'JUROS'
+      Precision = 18
+      Size = 5
+    end
+    object qryCBR_CONFIGMULTA: TFMTBCDField
+      FieldName = 'MULTA'
+      Origin = 'MULTA'
+      Precision = 18
+      Size = 5
+    end
+    object qryCBR_CONFIGCARENCIA_JUROS: TIntegerField
+      FieldName = 'CARENCIA_JUROS'
+      Origin = 'CARENCIA_JUROS'
+    end
+    object qryCBR_CONFIGTIPO_CALC_JUROS: TIntegerField
+      FieldName = 'TIPO_CALC_JUROS'
+      Origin = 'TIPO_CALC_JUROS'
+    end
+    object qryCBR_CONFIGWS_CLIENTID: TWideStringField
+      FieldName = 'WS_CLIENTID'
+      Origin = 'WS_CLIENTID'
+      Size = 500
+    end
+    object qryCBR_CONFIGWS_CLIENTSECRET: TWideStringField
+      FieldName = 'WS_CLIENTSECRET'
+      Origin = 'WS_CLIENTSECRET'
+      Size = 500
+    end
+    object qryCBR_CONFIGWS_KEYUSER: TWideStringField
+      FieldName = 'WS_KEYUSER'
+      Origin = 'WS_KEYUSER'
+      Size = 500
+    end
+    object qryCBR_CONFIGWS_SCOPE: TWideStringField
+      FieldName = 'WS_SCOPE'
+      Origin = 'WS_SCOPE'
+      Size = 255
+    end
+    object qryCBR_CONFIGWS_INDICADORPIX: TIntegerField
+      FieldName = 'WS_INDICADORPIX'
+      Origin = 'WS_INDICADORPIX'
+    end
+    object qryCBR_CONFIGLAYOUT: TIntegerField
+      FieldName = 'LAYOUT'
+      Origin = 'LAYOUT'
+    end
+    object qryCBR_CONFIGOBSERVACOES: TWideStringField
+      FieldName = 'OBSERVACOES'
+      Origin = 'OBSERVACOES'
+      Size = 500
+    end
     object qryCBR_CONFIGEMP_RAZAOSOCIAL: TWideStringField
       AutoGenerateValue = arDefault
       FieldName = 'EMP_RAZAOSOCIAL'
@@ -659,7 +637,7 @@ object dmPDFBoletos: TdmPDFBoletos
     object qryCBR_CONFIGEMP_CEP: TWideStringField
       AutoGenerateValue = arDefault
       FieldName = 'EMP_CEP'
-      Origin = 'EMP_CEP'
+      Origin = 'CEP'
       ProviderFlags = []
       ReadOnly = True
       FixedChar = True
@@ -672,60 +650,6 @@ object dmPDFBoletos: TdmPDFBoletos
       ProviderFlags = []
       ReadOnly = True
       Size = 50
-    end
-    object qryCBR_CONFIGJUROS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'JUROS'
-      Origin = 'JUROS'
-      Precision = 18
-      Size = 5
-    end
-    object qryCBR_CONFIGMULTA: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'MULTA'
-      Origin = 'MULTA'
-      Precision = 18
-      Size = 5
-    end
-    object qryCBR_CONFIGCARENCIA_JUROS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'CARENCIA_JUROS'
-      Origin = 'CARENCIA_JUROS'
-    end
-    object qryCBR_CONFIGTIPO_CALC_JUROS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'TIPO_CALC_JUROS'
-      Origin = 'TIPO_CALC_JUROS'
-    end
-    object qryCBR_CONFIGWS_CLIENTID: TWideStringField
-      FieldName = 'WS_CLIENTID'
-      Origin = 'WS_CLIENTID'
-      Size = 500
-    end
-    object qryCBR_CONFIGWS_CLIENTSECRET: TWideStringField
-      FieldName = 'WS_CLIENTSECRET'
-      Origin = 'WS_CLIENTSECRET'
-      Size = 500
-    end
-    object qryCBR_CONFIGWS_KEYUSER: TWideStringField
-      FieldName = 'WS_KEYUSER'
-      Origin = 'WS_KEYUSER'
-      Size = 500
-    end
-    object qryCBR_CONFIGWS_SCOPE: TWideStringField
-      FieldName = 'WS_SCOPE'
-      Origin = 'WS_SCOPE'
-      Size = 255
-    end
-    object qryCBR_CONFIGWS_INDICADORPIX: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'WS_INDICADORPIX'
-      Origin = 'WS_INDICADORPIX'
-    end
-    object qryCBR_CONFIGLAYOUT: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'LAYOUT'
-      Origin = 'LAYOUT'
     end
   end
   object ACBrBoletoFCFortes1: TACBrBoletoFCFortes

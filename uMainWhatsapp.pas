@@ -464,7 +464,7 @@ end;
 
 procedure TfmMainWhatsapp.chkNaoListarLogClick(Sender: TObject);
 begin
-  if chkInicioAutomatico.Checked then
+  if chkNaoListarLog.Checked then
     GravarIni('GERAL','LISTAR_LOG','S', FPathIniSistema )
   ELSE
     GravarIni('GERAL','LISTAR_LOG','N', FPathIniSistema );
@@ -669,7 +669,7 @@ end;
 function TfmMainWhatsapp.GetNomeAtendente: string;
 begin
   if not (edNomeEmpresa.Text = EmptyStr) then
-    Result := '[*'+edNomeEmpresa.Text+'*]\n';
+    Result := '[ *'+edNomeEmpresa.Text+'* ]\n';
 end;
 
 procedure TfmMainWhatsapp.GravaLog(ALog, AFileName: string);
@@ -769,12 +769,20 @@ procedure TfmMainWhatsapp.RegistraLog(ADirecao: integer; ANumero, ANome, AMensag
 var
   lTexto: string;
 begin
-
+  if ADirecao = LOG_ERRO then
+  begin
+    lTexto := Format('######## [>>>> ERROR <<<<] - [%s - %s] - [%s] - %s',
+          [ANumero, ANome, FormatDateTime('dd/mm/yyyy hh:nn:ss', Now), AMensagem]);
+    if not (AInformacoes.IsEmpty) then
+      lTexto := lTexto + sLineBreak + AInformacoes;
+    mmMensagens.Lines.Add(lTexto);
+    GravaLog(lTexto, 'LOG_'+FMeuNumero+'_');
+    mmMensagens.Lines.Add('----------------------------------------------------------------------------------------------------------------------------------');
+  end;
   if not chkNaoListarLog.Checked then
     begin
       case ADirecao of
-        LOG_ERRO: lTexto := Format('######## [>>>> ERROR <<<<] - [%s - %s] - [%s] - %s',
-          [ANumero, ANome, FormatDateTime('dd/mm/yyyy hh:nn:ss', Now), AMensagem]);
+        LOG_ERRO: Exit;
         LOG_OPERACAO: lTexto := Format('######## [<<<< INFORMAÇÃO >>>>] - [%s - %s] - [%s] - %s',
           [ANumero, ANome, FormatDateTime('dd/mm/yyyy hh:nn:ss', Now), AMensagem]);
         TP_OPCAO_ENTREGA_PARA_EMPRESA: lTexto := Format('>>>>>>>> [MENSAGEM RECEBIDA] - [%s - %s] - [%s] - %s',

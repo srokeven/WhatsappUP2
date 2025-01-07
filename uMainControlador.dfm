@@ -11,6 +11,7 @@ object frmMainControlador: TfrmMainControlador
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -29,7 +30,6 @@ object frmMainControlador: TfrmMainControlador
     ParentFont = False
     ShowCaption = False
     TabOrder = 0
-    ExplicitHeight = 293
     object btnIniciar: TButton
       AlignWithMargins = True
       Left = 4
@@ -40,7 +40,6 @@ object frmMainControlador: TfrmMainControlador
       Caption = 'Iniciar'
       TabOrder = 0
       OnClick = btnIniciarClick
-      ExplicitWidth = 129
     end
     object btnParar: TButton
       AlignWithMargins = True
@@ -53,8 +52,6 @@ object frmMainControlador: TfrmMainControlador
       Enabled = False
       TabOrder = 1
       OnClick = btnPararClick
-      ExplicitTop = 47
-      ExplicitWidth = 129
     end
     object btnOpcoesAvancadas: TButton
       AlignWithMargins = True
@@ -72,7 +69,6 @@ object frmMainControlador: TfrmMainControlador
       ParentFont = False
       TabOrder = 2
       OnClick = btnOpcoesAvancadasClick
-      ExplicitLeft = 2
     end
   end
   object mmLog: TMemo
@@ -82,10 +78,6 @@ object frmMainControlador: TfrmMainControlador
     Height = 311
     Align = alClient
     TabOrder = 1
-    ExplicitLeft = 272
-    ExplicitTop = 56
-    ExplicitWidth = 185
-    ExplicitHeight = 89
   end
   object tmCiclos: TTimer
     Enabled = False
