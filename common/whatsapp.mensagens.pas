@@ -2023,7 +2023,8 @@ end;
 
 function TMensagemBruta.VerificarSeEncerraAtendimento(ARespostaUsuario: string): boolean;
 begin
-  if StringsIguais(ARespostaUsuario, TP_PALAVRA_CHAVE_ATENDIMENTO_SAIR) then
+  Result := False;
+  if SameText(ARespostaUsuario, TP_PALAVRA_CHAVE_ATENDIMENTO_SAIR) then
     Result := True;
 end;
 
