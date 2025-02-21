@@ -106,39 +106,62 @@ begin
   end;
 end;
 
+//function SalvarImagemEncoded(aBase64: string): string;
+//var
+//  LInput: TMemoryStream;
+//  LOutput: TMemoryStream;
+//  outPutStream, inputStream: TStringStream;
+//  AStr: TStringList;
+//  vCaminhoArquivo, Base64ImageString, lNomeArquivo: string;
+//  jpg: TJPEGImage;
+//  imgAuxiliar: TImage;
+//begin
+//  Result := '';
+//  lNomeArquivo := 'IMG_'+THashMD5.GetHashString(aBase64);
+//  vCaminhoArquivo := GerarCaminhoArquivo(lNomeArquivo, 'jpg', False, False);
+//  if FileExists(vCaminhoArquivo) then
+//    Exit(vCaminhoArquivo);
+//  jpg := TJPEGImage.Create;
+//  imgAuxiliar := TImage.Create(nil);
+//  outPutStream := TStringStream.Create;
+//  try
+//    Base64ImageString := aBase64;
+//    inputStream := TStringStream.Create(Base64ImageString);
+//    TNetEncoding.Base64.Decode(inputStream, outPutStream);
+//    outPutStream.Position := 0;
+//    jpg.LoadFromStream(outPutStream);
+//    imgAuxiliar.Picture.Assign(nil);
+//    imgAuxiliar.Picture.Assign(jpg);
+//    imgAuxiliar.Picture.SaveToFile(vCaminhoArquivo);
+//    Result := vCaminhoArquivo;
+//  finally
+//    imgAuxiliar.Free;
+//    jpg.Free;
+//    inputStream.Free;
+//    outPutStream.Free;
+//  end;
+//end;
+
 function SalvarImagemEncoded(aBase64: string): string;
 var
-  LInput: TMemoryStream;
-  LOutput: TMemoryStream;
-  outPutStream, inputStream: TStringStream;
-  AStr: TStringList;
-  vCaminhoArquivo, Base64ImageString, lNomeArquivo: string;
-  jpg: TJPEGImage;
-  imgAuxiliar: TImage;
+  lNomeArquivo, vCaminhoArquivo: string;
+  lOutputStream, lInputStream: TStringStream;
 begin
   Result := '';
   lNomeArquivo := 'IMG_'+THashMD5.GetHashString(aBase64);
   vCaminhoArquivo := GerarCaminhoArquivo(lNomeArquivo, 'jpg', False, False);
   if FileExists(vCaminhoArquivo) then
     Exit(vCaminhoArquivo);
-  jpg := TJPEGImage.Create;
-  imgAuxiliar := TImage.Create(nil);
-  outPutStream := TStringStream.Create;
+  lOutputStream := TStringStream.Create;
+  lInputStream := TStringStream.Create(aBase64);
   try
-    Base64ImageString := aBase64;
-    inputStream := TStringStream.Create(Base64ImageString);
-    TNetEncoding.Base64.Decode(inputStream, outPutStream);
-    outPutStream.Position := 0;
-    jpg.LoadFromStream(outPutStream);
-    imgAuxiliar.Picture.Assign(nil);
-    imgAuxiliar.Picture.Assign(jpg);
-    imgAuxiliar.Picture.SaveToFile(vCaminhoArquivo);
+    TNetEncoding.Base64.Decode(lInputStream, lOutputStream);
+    lOutputStream.Position := 0;
+    lOutputStream.SaveToFile(vCaminhoArquivo);
     Result := vCaminhoArquivo;
   finally
-    imgAuxiliar.Free;
-    jpg.Free;
-    inputStream.Free;
-    outPutStream.Free;
+    lInputStream.Free;
+    lOutputStream.Free;
   end;
 end;
 

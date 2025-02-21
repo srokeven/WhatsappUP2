@@ -10,12 +10,10 @@ object fmMainWhatsapp: TfmMainWhatsapp
   Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poScreenCenter
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 16
   object pnlBackground: TPanel
     Left = 0
@@ -25,6 +23,8 @@ object fmMainWhatsapp: TfmMainWhatsapp
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitWidth = 1010
+    ExplicitHeight = 540
     object pnlTopo: TPanel
       Left = 0
       Top = 0
@@ -42,6 +42,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
       ParentBackground = False
       ParentFont = False
       TabOrder = 0
+      ExplicitWidth = 1010
       object Label1: TLabel
         Left = 0
         Top = 0
@@ -69,6 +70,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
       BevelKind = bkTile
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitHeight = 483
       object pnlTipoConexao: TPanel
         AlignWithMargins = True
         Left = 0
@@ -217,6 +219,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
         ParentBackground = False
         ParentFont = False
         TabOrder = 2
+        ExplicitHeight = 137
         object lbStatus: TLabel
           Left = 0
           Top = 0
@@ -249,6 +252,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
           Font.Style = []
           ParentFont = False
           TabOrder = 0
+          ExplicitTop = 90
           object btnDesconectar: TcxButton
             AlignWithMargins = True
             Left = 170
@@ -337,6 +341,8 @@ object fmMainWhatsapp: TfmMainWhatsapp
       BevelKind = bkTile
       BevelOuter = bvNone
       TabOrder = 2
+      ExplicitWidth = 673
+      ExplicitHeight = 483
       object pnlInformacoes: TPanel
         Left = 0
         Top = 0
@@ -344,6 +350,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
         Height = 65
         Align = alTop
         TabOrder = 0
+        ExplicitWidth = 669
         DesignSize = (
           675
           65)
@@ -383,6 +390,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
           ParentFont = False
           TabOrder = 0
           Text = 'EMPRESA'
+          ExplicitWidth = 452
         end
       end
       object pcInformacoes: TPageControl
@@ -393,9 +401,11 @@ object fmMainWhatsapp: TfmMainWhatsapp
         ActivePage = tsLogs
         Align = alClient
         TabOrder = 1
+        ExplicitWidth = 669
+        ExplicitHeight = 414
         object tsLogs: TTabSheet
           Caption = 'Logs'
-          object W: TLabel
+          object lbLogUltimasMensagens: TLabel
             AlignWithMargins = True
             Left = 3
             Top = 3
@@ -403,15 +413,28 @@ object fmMainWhatsapp: TfmMainWhatsapp
             Height = 16
             Align = alTop
             Caption = 'Log das '#250'ltimas mensagens'
-            ExplicitWidth = 158
+            ExplicitTop = 0
+          end
+          object lbStatusLooping: TLabel
+            AlignWithMargins = True
+            Left = 3
+            Top = 373
+            Width = 661
+            Height = 16
+            Align = alBottom
+            Caption = 'Parado'
+            OnDblClick = lbStatusLoopingDblClick
+            ExplicitWidth = 40
           end
           object mmMensagens: TMemo
             Left = 0
             Top = 22
             Width = 667
-            Height = 370
+            Height = 348
             Align = alClient
             TabOrder = 0
+            ExplicitWidth = 661
+            ExplicitHeight = 361
           end
           object chkNaoListarLog: TCheckBox
             Left = 559
@@ -1021,8 +1044,8 @@ object fmMainWhatsapp: TfmMainWhatsapp
     OnGetMe = WhatsappWebGetMe
     OnNewGetNumber = WhatsappWebNewGetNumber
     OnGetIncomingCall = WhatsappWebGetIncomingCall
-    Left = 528
-    Top = 88
+    Left = 904
+    Top = 96
   end
   object tmEnvioMensagens: TTimer
     Enabled = False

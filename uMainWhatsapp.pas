@@ -50,7 +50,7 @@ type
     lbStatus: TLabel;
     pnlInformacoes: TPanel;
     lbMeuNumero: TLabel;
-    W: TLabel;
+    lbLogUltimasMensagens: TLabel;
     mmMensagens: TMemo;
     FDPhysFBDriverLink1: TFDPhysFBDriverLink;
     FDGUIxWaitCursor1: TFDGUIxWaitCursor;
@@ -147,6 +147,7 @@ type
     pnlAlertaFinalizando: TPanel;
     chkInicioAutomatico: TCheckBox;
     chkNaoListarLog: TCheckBox;
+    lbStatusLooping: TLabel;
     procedure SpeedButton1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -179,6 +180,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure chkInicioAutomaticoClick(Sender: TObject);
     procedure chkNaoListarLogClick(Sender: TObject);
+    procedure lbStatusLoopingDblClick(Sender: TObject);
   private
     FPathIniSistema: string;
     FCaminhoArquivoIni: string;
@@ -197,8 +199,8 @@ type
       AAnexoMensagem, AInformacoes: string);
     procedure SalvaMensagemRecebida(ANumeroCliente, ANomeCliente, AProtocolo, AMensagemTexto,
       AAnexoMensagem: string; AConexao: TFDConnection);
-    procedure EnviaMensagem(ANumeroCliente, ANomeCliente, AMensagemTexto: string);
-    procedure EnviaMensagemComAnexo(ANumeroCliente, ANomeCliente, AMensagemTexto, AAnexo: string);
+    function EnviaMensagem(ANumeroCliente, ANomeCliente, AMensagemTexto: string): boolean;
+    function EnviaMensagemComAnexo(ANumeroCliente, ANomeCliente, AMensagemTexto, AAnexo: string): boolean;
     procedure ConsultarMensagensParaEnviar;
     function EncodeAnexo(AAquivo: string): string;
     procedure SalvarConfiguracoes;
@@ -542,28 +544,36 @@ begin
         TP_ENTREGA_ANEXO_IMAGEM:
           begin
             if not (lMensagensParaEnviar[I].GetAnexoImagem.IsEmpty) then
-              EnviaMensagemComAnexo(lMensagensParaEnviar[I].NumeroCliente,
+              if EnviaMensagemComAnexo(lMensagensParaEnviar[I].NumeroCliente,
                                     lMensagensParaEnviar[I].ClienteNome,
                                     lMensagensParaEnviar[I].GetMensagem,
-                                    lMensagensParaEnviar[I].GetAnexoImagem);
+                                    lMensagensParaEnviar[I].GetAnexoImagem) then
+                lRespostaLida := lMensagensParaEnviar[I].MarcarComoEnviada(fdConexaoEnvio)
+              else
+                lRespostaLida := 'Mensagem não enviada';
           end;
         TP_ENTREGA_ANEXO_PDF:
           begin
             if not (lMensagensParaEnviar[I].GetAnexoPDF.IsEmpty) then
-              EnviaMensagemComAnexo(lMensagensParaEnviar[I].NumeroCliente,
+              if EnviaMensagemComAnexo(lMensagensParaEnviar[I].NumeroCliente,
                                     lMensagensParaEnviar[I].ClienteNome,
                                     lMensagensParaEnviar[I].GetMensagem,
-                                    lMensagensParaEnviar[I].GetAnexoPDF);
+                                    lMensagensParaEnviar[I].GetAnexoPDF) then
+                lRespostaLida := lMensagensParaEnviar[I].MarcarComoEnviada(fdConexaoEnvio)
+              else
+                lRespostaLida := 'Mensagem não enviada';
           end;
         else
           begin
             if not (lMensagensParaEnviar[I].GetMensagem.IsEmpty) then
-                EnviaMensagem(lMensagensParaEnviar[I].NumeroCliente,
+              if EnviaMensagem(lMensagensParaEnviar[I].NumeroCliente,
                                       lMensagensParaEnviar[I].ClienteNome,
-                                      lMensagensParaEnviar[I].GetMensagem);
+                                      lMensagensParaEnviar[I].GetMensagem) then
+                lRespostaLida := lMensagensParaEnviar[I].MarcarComoEnviada(fdConexaoEnvio)
+              else
+                lRespostaLida := 'Mensagem não enviada';
           end;
       end;
-      lRespostaLida := lMensagensParaEnviar[I].MarcarComoEnviada(fdConexaoEnvio);
       if not (lRespostaLida.IsEmpty) then
         RegistraLog(LOG_ERRO, lMensagensParaEnviar[I].NumeroCliente, lMensagensParaEnviar[I].ClienteNome, lRespostaLida, '');
       if lMensagensParaEnviar[I].OpcaoEntregue = TP_ENTREGA_TEXTO_ATIVO then
@@ -582,15 +592,17 @@ begin
   Result := EmptyStr;
 end;
 
-procedure TfmMainWhatsapp.EnviaMensagemComAnexo(ANumeroCliente, ANomeCliente,
-  AMensagemTexto, AAnexo: string);
+function TfmMainWhatsapp.EnviaMensagemComAnexo(ANumeroCliente, ANomeCliente,
+  AMensagemTexto, AAnexo: string): boolean;
 begin
+  Result := False;
   if not (AAnexo.IsEmpty) then
   begin
     try
       WhatsappWeb.SendFile(ANumeroCliente,
                            AAnexo,
                            IfThen(AMensagemTexto.IsEmpty, '', GetNomeAtendente+AMensagemTexto));
+      Result := True;
       RegistraLog(TP_OPCAO_ENTREGA_PARA_USUARIO, ANumeroCliente, ANomeCliente, AMensagemTexto, '');
     except
       on e: exception do
@@ -600,17 +612,19 @@ begin
     end;
   end
   else
-    EnviaMensagem(ANumeroCliente, ANomeCliente, AMensagemTexto);
+    Result := EnviaMensagem(ANumeroCliente, ANomeCliente, AMensagemTexto);
 end;
 
-procedure TfmMainWhatsapp.EnviaMensagem(ANumeroCliente, ANomeCliente, AMensagemTexto: string);
+function TfmMainWhatsapp.EnviaMensagem(ANumeroCliente, ANomeCliente, AMensagemTexto: string): boolean;
 begin
+  Result := False;
   if not (AMensagemTexto.IsEmpty) then
   begin
     try
       if not (FMarcarMensagensRecebidasComoLidasAoPausar) then
       begin
         WhatsappWeb.Send(ANumeroCliente, GetNomeAtendente+AMensagemTexto);
+        Result := True;
         RegistraLog(TP_OPCAO_ENTREGA_PARA_USUARIO, ANumeroCliente, ANomeCliente, AMensagemTexto, '');
       end;
     except
@@ -708,6 +722,24 @@ begin
     vIni.WriteString(ASecao, AIdent, AValor);
   finally
     vIni.Free;
+  end;
+end;
+
+procedure TfmMainWhatsapp.lbStatusLoopingDblClick(Sender: TObject);
+begin
+  if tmEnvioMensagens.Enabled then
+  begin
+    if ShowQuestion('Deseja parar o looping?') then
+    begin
+      tmEnvioMensagens.Enabled := False;
+    end;
+  end
+  else
+  begin
+    if ShowQuestion('Deseja iniciar o looping?') then
+    begin
+      tmEnvioMensagens.Enabled := True;
+    end;
   end;
 end;
 
@@ -911,6 +943,7 @@ procedure TfmMainWhatsapp.tmEnvioMensagensTimer(Sender: TObject);
 begin
   try
     tmEnvioMensagens.Enabled := False;
+    lbStatusLooping.Caption := 'Ultima verificação: '+FormatDateTime('dd/mm/yyyy hh:nn:ss', now);
     if EstarNoHorario then
     begin
       FEnvioAtivoAtivado := True;

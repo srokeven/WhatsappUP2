@@ -1068,7 +1068,8 @@ begin
                        'left join CLIENTES CLI on CLI.ID = E.CLIENTE_ID ' +
                        'where E.NUMERO_EMPRESA = :NUMEROEMPRESA and ' +
                              'current_timestamp between E.DATA_ENVIO_INICIO and E.DATA_ENVIO_FINAL and ' +
-                             'E.STATUS_ENVIO = :STATUSENVIO';
+                             'E.STATUS_ENVIO = :STATUSENVIO '+
+                             ' and coalesce(E.NUMERO_CLIENTE, '''') <> '''' ';
     lQuery.ParamByName('NUMEROEMPRESA').AsString := ANumeroEmpresa;
     lQuery.ParamByName('STATUSENVIO').AsInteger := STS_MENSAGEM_NAO_ENVIADA;
     lQuery.Open;
