@@ -148,6 +148,7 @@ type
     chkInicioAutomatico: TCheckBox;
     chkNaoListarLog: TCheckBox;
     lbStatusLooping: TLabel;
+    tmRestartApp: TTimer;
     procedure SpeedButton1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -181,6 +182,8 @@ type
     procedure chkInicioAutomaticoClick(Sender: TObject);
     procedure chkNaoListarLogClick(Sender: TObject);
     procedure lbStatusLoopingDblClick(Sender: TObject);
+    procedure tmRestartAppTimer(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     FPathIniSistema: string;
     FCaminhoArquivoIni: string;
@@ -540,13 +543,14 @@ begin
     lMensagensParaEnviar := TMensagemEnviar.RecuperaMensagens(FMeuNumero, fdConexaoEnvio);
     for I := 0 to lMensagensParaEnviar.Count - 1 do
     begin
+      Sleep(5000);
       case lMensagensParaEnviar[I].OpcaoEntregue of
         TP_ENTREGA_ANEXO_IMAGEM:
           begin
             if not (lMensagensParaEnviar[I].GetAnexoImagem.IsEmpty) then
               if EnviaMensagemComAnexo(lMensagensParaEnviar[I].NumeroCliente,
                                     lMensagensParaEnviar[I].ClienteNome,
-                                    lMensagensParaEnviar[I].GetMensagem,
+                                    lMensagensParaEnviar[I].GetMensagem(lMensagensParaEnviar[I].ClienteNome),
                                     lMensagensParaEnviar[I].GetAnexoImagem) then
                 lRespostaLida := lMensagensParaEnviar[I].MarcarComoEnviada(fdConexaoEnvio)
               else
@@ -557,7 +561,7 @@ begin
             if not (lMensagensParaEnviar[I].GetAnexoPDF.IsEmpty) then
               if EnviaMensagemComAnexo(lMensagensParaEnviar[I].NumeroCliente,
                                     lMensagensParaEnviar[I].ClienteNome,
-                                    lMensagensParaEnviar[I].GetMensagem,
+                                    lMensagensParaEnviar[I].GetMensagem(lMensagensParaEnviar[I].ClienteNome),
                                     lMensagensParaEnviar[I].GetAnexoPDF) then
                 lRespostaLida := lMensagensParaEnviar[I].MarcarComoEnviada(fdConexaoEnvio)
               else
@@ -565,10 +569,10 @@ begin
           end;
         else
           begin
-            if not (lMensagensParaEnviar[I].GetMensagem.IsEmpty) then
+            if not (lMensagensParaEnviar[I].GetMensagem(lMensagensParaEnviar[I].ClienteNome).IsEmpty) then
               if EnviaMensagem(lMensagensParaEnviar[I].NumeroCliente,
                                       lMensagensParaEnviar[I].ClienteNome,
-                                      lMensagensParaEnviar[I].GetMensagem) then
+                                      lMensagensParaEnviar[I].GetMensagem(lMensagensParaEnviar[I].ClienteNome)) then
                 lRespostaLida := lMensagensParaEnviar[I].MarcarComoEnviada(fdConexaoEnvio)
               else
                 lRespostaLida := 'Mensagem não enviada';
@@ -654,14 +658,20 @@ begin
         Exit;
       end;
     else
-      ShowMessage(TInject(WhatsappWeb).StatusToStr);
+    begin
+      if tmRestartApp.Enabled then
+        ShowMessage(TInject(WhatsappWeb).StatusToStr);
+    end;
   end;
 end;
 
 procedure TfmMainWhatsapp.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
-  CanClose := ShowQuestion('Deseja fechar o serviço de recebimento e envio de mensagens?');
+  if tmRestartApp.Enabled then
+    CanClose := ShowQuestion('Deseja fechar o serviço de recebimento e envio de mensagens?')
+  else
+    CanClose := True;
 end;
 
 procedure TfmMainWhatsapp.FormCreate(Sender: TObject);
@@ -678,6 +688,11 @@ begin
   if chkInicioAutomatico.Checked then
   btnConectar.Click;
 
+end;
+
+procedure TfmMainWhatsapp.FormShow(Sender: TObject);
+begin
+  tmRestartApp.Enabled := True;
 end;
 
 function TfmMainWhatsapp.GetNomeAtendente: string;
@@ -955,6 +970,12 @@ begin
     FEnvioAtivoAtivado := False;
     tmEnvioMensagens.Enabled := True;
   end;
+end;
+
+procedure TfmMainWhatsapp.tmRestartAppTimer(Sender: TObject);
+begin
+  tmRestartApp.Enabled := False;
+  Close;
 end;
 
 procedure TfmMainWhatsapp.VerificaExpediente;

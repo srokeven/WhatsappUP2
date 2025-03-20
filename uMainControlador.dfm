@@ -10,10 +10,8 @@ object frmMainControlador: TfrmMainControlador
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   OnCreate = FormCreate
   OnShow = FormShow
-  PixelsPerInch = 96
   TextHeight = 13
   object pnlSideBar: TPanel
     Left = 0
@@ -30,6 +28,7 @@ object frmMainControlador: TfrmMainControlador
     ParentFont = False
     ShowCaption = False
     TabOrder = 0
+    ExplicitHeight = 302
     object btnIniciar: TButton
       AlignWithMargins = True
       Left = 4
@@ -78,6 +77,8 @@ object frmMainControlador: TfrmMainControlador
     Height = 311
     Align = alClient
     TabOrder = 1
+    ExplicitWidth = 523
+    ExplicitHeight = 302
   end
   object tmCiclos: TTimer
     Enabled = False

@@ -12,7 +12,7 @@ uses
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys,
   FireDAC.Phys.FB, FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait, FireDAC.Comp.UI,
   FireDAC.Phys.IBBase, Data.DB, FireDAC.Comp.Client, whatsapp.constantes,
-  System.DateUtils, IniFiles;
+  System.DateUtils, IniFiles, Vcl.Mask;
 
 type
   TfmControladorMensagens = class(TForm)
@@ -218,7 +218,7 @@ begin
           if not (lMensagensParaEnviar[I].GetAnexoImagem.IsEmpty) then
             mmLog.Lines.Add(Format('Numero cliente: %s; Nome cliente: %s; Mensagem: %s; Anexo: %s', [lMensagensParaEnviar[I].NumeroCliente,
                                   lMensagensParaEnviar[I].ClienteNome,
-                                  lMensagensParaEnviar[I].GetMensagem,
+                                  lMensagensParaEnviar[I].GetMensagem(lMensagensParaEnviar[I].ClienteNome),
                                   lMensagensParaEnviar[I].GetAnexoImagem]));
         end;
       TP_ENTREGA_ANEXO_PDF:
@@ -226,15 +226,15 @@ begin
           if not (lMensagensParaEnviar[I].GetAnexoImagem.IsEmpty) then
             mmLog.Lines.Add(Format('Numero cliente: %s; Nome cliente: %s; Mensagem: %s; Anexo: %s', [lMensagensParaEnviar[I].NumeroCliente,
                                   lMensagensParaEnviar[I].ClienteNome,
-                                  lMensagensParaEnviar[I].GetMensagem,
+                                  lMensagensParaEnviar[I].GetMensagem(lMensagensParaEnviar[I].ClienteNome),
                                   lMensagensParaEnviar[I].GetAnexoPDF]));
         end;
       else
         begin
-          if not (lMensagensParaEnviar[I].GetMensagem.IsEmpty) then
+          if not (lMensagensParaEnviar[I].GetMensagem(lMensagensParaEnviar[I].ClienteNome).IsEmpty) then
               mmLog.Lines.Add(Format('Numero cliente: %s; Nome cliente: %s; Mensagem: %s', [lMensagensParaEnviar[I].NumeroCliente,
                                     lMensagensParaEnviar[I].ClienteNome,
-                                    lMensagensParaEnviar[I].GetMensagem]));
+                                    lMensagensParaEnviar[I].GetMensagem(lMensagensParaEnviar[I].ClienteNome)]));
         end;
     end;
     lRespostaLida := lMensagensParaEnviar[I].MarcarComoEnviada(fdConexao);

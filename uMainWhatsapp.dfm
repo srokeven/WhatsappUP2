@@ -14,6 +14,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnShow = FormShow
   TextHeight = 16
   object pnlBackground: TPanel
     Left = 0
@@ -413,7 +414,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
             Height = 16
             Align = alTop
             Caption = 'Log das '#250'ltimas mensagens'
-            ExplicitTop = 0
+            ExplicitWidth = 158
           end
           object lbStatusLooping: TLabel
             AlignWithMargins = True
@@ -434,7 +435,7 @@ object fmMainWhatsapp: TfmMainWhatsapp
             Align = alClient
             TabOrder = 0
             ExplicitWidth = 661
-            ExplicitHeight = 361
+            ExplicitHeight = 339
           end
           object chkNaoListarLog: TCheckBox
             Left = 559
@@ -1009,8 +1010,8 @@ object fmMainWhatsapp: TfmMainWhatsapp
   end
   object odArquivo: TOpenDialog
     Filter = 'Arquivo de configuracao|*.ini'
-    Left = 272
-    Top = 416
+    Left = 412
+    Top = 336
   end
   object FDPhysFBDriverLink1: TFDPhysFBDriverLink
     Left = 832
@@ -1063,8 +1064,8 @@ object fmMainWhatsapp: TfmMainWhatsapp
     ResourceOptions.AssignedValues = [rvAutoReconnect]
     ResourceOptions.AutoReconnect = True
     LoginPrompt = False
-    Left = 712
-    Top = 360
+    Left = 890
+    Top = 290
   end
   object fdConexaoRecebimento: TFDConnection
     ConnectionName = 'ConexaoEnvio'
@@ -1075,8 +1076,8 @@ object fmMainWhatsapp: TfmMainWhatsapp
     ResourceOptions.AssignedValues = [rvAutoReconnect]
     ResourceOptions.AutoReconnect = True
     LoginPrompt = False
-    Left = 712
-    Top = 408
+    Left = 738
+    Top = 326
   end
   object fdConexaoAdmininstrativo: TFDConnection
     ConnectionName = 'ConexaoAdministrativo'
@@ -1089,5 +1090,12 @@ object fmMainWhatsapp: TfmMainWhatsapp
     LoginPrompt = False
     Left = 712
     Top = 464
+  end
+  object tmRestartApp: TTimer
+    Enabled = False
+    Interval = 7200000
+    OnTimer = tmRestartAppTimer
+    Left = 413
+    Top = 253
   end
 end

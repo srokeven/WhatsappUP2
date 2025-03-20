@@ -2,25 +2,24 @@ object fmControladorMensagens: TfmControladorMensagens
   Left = 0
   Top = 0
   Caption = 'Controlador de mensagens'
-  ClientHeight = 534
-  ClientWidth = 951
+  ClientHeight = 525
+  ClientWidth = 945
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   OnShow = FormShow
-  PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 951
+    Width = 945
     Height = 65
     Align = alTop
     TabOrder = 0
+    ExplicitWidth = 951
     object Button1: TButton
       Left = 9
       Top = 21
@@ -63,18 +62,21 @@ object fmControladorMensagens: TfmControladorMensagens
   object mmLog: TMemo
     Left = 297
     Top = 65
-    Width = 359
-    Height = 469
+    Width = 353
+    Height = 460
     Align = alClient
     TabOrder = 1
+    ExplicitWidth = 359
+    ExplicitHeight = 469
   end
   object Panel2: TPanel
     Left = 0
     Top = 65
     Width = 297
-    Height = 469
+    Height = 460
     Align = alLeft
     TabOrder = 2
+    ExplicitHeight = 469
     object Label1: TLabel
       Left = 8
       Top = 112
@@ -164,6 +166,7 @@ object fmControladorMensagens: TfmControladorMensagens
       EditLabel.Height = 13
       EditLabel.Caption = 'Opcao entregue'
       TabOrder = 4
+      Text = ''
     end
     object OpcaoRecebida: TLabeledEdit
       Left = 160
@@ -174,6 +177,7 @@ object fmControladorMensagens: TfmControladorMensagens
       EditLabel.Height = 13
       EditLabel.Caption = 'Op'#231#227'o recebida'
       TabOrder = 5
+      Text = ''
     end
     object Mensagem: TLabeledEdit
       Left = 8
@@ -184,6 +188,7 @@ object fmControladorMensagens: TfmControladorMensagens
       EditLabel.Height = 13
       EditLabel.Caption = 'Mensagem'
       TabOrder = 6
+      Text = ''
     end
     object AnexoMensagem: TLabeledEdit
       Left = 8
@@ -194,6 +199,7 @@ object fmControladorMensagens: TfmControladorMensagens
       EditLabel.Height = 13
       EditLabel.Caption = 'Anexo mensagem'
       TabOrder = 7
+      Text = ''
     end
     object Button4: TButton
       Left = 8
@@ -213,6 +219,7 @@ object fmControladorMensagens: TfmControladorMensagens
       EditLabel.Height = 13
       EditLabel.Caption = 'Ticket'
       TabOrder = 9
+      Text = ''
     end
     object StatusEnvio: TComboBox
       Left = 9
@@ -272,12 +279,14 @@ object fmControladorMensagens: TfmControladorMensagens
     end
   end
   object Panel3: TPanel
-    Left = 656
+    Left = 650
     Top = 65
     Width = 295
-    Height = 469
+    Height = 460
     Align = alRight
     TabOrder = 3
+    ExplicitLeft = 656
+    ExplicitHeight = 469
     object Label3: TLabel
       Left = 6
       Top = 69

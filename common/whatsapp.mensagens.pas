@@ -44,7 +44,7 @@ type
     function RegistraMensagem(AConexao: TFDConnection): string;
     procedure SetMensagem(ATextoBruto: string);
     procedure SetAnexoMensagem(ACaminhoArquivo: string);
-    function GetMensagem: string;
+    function GetMensagem(ANomeCliente: string): string;
     function GetAnexoImagem:string;
     function GetAnexoPDF:string;
     function MarcarComoEnviada(AConexao: TFDConnection): string; //Retorna erro caso houver
@@ -1001,7 +1001,7 @@ begin
           lMensagemParaEnviar := lTextoPadrao + lMensagemWhatsapp.GetTextoInicioSair;
         end;
         else begin
-          lMensagemParaEnviar := lTextoPadrao + ReplaceStr(lUltimaMensagemValida.GetMensagem, lTextoPadrao, '');
+          lMensagemParaEnviar := lTextoPadrao + ReplaceStr(lUltimaMensagemValida.GetMensagem(lUltimaMensagemValida.ClienteNome), lTextoPadrao, '');
         end;
       end;
 
@@ -1273,17 +1273,23 @@ end;
 
 function TMensagemEnviar.GetAnexoImagem: string;
 begin
-  Result := SalvarImagemEncoded(FAnexoMensagem);
+  if Length(FAnexoMensagem) < 50 then
+    Result := EmptyStr
+  else
+    Result := SalvarImagemEncoded(FAnexoMensagem);
 end;
 
 function TMensagemEnviar.GetAnexoPDF: string;
 begin
-  Result := SalvarPDFEncoded(FAnexoMensagem);
+  if Length(FAnexoMensagem) < 50 then
+    Result := EmptyStr
+  else
+    Result := SalvarPDFEncoded(FAnexoMensagem);
 end;
 
-function TMensagemEnviar.GetMensagem: string;
+function TMensagemEnviar.GetMensagem(ANomeCliente: string): string;
 begin
-  Result := Trim(DecodeString(FMensagem));
+  Result := ReplaceText(Trim(DecodeString(FMensagem)), '{CLIENTE}', ANomeCliente);
 end;
 
 function TMensagemEnviar.MarcarComoEnviada(AConexao: TFDConnection): string;
@@ -1584,7 +1590,7 @@ begin
                        'left join CLIENTES CLI on CLI.ID = B.CLIENTE_ID ' +
                        'where B.NUMERO_EMPRESA = :NUMEROEMPRESA and ' +
                              'current_timestamp between B.DATA_ENVIO_INICIO and B.DATA_ENVIO_FINAL and ' +
-                             'B.STATUS_ENVIO = :STATUSENVIO ';
+                             'B.STATUS_ENVIO = :STATUSENVIO  and char_length(B.NUMERO_CLIENTE) <= 11 ';
     lQuery.ParamByName('NUMEROEMPRESA').AsString := ANumeroEmpresa;
     lQuery.ParamByName('STATUSENVIO').AsInteger := AStatusEnvio;
     lQuery.Open;
@@ -1639,7 +1645,7 @@ begin
                        'from wb_mensagens b ' +
                        'where B.NUMERO_EMPRESA = :NUMEROEMPRESA and ' +
                              'current_timestamp between B.DATA_ENVIO_INICIO and B.DATA_ENVIO_FINAL and ' +
-                             'B.STATUS_ENVIO = :STATUSENVIO ';
+                             'B.STATUS_ENVIO = :STATUSENVIO and char_length(B.NUMERO_CLIENTE) <= 11 ';
     lQuery.ParamByName('NUMEROEMPRESA').AsString := ANumeroEmpresa;
     lQuery.ParamByName('STATUSENVIO').AsInteger := STS_MENSAGEM_RECEBIDA;
     lQuery.Open;
@@ -1663,7 +1669,7 @@ begin
                          'where B.NUMERO_EMPRESA = :NUMEROEMPRESA and ' +
                                'current_timestamp between B.DATA_ENVIO_INICIO and B.DATA_ENVIO_FINAL and ' +
                                'B.STATUS_ENVIO = :STATUSENVIO and ' +
-                               'B.NUMERO_CLIENTE = :NUMEROCLIENTE ' +
+                               'B.NUMERO_CLIENTE = :NUMEROCLIENTE  and char_length(B.NUMERO_CLIENTE) <= 11 ' +
                          'order by B.DATA_CADASTRO desc ';
       lQuery.ParamByName('CLIENTEID').AsInteger := lNumeros.Items[Key];
       lQuery.ParamByName('NUMEROEMPRESA').AsString := ANumeroEmpresa;

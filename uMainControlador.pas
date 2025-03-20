@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, System.DateUtils, IniFiles,
-  whatsapp.mensagens, uControladorMensagens;
+  whatsapp.mensagens, uControladorMensagens, Winapi.TlHelp32, Winapi.ShellApi	;
 
 type
   TfrmMainControlador = class(TForm)
@@ -27,6 +27,8 @@ type
     function StrToBoolean(const Value: string): boolean;
     function VerificaExpediente: boolean;
     function LerIni(ASecao, AIdent, AValorDefault, AIniFile: string): string;
+    function ProcessRunning (sExeName: String) : Boolean;
+    procedure BringApplicationToFront(aClassForm, aExeCall: string; aUseShellExecuter: boolean = false);
   public
     { Public declarations }
   end;
@@ -37,6 +39,30 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TfrmMainControlador.BringApplicationToFront(aClassForm, aExeCall: string; aUseShellExecuter: boolean);
+var
+  Wnd : HWND;
+  _ExeName, _ParamName: string;
+begin
+  Wnd := FindWindow(PWideChar(aClassForm), nil);
+  if Wnd = 0 then
+  begin
+    if aExeCall.IsEmpty then
+    begin
+      Exit;
+    end;
+    _ExeName := Copy(aExeCall, 1, pos('.exe', aExeCall)+3);
+    _ParamName := Copy(aExeCall, pos('.exe', aExeCall)+5, Length(aExeCall));
+    if aUseShellExecuter then
+      ShellExecute(Application.Handle, 'open', PWideChar(aExeCall), nil, PWideChar(ExtractFilePath(aExeCall)), SW_SHOWNORMAL);
+  end
+  else
+    if IsIconic(Wnd) then
+      ShowWindow(Wnd, SW_RESTORE)
+    else
+      SetForegroundWindow(Wnd);
+end;
 
 procedure TfrmMainControlador.btnIniciarClick(Sender: TObject);
 begin
@@ -95,6 +121,28 @@ begin
   mmLog.Lines.Add(FormatDatetime('dd/mm/yyyy hh:nn:ss', Now)+' - '+ATexto);
 end;
 
+function TfrmMainControlador.ProcessRunning(sExeName: String): Boolean;
+var
+  hSnapShot : THandle;
+  ProcessEntry32 : TProcessEntry32;
+begin
+  Result := false;
+  hSnapShot := CreateToolhelp32Snapshot (TH32CS_SNAPPROCESS, 0);
+  Win32Check (hSnapShot <> INVALID_HANDLE_VALUE);
+  sExeName := LowerCase (sExeName);
+  FillChar (ProcessEntry32, SizeOf (TProcessEntry32), #0);
+  ProcessEntry32.dwSize := SizeOf (TProcessEntry32);
+  if (Process32First (hSnapShot, ProcessEntry32)) then
+    repeat
+      if (Pos (sExeName, LowerCase (ProcessEntry32.szExeFile)) = 1) then
+      begin
+        Result := true;
+        Break;
+      end;
+    until (Process32Next (hSnapShot, ProcessEntry32) = false);
+  CloseHandle (hSnapShot);
+end;
+
 function TfrmMainControlador.StrToBoolean(const Value: string): boolean;
 begin
   Result := SameText(Value, 'S');
@@ -109,6 +157,8 @@ begin
   tmCiclos.Enabled := False;
   mmLog.Lines.Clear;
   Log('Processo iniciado');
+  if not (ProcessRunning('WhatsAppUP2.exe')) then
+    BringApplicationToFront('TfmMainWhatsapp', ExtractFilePath(ParamStr(0))+'WhatsAppUP2.exe', True);
   lProcessar := TProcessamentoMensagens.Create;
   try
     Log('Processando mensagens recebidas e a enviar');
