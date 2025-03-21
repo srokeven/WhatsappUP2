@@ -25,7 +25,7 @@ type
     FPathIniSistema: string;
     procedure Log(ATexto: string);
     function StrToBoolean(const Value: string): boolean;
-    function VerificaExpediente: boolean;
+    function VerificaExpediente(AAcrescentarHora: integer): boolean;
     function LerIni(ASecao, AIdent, AValorDefault, AIniFile: string): string;
     function ProcessRunning (sExeName: String) : Boolean;
     procedure BringApplicationToFront(aClassForm, aExeCall: string; aUseShellExecuter: boolean = false);
@@ -152,25 +152,31 @@ procedure TfrmMainControlador.tmCiclosTimer(Sender: TObject);
 var
   lProcessar: TProcessamentoMensagens;
 begin
-  if not (VerificaExpediente) then
-    Exit;
+  if not (ProcessRunning('WhatsAppUP2.exe')) then
+    BringApplicationToFront('TfmMainWhatsapp', ExtractFilePath(ParamStr(0))+'WhatsAppUP2.exe', True);
+
   tmCiclos.Enabled := False;
   mmLog.Lines.Clear;
   Log('Processo iniciado');
-  if not (ProcessRunning('WhatsAppUP2.exe')) then
-    BringApplicationToFront('TfmMainWhatsapp', ExtractFilePath(ParamStr(0))+'WhatsAppUP2.exe', True);
   lProcessar := TProcessamentoMensagens.Create;
   try
-    Log('Processando mensagens recebidas e a enviar');
-    lProcessar.ExecutarMensagensTodosCadastros;
-    Log('Concluido. Processando mensagens de aniversario');
-    lProcessar.NotificaAniversariantes;
-    Log('Concluido. Processando mensagens de vencimento de boletos');
-    lProcessar.NotificaBoletosAntesDoVencimento;
-    Log('Concluido. Processando mensagens de boletos vencidos');
-    lProcessar.NotificaBoletosUmdiaAposVencimento;
-    Log('Concluido. Processando mensagens de aviso de boletos após 3 dias');
-    lProcessar.NotificaBoletosAcadaTresDias;
+    if VerificaExpediente(0) then
+    begin
+      Log('Processando mensagens recebidas e a enviar');
+      lProcessar.ExecutarMensagensTodosCadastros;
+      Log('Concluido. Processando mensagens de aniversario');
+      lProcessar.NotificaAniversariantes;
+    end;
+    if VerificaExpediente(-2) then
+    begin
+      Log('Concluido. Processando mensagens de vencimento de boletos');
+      lProcessar.NotificaBoletosAntesDoVencimento;
+      Log('Concluido. Processando mensagens de boletos vencidos');
+      lProcessar.NotificaBoletosUmdiaAposVencimento;
+      Log('Concluido. Processando mensagens de aviso de boletos após 3 dias');
+      lProcessar.NotificaBoletosAcadaTresDias;
+    end;
+
     Log('Concluido.');
   finally
     tmCiclos.Enabled := True;
@@ -178,9 +184,10 @@ begin
   end;
 end;
 
-function TfrmMainControlador.VerificaExpediente: boolean;
+function TfrmMainControlador.VerificaExpediente(AAcrescentarHora: integer): boolean;
 begin
   Result := True;
+  var HoraAtual := IncHour(Now, AAcrescentarHora);
   case DayOfTheWeek(Now) of
     DayMonday:
       begin
@@ -188,13 +195,13 @@ begin
           Exit(False)
         else
         begin
-          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'SEQUNDA_INICIO', '00:00:00', FPathIniSistema)),
+          if not (TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'SEQUNDA_INICIO', '00:00:00', FPathIniSistema)),
                                     StrToTime(LerIni('GERAL', 'SEQUNDA_FIM', '00:00:00', FPathIniSistema)), True)) then
           begin
             Exit(False);
           end;
           if StrToTime(LerIni('GERAL', 'SEQUNDA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
-          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'SEQUNDA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+          if TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'SEQUNDA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
                                StrToTime(LerIni('GERAL', 'SEQUNDA_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
           begin
             Exit(False);
@@ -207,13 +214,13 @@ begin
           Exit(False)
         else
         begin
-          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'TERCA_INICIO', '00:00:00', FPathIniSistema)),
+          if not (TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'TERCA_INICIO', '00:00:00', FPathIniSistema)),
                                     StrToTime(LerIni('GERAL', 'TERCA_FIM', '00:00:00', FPathIniSistema)), True)) then
           begin
             Exit(False);
           end;
           if StrToTime(LerIni('GERAL', 'TERCA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
-          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'TERCA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+          if TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'TERCA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
                                StrToTime(LerIni('GERAL', 'TERCA_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
           begin
             Exit(False);
@@ -226,13 +233,13 @@ begin
           Exit(False)
         else
         begin
-          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'QUARTA_INICIO', '00:00:00', FPathIniSistema)),
+          if not (TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'QUARTA_INICIO', '00:00:00', FPathIniSistema)),
                                     StrToTime(LerIni('GERAL', 'QUARTA_FIM', '00:00:00', FPathIniSistema)), True)) then
           begin
             Exit(False);
           end;
           if StrToTime(LerIni('GERAL', 'QUARTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
-          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'QUARTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+          if TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'QUARTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
                                StrToTime(LerIni('GERAL', 'QUARTA_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
           begin
             Exit(False);
@@ -245,13 +252,13 @@ begin
           Exit(False)
         else
         begin
-          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'QUINTA_INICIO', '00:00:00', FPathIniSistema)),
+          if not (TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'QUINTA_INICIO', '00:00:00', FPathIniSistema)),
                                     StrToTime(LerIni('GERAL', 'QUINTA_FIM', '00:00:00', FPathIniSistema)), True)) then
           begin
             Exit(False);
           end;
           if StrToTime(LerIni('GERAL', 'QUINTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
-          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'QUINTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+          if TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'QUINTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
                                StrToTime(LerIni('GERAL', 'QUINTA_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
           begin
             Exit(False);
@@ -264,13 +271,13 @@ begin
           Exit(False)
         else
         begin
-          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'SEXTA_INICIO', '00:00:00', FPathIniSistema)),
+          if not (TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'SEXTA_INICIO', '00:00:00', FPathIniSistema)),
                                     StrToTime(LerIni('GERAL', 'SEXTA_FIM', '00:00:00', FPathIniSistema)), True)) then
           begin
             Exit(False);
           end;
           if StrToTime(LerIni('GERAL', 'SEXTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
-          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'SEXTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+          if TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'SEXTA_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
                                StrToTime(LerIni('GERAL', 'SEXTA_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
           begin
             Exit(False);
@@ -283,13 +290,13 @@ begin
           Exit(False)
         else
         begin
-          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'SABADO_INICIO', '00:00:00', FPathIniSistema)),
+          if not (TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'SABADO_INICIO', '00:00:00', FPathIniSistema)),
                                     StrToTime(LerIni('GERAL', 'SABADO_FIM', '00:00:00', FPathIniSistema)), True)) then
           begin
             Exit(False);
           end;
           if StrToTime(LerIni('GERAL', 'SABADO_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
-          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'SABADO_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+          if TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'SABADO_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
                                StrToTime(LerIni('GERAL', 'SABADO_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
           begin
             Exit(False);
@@ -302,13 +309,13 @@ begin
           Exit(False)
         else
         begin
-          if not (TimeInRange(Time, StrToTime(LerIni('GERAL', 'DOMINGO_INICIO', '00:00:00', FPathIniSistema)),
+          if not (TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'DOMINGO_INICIO', '00:00:00', FPathIniSistema)),
                                     StrToTime(LerIni('GERAL', 'DOMINGO_FIM', '00:00:00', FPathIniSistema)), True)) then
           begin
             Exit(False);
           end;
           if StrToTime(LerIni('GERAL', 'DOMINGO_INTEVALO_INICIO', '00:00:00', FPathIniSistema)) > 0 then
-          if TimeInRange(Time, StrToTime(LerIni('GERAL', 'DOMINGO_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
+          if TimeInRange(TimeOf(HoraAtual), StrToTime(LerIni('GERAL', 'DOMINGO_INTEVALO_INICIO', '00:00:00', FPathIniSistema)),
                                StrToTime(LerIni('GERAL', 'DOMINGO_INTERVALO_FIM', '00:00:00', FPathIniSistema)), True) then
           begin
             Exit(False);

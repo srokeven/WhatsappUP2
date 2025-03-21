@@ -24,6 +24,7 @@ function SalvarImagemEncoded(aBase64: string): string;
 function EncodeFileBase64(aFile: string): string;
 function GerarCaminhoArquivo(aNome, aExt: string; aUsaCaractereAleatorio, aApagaSeExistir: boolean): string;
 function RemoverAcentos(const ATexto: string): string;
+function SomenteLetras(const ATexto: string): string;
 function StringsIguais(const AString1, AString2: string): Boolean;
 function StrZero(cNumero: Integer; cDigitos: Integer): string;
 function LoadLogoBase64: String;
@@ -219,6 +220,19 @@ begin
       Result[I] := 'u'
     else if Result[I] = 'ç' then
       Result[I] := 'c';
+end;
+
+function SomenteLetras(const ATexto: string): string;
+var
+  i: Integer;
+begin
+  Result := '';
+  for i := 1 to Length(ATexto) do
+    if (ATexto[i] in ['a'..'z', 'A'..'Z']) or (ATexto[i] = ' ') then
+      Result := Result + ATexto[i];
+  Result := Trim(ATexto);
+  if Result.IsEmpty then
+    Result := 'Cliente';
 end;
 
 function StringsIguais(const AString1, AString2: string): Boolean;

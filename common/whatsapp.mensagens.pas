@@ -27,7 +27,7 @@ type
     OpcaoEntregue: integer;
     Finalizado: integer;
     ClienteId: integer;
-    ClienteNome: string;
+    FClienteNome: string;
   private
     FAnexoMensagem: string;
     FMensagem: string;
@@ -47,6 +47,7 @@ type
     function GetMensagem(ANomeCliente: string): string;
     function GetAnexoImagem:string;
     function GetAnexoPDF:string;
+    function ClienteNome: string;
     function MarcarComoEnviada(AConexao: TFDConnection): string; //Retorna erro caso houver
     function MarcarComoFinalizada(AConexao: TFDConnection): string; //Retorna erro caso houver
     class function RetornaUltimaOpcaoEntregueValida(ANumeroEmpresa, ANumeroCliente: string; AConexao: TFDConnection): TMensagemEnviar; static;
@@ -64,7 +65,7 @@ type
     OpcaoRecebida: integer;
     Finalizado: integer;
     ClienteId: integer;
-    ClienteNome: string;
+    FClienteNome: string;
   private
     FMensagem: string;
   public
@@ -76,6 +77,7 @@ type
       AClienteId: integer; AClienteNome: string): TMensagemRecebida; static;
     procedure SetMensagem(ATextoBruto: string);
     function GetMensagem: string;
+    function ClienteNome: string;
     function RegistraMensagem(AConexao: TFDConnection): string;
     function MarcarComoFinalizada(AConexao: TFDConnection): string; //Retorna erro caso houver
     function GeraMensagemDeResposta: TMensagemEnviar;
@@ -99,7 +101,7 @@ type
     Finalizado: integer;
     ClienteId: integer;
     Protocolo: string;
-    vClienteNome: string;
+    FClienteNome: string;
   private
     FMensagem: string;
     FAnexoMensagem: string;
@@ -117,6 +119,7 @@ type
       AClienteNome: string): TMensagemBruta; static;
     procedure SetMensagem(ATextoBruto: string);
     procedure SetAnexoMensagem(ACaminhoArquivo: string);
+    function ClienteNome: string;
     function GetMensagem: string;
     function GetMensagemEncoded: string;
     function GetAnexoMensagemEncoded: string;
@@ -1049,7 +1052,7 @@ begin
   Result.FMensagem := AMensagem;
   Result.Finalizado := AFinalizado;
   Result.ClienteId := AClienteId;
-  Result.ClienteNome := AClienteNome;
+  Result.FClienteNome := AClienteNome;
   Result.FAnexoMensagem := AAnexoMensagem;
 end;
 
@@ -1267,8 +1270,13 @@ begin
   FMensagem := EmptyStr;
   Finalizado := 0;
   ClienteId := 0;
-  ClienteNome := EmptyStr;
+  FClienteNome := EmptyStr;
   FAnexoMensagem := EmptyStr;
+end;
+
+function TMensagemEnviar.ClienteNome: string;
+begin
+  Result := SomenteLetras(FClienteNome);
 end;
 
 function TMensagemEnviar.GetAnexoImagem: string;
@@ -1362,7 +1370,7 @@ begin
   Result.SetMensagem(AMensagem);
   Result.Finalizado := AFinalizado;
   Result.ClienteId := AClienteId;
-  Result.ClienteNome := AClienteNome;
+  Result.FClienteNome := AClienteNome;
   Result.FAnexoMensagem := AAnexoMensagem
 
   //já esta sendo passado o o anexo codificado
@@ -1395,7 +1403,12 @@ begin
   Result.Finalizado := AFinalizado;
   Result.ClienteId := AClienteId;
   Result.Protocolo := AProtocolo;
-  Result.vClienteNome := AClienteNome;
+  Result.FClienteNome := AClienteNome;
+end;
+
+function TMensagemBruta.ClienteNome: string;
+begin
+  Result := SomenteLetras(FClienteNome);
 end;
 
 function TMensagemBruta.ConverterTextoParaOpcaoMenu(
@@ -1491,7 +1504,7 @@ begin
     if not (lQuery.IsEmpty) then
     begin
       Self.ClienteId := lQuery.FieldByName('ID').AsInteger;
-      Self.vClienteNome := lQuery.FieldByName('DESCRICAO').AsString;
+      Self.FClienteNome := lQuery.FieldByName('DESCRICAO').AsString;
     end;
     lQuery.Close;
   finally
@@ -1571,7 +1584,7 @@ begin
   Result.Finalizado := AFinalizado;
   Result.ClienteId := AClienteId;
   Result.Protocolo := AProtocolo;
-  Result.vClienteNome := AClienteNome;
+  Result.FClienteNome := AClienteNome;
 end;
 
 class function TMensagemBruta.RecuperaMensagens(ANumeroEmpresa: string; AStatusEnvio: integer;
@@ -1821,7 +1834,7 @@ begin
   if ClienteId = 0 then
     IdentificarClienteAPartirDoWhatsapp(AConexao);
   Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, Ticket,
-    Protocolo, ATipoMensagemRecebida, FMensagem, Finalizado, ClienteId, vClienteNome);
+    Protocolo, ATipoMensagemRecebida, FMensagem, Finalizado, ClienteId, FClienteNome);
   Result.RegistraMensagem(AConexao);
 end;
 
@@ -1852,22 +1865,22 @@ begin
           if lRespostaTratada = TP_RECEBIDA_REQUISITAR_ULTIMOS_PEDIDOS then
             begin
               Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-                Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, vClienteNome);
+                Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, FClienteNome);
             end
           else
           if lRespostaTratada = TP_RECEBIDA_REQUISITAR_SETORES then
             BEGIN // ----- Listar Setores -----
               Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-                Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, vClienteNome);
+                Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, FClienteNome);
             END
           else If lRespostaTratada = TP_RECEBIDA_REQUISITAR_BOLETOS_EM_ABERTO then
               BEGIN
                 Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-                  Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, vClienteNome);
+                  Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, FClienteNome);
               END
           else if lRespostaTratada = TP_RECEBIDA_INVALIDA then
             Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-              Protocolo, TP_RECEBIDA_INVALIDA, FMensagem, Finalizado, ClienteId, vClienteNome);
+              Protocolo, TP_RECEBIDA_INVALIDA, FMensagem, Finalizado, ClienteId, FClienteNome);
 
         end;
       TP_ENTREGA_ULTIMOS_PEDIDOS_REQUISITAR_CNPJCPF, TP_ENTREGA_ULTIMOS_OS_REQUISITAR_CNPJCPF,
@@ -1875,7 +1888,7 @@ begin
         if VerificarSeVoltaParaOMenuInicial(Self.GetMensagem) then
         begin //Volta para o menu inicial
           Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-            Protocolo, TP_RECEBIDA_INICIO_ATENDIMENTO, FMensagem, Finalizado, ClienteId, vClienteNome);
+            Protocolo, TP_RECEBIDA_INICIO_ATENDIMENTO, FMensagem, Finalizado, ClienteId, FClienteNome);
         end
         else
         begin
@@ -1888,7 +1901,7 @@ begin
               TP_ENTREGA_BOLETOS_EM_ABERTO_REQUISITAR_CNPJCPF: lRespostaTratada := TP_RECEBIDA_REQUISITAR_BOLETOS_EM_ABERTO_CPFCNPJ_ENCONTRADO;
             end;
           Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-            Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, vClienteNome);
+            Protocolo, lRespostaTratada, FMensagem, Finalizado, ClienteId, FClienteNome);
         end;
       end;
       //Caso o usuario ja fez o que queria tratar se ele ta voltando para o inicio novamente
@@ -1898,12 +1911,12 @@ begin
           if VerificarSeVoltaParaOMenuInicial(Self.GetMensagem) then
           begin //Volta para o menu inicial
             Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-              Protocolo, TP_RECEBIDA_INICIO_ATENDIMENTO, FMensagem, Finalizado, ClienteId, vClienteNome);
+              Protocolo, TP_RECEBIDA_INICIO_ATENDIMENTO, FMensagem, Finalizado, ClienteId, FClienteNome);
           end
           else
           begin //Retona opção invalida
             Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-              Protocolo, TP_RECEBIDA_INVALIDA, FMensagem, Finalizado, ClienteId, vClienteNome);
+              Protocolo, TP_RECEBIDA_INVALIDA, FMensagem, Finalizado, ClienteId, FClienteNome);
           end;
         end;
 
@@ -1912,11 +1925,11 @@ begin
           if  ValidarSetorSelecionado( Self.GetMensagem, AConexao ) then
             begin
               Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-              Protocolo, TP_RECEBIDA_REQUISITAR_SETORES_CONTATOS, FMensagem, Finalizado, ClienteId, vClienteNome);
+              Protocolo, TP_RECEBIDA_REQUISITAR_SETORES_CONTATOS, FMensagem, Finalizado, ClienteId, FClienteNome);
             end
           else
             Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-              Protocolo, TP_RECEBIDA_INICIO_ATENDIMENTO, FMensagem, Finalizado, ClienteId, vClienteNome);
+              Protocolo, TP_RECEBIDA_INICIO_ATENDIMENTO, FMensagem, Finalizado, ClienteId, FClienteNome);
         END;
 
        TP_ENTREGA_NOVO_CLIENTE:
@@ -1927,19 +1940,19 @@ begin
               TP_RECEBIDA_CONFIRMA_CONTATO_NOVO_CLIENTE:
                 begin
                   Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-                    Protocolo, TP_RECEBIDA_CONFIRMA_CONTATO_NOVO_CLIENTE, FMensagem, Finalizado, ClienteId, vClienteNome);
+                    Protocolo, TP_RECEBIDA_CONFIRMA_CONTATO_NOVO_CLIENTE, FMensagem, Finalizado, ClienteId, FClienteNome);
                 end;
 
               TP_RECEBIDA_NAO_CONFIRMA_CONTATO_NOVO_CLIENTE: //CASO NÃO CONFIME O CONTATO SERA EXCLUIDO O NUMERO DO WHATS NO CADASTRO DO CLIENTE
                 BEGIN
                   Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-                    Protocolo, TP_RECEBIDA_NAO_CONFIRMA_CONTATO_NOVO_CLIENTE, FMensagem, Finalizado, ClienteId, vClienteNome);
+                    Protocolo, TP_RECEBIDA_NAO_CONFIRMA_CONTATO_NOVO_CLIENTE, FMensagem, Finalizado, ClienteId, FClienteNome);
                 END;
 
               else
                 begin
                    Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-                   Protocolo, TP_RECEBIDA_INVALIDA, FMensagem, Finalizado, ClienteId, vClienteNome);
+                   Protocolo, TP_RECEBIDA_INVALIDA, FMensagem, Finalizado, ClienteId, FClienteNome);
                 end;
             end
 
@@ -1948,14 +1961,14 @@ begin
        TP_ENTREGA_ANEXO_PDF, TP_RECEBIDA_REQUISITAR_SETORES_CONTATOS, TP_RECEBIDA_REQUISITAR_BOLETOS_EM_ABERTO:
           BEGIN
              Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-                   Protocolo, TP_RECEBIDA_INICIO_ATENDIMENTO, FMensagem, Finalizado, ClienteId, vClienteNome);
+                   Protocolo, TP_RECEBIDA_INICIO_ATENDIMENTO, FMensagem, Finalizado, ClienteId, FClienteNome);
           END;
     end;
   end
   else  //Encerra os atendimentos se o usuairo digitou "SAIR"
   begin
     Result := TMensagemRecebida.Add(0, DataCadastro, NumeroEmpresa, NumeroCliente, AUltimaMensagemValida.Ticket,
-      Protocolo, TP_RECEBIDA_FINALIZAR, FMensagem, STS_ATENDIMENTO_FINALIZADO, ClienteId, vClienteNome);
+      Protocolo, TP_RECEBIDA_FINALIZAR, FMensagem, STS_ATENDIMENTO_FINALIZADO, ClienteId, FClienteNome);
   end;
   Result.RegistraMensagem(AConexao);
 end;
@@ -1976,7 +1989,7 @@ begin
       if not (lQuery.IsEmpty) then
       begin
         Self.ClienteId := lQuery.FieldByName('ID').AsInteger;
-        Self.vClienteNome := lQuery.FieldByName('DESCRICAO').AsString;
+        Self.FClienteNome := lQuery.FieldByName('DESCRICAO').AsString;
         Result := TP_RECEBIDA_VALIDADA;
         lQuery.Close;
         lQuery.SQL.Text := 'update CLIENTES set WHATSAPP = :WHATSAPP where ID = :ID';
@@ -2058,7 +2071,12 @@ begin
   Result.FMensagem := AMensagem;
   Result.Finalizado := AFinalizado;
   Result.ClienteId := AClienteId;
-  Result.ClienteNome := AClienteNome;
+  Result.FClienteNome := AClienteNome;
+end;
+
+function TMensagemRecebida.ClienteNome: string;
+begin
+  Result := SomenteLetras(FClienteNome);
 end;
 
 function TMensagemRecebida.GeraMensagemDeResposta: TMensagemEnviar;
@@ -2134,7 +2152,7 @@ begin
   Result.SetMensagem(AMensagem);
   Result.Finalizado := AFinalizado;
   Result.ClienteId := AClienteId;
-  Result.ClienteNome := AClienteNome;
+  Result.FClienteNome := AClienteNome;
 end;
 
 class function TMensagemRecebida.RecuperaMensagens(ANumeroEmpresa,
