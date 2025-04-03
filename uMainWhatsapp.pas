@@ -543,7 +543,6 @@ begin
     lMensagensParaEnviar := TMensagemEnviar.RecuperaMensagens(FMeuNumero, fdConexaoEnvio);
     for I := 0 to lMensagensParaEnviar.Count - 1 do
     begin
-      Sleep(5000);
       case lMensagensParaEnviar[I].OpcaoEntregue of
         TP_ENTREGA_ANEXO_IMAGEM:
           begin
@@ -775,6 +774,8 @@ procedure TfmMainWhatsapp.MensagemRecebida(ANumeroCliente, ANomeCliente, AProtoc
   AMensagemTexto, AAnexoMensagem, AInformacoes: string);
 begin
   RegistraLog(TP_OPCAO_ENTREGA_PARA_EMPRESA, ANumeroCliente, ANomeCliente, AMensagemTexto, AInformacoes);
+  if AMensagemTexto.IsEmpty then
+    Exit;
   if not (EstarNoHorario) then
   begin
     EnviaMensagem(ANumeroCliente, ANomeCliente, mmForaHorario.Lines.Text);
@@ -1349,7 +1350,7 @@ begin
               end
             else //Leitura das mensagens comuns de texto
             begin
-              lMensagemRecebida := StringReplace(lMessage.body, #$A, #13#10, [rfReplaceAll, rfIgnoreCase]);
+              lMensagemRecebida := Trim(StringReplace(lMessage.body, #$A, #13#10, [rfReplaceAll, rfIgnoreCase]));
               lInformacoes := Format('-> Tipo da mensagem: %s'+sLineBreak+
                                      '-> Protocolo: %s',
                                      [lMessage.&type, lProtocolo]);

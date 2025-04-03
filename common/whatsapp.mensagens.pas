@@ -1065,7 +1065,7 @@ begin
   lQuery := TFDQuery.Create(nil);
   try
     lQuery.Connection := AConexao;
-    lQuery.SQL.Text := 'select E.*,  ' +
+    lQuery.SQL.Text := 'select first 1 E.*,  ' +
                               'CLI.DESCRICAO CLIENTE_NOME ' +
                        'from WB_MENSAGEM_ENVIO E ' +
                        'left join CLIENTES CLI on CLI.ID = E.CLIENTE_ID ' +
